@@ -4,8 +4,8 @@ import { supabase } from '../../lib/supabase';
 import type { Assignment } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    FileText, Clock, CheckCircle, AlertCircle, ArrowLeft, Shield,
-    LogOut, Plus, TrendingUp, Search, Filter, Mail, Users,
+    FileText, Clock, CheckCircle, AlertCircle, ArrowLeft,
+    Plus, Search, Mail, Users,
     ExternalLink, BookOpen, ChevronRight, MoreVertical, X,
     Award, BarChart2, Calendar
 } from 'lucide-react';
@@ -13,7 +13,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 const AdminAssignments: React.FC = () => {
     const navigate = useNavigate();
-    const { setUser } = useAuth();
+    const { } = useAuth();
     const [assignments, setAssignments] = useState<Assignment[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'pending' | 'graded' | 'overdue'>('all');
@@ -61,11 +61,6 @@ const AdminAssignments: React.FC = () => {
         }
     };
 
-    const handleSignOut = () => {
-        localStorage.removeItem('adminUser');
-        setUser(null);
-        navigate('/admin');
-    };
 
     const filteredAssignments = assignments.filter((a) => {
         const matchesSearch =
@@ -202,8 +197,8 @@ const AdminAssignments: React.FC = () => {
                                         key={f}
                                         onClick={() => setFilter(f)}
                                         className={`px-6 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${filter === f
-                                                ? 'bg-white text-indigo-600 shadow-xl shadow-indigo-500/5 scale-105'
-                                                : 'text-gray-400 hover:text-gray-600'
+                                            ? 'bg-white text-indigo-600 shadow-xl shadow-indigo-500/5 scale-105'
+                                            : 'text-gray-400 hover:text-gray-600'
                                             }`}
                                     >
                                         {f}

@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import type { Question, QuestionType, QuestionOption, Profile } from '../../lib/supabase';
+import type { Question, QuestionType, QuestionOption } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus, Trash2, GripVertical, Save, Eye, Calendar,
     CheckSquare, List, Type, AlignLeft, Star, BarChart3,
-    Users, Target, Clock, Settings, ArrowLeft, Copy,
-    ChevronRight, Search, Layout, FileText, Send, Sparkles,
-    Filter, MoreVertical, CheckCircle, AlertCircle, X,
-    Maximize2, Monitor, Database, Shield
+    Users, Target, Settings, ArrowLeft, Copy,
+    Search, Layout, FileText, Send, Sparkles,
+    MoreVertical, CheckCircle, X,
+    Monitor, Database
 } from 'lucide-react';
 
 const AdminQuestionnaires: React.FC = () => {
@@ -18,7 +18,6 @@ const AdminQuestionnaires: React.FC = () => {
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState<'create' | 'manage'>('manage');
     const [questionnaires, setQuestionnaires] = useState<any[]>([]);
-    const [students, setStudents] = useState<Profile[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -33,7 +32,6 @@ const AdminQuestionnaires: React.FC = () => {
     const [showCorrectAnswers, setShowCorrectAnswers] = useState(false);
     const [maxAttempts, setMaxAttempts] = useState(1);
     const [timeLimitMinutes, setTimeLimitMinutes] = useState<number | undefined>();
-    const [isPublished, setIsPublished] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -41,19 +39,12 @@ const AdminQuestionnaires: React.FC = () => {
 
     const loadData = async () => {
         try {
-            const [questionnairesRes, studentsRes] = await Promise.all([
-                supabase
-                    .from('questionnaires')
-                    .select('*')
-                    .order('created_at', { ascending: false }),
-                supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('role', 'member')
-            ]);
+            const { data } = await supabase
+                .from('questionnaires')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-            if (questionnairesRes.data) setQuestionnaires(questionnairesRes.data);
-            if (studentsRes.data) setStudents(studentsRes.data);
+            if (data) setQuestionnaires(data);
             setLoading(false);
         } catch (error) {
             console.error('Error loading data:', error);
@@ -186,7 +177,6 @@ const AdminQuestionnaires: React.FC = () => {
         setShowCorrectAnswers(false);
         setMaxAttempts(1);
         setTimeLimitMinutes(undefined);
-        setIsPublished(false);
     };
 
     const deleteQuestionnaire = async (id: string) => {
@@ -275,8 +265,8 @@ const AdminQuestionnaires: React.FC = () => {
                         <button
                             onClick={() => setActiveTab('manage')}
                             className={`px-6 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all ${activeTab === 'manage'
-                                    ? 'bg-white text-indigo-600 shadow-xl shadow-indigo-500/10 scale-105'
-                                    : 'text-gray-400 hover:text-gray-600'
+                                ? 'bg-white text-indigo-600 shadow-xl shadow-indigo-500/10 scale-105'
+                                : 'text-gray-400 hover:text-gray-600'
                                 }`}
                         >
                             <div className="flex items-center gap-2">
@@ -287,8 +277,8 @@ const AdminQuestionnaires: React.FC = () => {
                         <button
                             onClick={() => setActiveTab('create')}
                             className={`px-6 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all ${activeTab === 'create'
-                                    ? 'bg-white text-indigo-600 shadow-xl shadow-indigo-500/10 scale-105'
-                                    : 'text-gray-400 hover:text-gray-600'
+                                ? 'bg-white text-indigo-600 shadow-xl shadow-indigo-500/10 scale-105'
+                                : 'text-gray-400 hover:text-gray-600'
                                 }`}
                         >
                             <div className="flex items-center gap-2">
@@ -349,8 +339,8 @@ const AdminQuestionnaires: React.FC = () => {
                                                 <div className="flex items-start justify-between mb-6">
                                                     <div className="flex gap-2">
                                                         <span className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full ${q.is_published
-                                                                ? 'bg-indigo-50 text-indigo-600'
-                                                                : 'bg-gray-100 text-gray-400'
+                                                            ? 'bg-indigo-50 text-indigo-600'
+                                                            : 'bg-gray-100 text-gray-400'
                                                             }`}>
                                                             {q.is_published ? 'Live' : 'Draft'}
                                                         </span>
@@ -396,8 +386,8 @@ const AdminQuestionnaires: React.FC = () => {
                                                     <button
                                                         onClick={() => togglePublish(q.id, q.is_published)}
                                                         className={`flex items-center justify-center gap-2 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border-2 ${q.is_published
-                                                                ? 'bg-red-50 border-red-100 text-red-600 hover:bg-red-100'
-                                                                : 'bg-indigo-50 border-indigo-100 text-indigo-600 hover:bg-indigo-100'
+                                                            ? 'bg-red-50 border-red-100 text-red-600 hover:bg-red-100'
+                                                            : 'bg-indigo-50 border-indigo-100 text-indigo-600 hover:bg-indigo-100'
                                                             }`}
                                                     >
                                                         {q.is_published ? 'Unlist' : 'Deploy'}
@@ -549,8 +539,8 @@ const AdminQuestionnaires: React.FC = () => {
                                                                                                 }
                                                                                             }}
                                                                                             className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${option.isCorrect
-                                                                                                    ? 'bg-green-500 text-white shadow-lg shadow-green-500/30 rotate-0'
-                                                                                                    : 'bg-white text-gray-200 hover:text-gray-900 border border-gray-100'
+                                                                                                ? 'bg-green-500 text-white shadow-lg shadow-green-500/30 rotate-0'
+                                                                                                : 'bg-white text-gray-200 hover:text-gray-900 border border-gray-100'
                                                                                                 }`}
                                                                                         >
                                                                                             {option.isCorrect ? <CheckCircle className="w-5 h-5" /> : <div className="w-2 h-2 rounded-full bg-current" />}
@@ -683,8 +673,8 @@ const AdminQuestionnaires: React.FC = () => {
                                                         }
                                                     }}
                                                     className={`px-4 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all text-left flex items-center justify-between border-2 ${targetLearningPaths.includes(path)
-                                                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-600/20'
-                                                            : 'bg-white text-gray-400 border-gray-50 hover:border-indigo-100 uppercase'
+                                                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-600/20'
+                                                        : 'bg-white text-gray-400 border-gray-50 hover:border-indigo-100 uppercase'
                                                         }`}
                                                 >
                                                     {path === 'fe' ? 'Frontend' : path === 'be' ? 'Backend' : 'Fullstack'}

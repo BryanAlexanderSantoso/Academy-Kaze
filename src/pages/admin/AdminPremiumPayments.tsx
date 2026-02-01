@@ -7,13 +7,9 @@ import {
     XCircle,
     Image as ImageIcon,
     Shield,
-    AlertCircle,
-    Calendar,
     Search,
-    ChevronRight,
     Filter,
     ArrowUpRight,
-    TrendingUp,
     Users,
     Clock,
     DollarSign,
@@ -22,8 +18,7 @@ import {
     Maximize2,
     Activity,
     CreditCard,
-    Zap,
-    Download
+    Zap
 } from 'lucide-react';
 
 const AdminPremiumPayments: React.FC = () => {
@@ -285,8 +280,8 @@ const AdminPremiumPayments: React.FC = () => {
                                                         </button>
                                                     ) : (
                                                         <div className={`px-6 py-2 rounded-2xl text-[9px] font-black uppercase tracking-[0.2em] border ${payment.status === 'approved'
-                                                                ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
-                                                                : 'bg-red-50 text-red-600 border-red-100'
+                                                            ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                                                            : 'bg-red-50 text-red-600 border-red-100'
                                                             }`}>
                                                             {payment.status}
                                                         </div>

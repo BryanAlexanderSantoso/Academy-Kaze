@@ -13,13 +13,7 @@ import {
     LogOut,
     Menu,
     X,
-    ShieldCheck,
-    ChevronRight,
-    Zap,
-    Layout,
-    Cpu,
-    Target,
-    Activity
+    ShieldCheck
 } from 'lucide-react';
 
 const MemberDashboard: React.FC = () => {
@@ -42,8 +36,6 @@ const MemberDashboard: React.FC = () => {
         setUser(null);
         navigate('/login');
     };
-
-    const pathAccent = user?.learning_path === 'fe' ? 'indigo' : user?.learning_path === 'be' ? 'emerald' : 'amber';
 
     return (
         <div className="min-h-screen bg-gray-50/50 selection:bg-indigo-100 selection:text-indigo-900">
@@ -90,8 +82,8 @@ const MemberDashboard: React.FC = () => {
                                 key={item.id}
                                 onClick={() => navigate(item.path)}
                                 className={`p-4 rounded-[20px] transition-all flex items-center justify-center relative group ${isActive
-                                        ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20'
-                                        : 'text-gray-300 hover:text-gray-900 hover:bg-gray-50'
+                                    ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20'
+                                    : 'text-gray-300 hover:text-gray-900 hover:bg-gray-50'
                                     }`}
                             >
                                 <Icon className="w-7 h-7" />
@@ -168,8 +160,8 @@ const MemberDashboard: React.FC = () => {
                                                 setSidebarOpen(false);
                                             }}
                                             className={`flex items-center gap-4 p-4 rounded-2xl transition-all ${isActive
-                                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                                                    : 'text-gray-400 hover:text-gray-900 hover:bg-gray-50'
+                                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                                                : 'text-gray-400 hover:text-gray-900 hover:bg-gray-50'
                                                 }`}
                                         >
                                             <Icon className="w-5 h-5" />

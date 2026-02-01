@@ -5,15 +5,15 @@ import type { Course } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     BookOpen, Plus, Edit, Trash2, Eye, EyeOff, ArrowLeft,
-    Shield, LogOut, Search, Filter, Grid, List as ListIcon,
-    ChevronRight, MoreVertical, Layout, Layers, Sparkles,
+    Search, Grid, List as ListIcon,
+    ChevronRight, Layout, Layers,
     Calendar, Clock
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const AdminCourses: React.FC = () => {
     const navigate = useNavigate();
-    const { setUser } = useAuth();
+    const { } = useAuth();
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -25,7 +25,7 @@ const AdminCourses: React.FC = () => {
 
     const loadCourses = async () => {
         try {
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('courses')
                 .select('*')
                 .order('created_at', { ascending: false });
@@ -59,11 +59,6 @@ const AdminCourses: React.FC = () => {
         }
     };
 
-    const handleSignOut = () => {
-        localStorage.removeItem('adminUser');
-        setUser(null);
-        navigate('/admin');
-    };
 
     const filteredCourses = courses.filter(c =>
         c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -198,8 +193,8 @@ const AdminCourses: React.FC = () => {
                                             <button
                                                 onClick={() => handleTogglePublish(course)}
                                                 className={`p-2.5 rounded-xl backdrop-blur-md transition-all ${course.is_published
-                                                        ? 'bg-indigo-600/90 text-white'
-                                                        : 'bg-white/90 text-gray-400'
+                                                    ? 'bg-indigo-600/90 text-white'
+                                                    : 'bg-white/90 text-gray-400'
                                                     }`}
                                             >
                                                 {course.is_published ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}

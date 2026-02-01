@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { Course } from '../../lib/supabase';
-import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Calendar, Clock, Search, Book, Sparkles, ChevronRight, Activity, Filter } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { BookOpen, Clock, Search, Book, Sparkles, ChevronRight, Activity } from 'lucide-react';
 
 const Courses: React.FC = () => {
     const { user } = useAuth();

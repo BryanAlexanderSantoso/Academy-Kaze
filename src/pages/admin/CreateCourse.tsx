@@ -1,25 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
     Save,
     ArrowLeft,
     Shield,
     LogOut,
     Zap,
-    Plus,
-    Layers,
     Clock,
     Calendar,
-    Globe,
     Monitor,
     Palette,
     Code2,
     CheckCircle2,
     Sparkles,
-    FileText,
-    Settings,
     Layout
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';

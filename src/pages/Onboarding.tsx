@@ -4,10 +4,10 @@ import { updateLearningPath } from '../lib/auth';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Code2, Server, Layers, ArrowRight, CheckCircle2,
-    Sparkles, ShieldCheck, Zap, Laptop, Database, Globe,
-    Layout, BookOpen, FileText, ClipboardList, Monitor,
-    ChevronRight, Rocket, Target, Star, Play
+    ArrowRight, CheckCircle2,
+    Sparkles, ShieldCheck, Laptop, Database, Globe,
+    BookOpen, FileText, ClipboardList,
+    ChevronRight, Rocket, Target
 } from 'lucide-react';
 
 const learningPaths = [

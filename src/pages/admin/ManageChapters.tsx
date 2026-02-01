@@ -4,30 +4,21 @@ import { supabase } from '../../lib/supabase';
 import type { CourseChapter, Course } from '../../lib/supabase';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import {
-    Plus,
     Type,
     FileText,
     Link as LinkIcon,
     Trash2,
     GripVertical,
-    ChevronDown,
-    ChevronUp,
     Save,
     ArrowLeft,
     Layers,
-    Layout,
     Sparkles,
-    Trash,
-    ChevronRight,
     Edit,
-    Terminal,
     Monitor,
     BookOpen,
     Zap,
     LogOut,
-    Upload,
-    X,
-    Check
+    Upload
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -103,13 +94,9 @@ const ManageChapters: React.FC = () => {
             const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
             const filePath = `${courseId}/${fileName}`;
 
-            const { error: uploadError, data } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from('course-materials')
-                .upload(filePath, file, {
-                    onUploadProgress: (progress) => {
-                        setUploadProgress(Math.round((progress.loaded / progress.total) * 100));
-                    }
-                });
+                .upload(filePath, file);
 
             if (uploadError) throw uploadError;
 

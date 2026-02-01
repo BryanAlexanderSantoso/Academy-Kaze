@@ -3,9 +3,9 @@ import { useNavigate, Link } from 'react-router-dom';
 import { signUp } from '../lib/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    GraduationCap, Mail, Lock, User, ArrowRight,
-    Sparkles, ShieldCheck, Zap, ChevronRight, AlertCircle,
-    UserPlus, Shapes, Shield, Fingerprint, Activity
+    GraduationCap, Mail, Lock, User,
+    Zap, AlertCircle,
+    UserPlus, Shield, Fingerprint, Activity
 } from 'lucide-react';
 
 const Signup: React.FC = () => {

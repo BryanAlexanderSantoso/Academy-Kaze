@@ -5,9 +5,9 @@ import type { Questionnaire, QuestionnaireResponse, Profile } from '../../lib/su
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     ArrowLeft, Users, CheckCircle, Clock, Award,
-    TrendingUp, Download, Filter, Search, Star,
-    BookOpen, ChevronRight, Layout, Mail, Calendar,
-    FileText, Zap, BarChart2, Shield, X, Maximize2
+    Download, Search, Star,
+    Mail, Calendar,
+    FileText, Zap, BarChart2, Shield, X
 } from 'lucide-react';
 
 const QuestionnaireResponses: React.FC = () => {

@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { Questionnaire, QuestionnaireResponse } from '../../lib/supabase';
 import { motion } from 'framer-motion';
-import { ClipboardList, Calendar, CheckCircle, AlertCircle, Play, Eye, Clock, Award } from 'lucide-react';
+import { ClipboardList, Calendar, AlertCircle, Play, Eye, Clock, Award } from 'lucide-react';
 
 const Questionnaires: React.FC = () => {
     const { user } = useAuth();

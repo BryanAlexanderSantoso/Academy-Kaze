@@ -21,9 +21,7 @@ import {
     Plus,
     Monitor,
     ChevronRight,
-    Terminal,
-    Layers,
-    Clock
+    Terminal
 } from 'lucide-react';
 
 const AdminDashboard: React.FC = () => {

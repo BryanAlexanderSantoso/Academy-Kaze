@@ -2,25 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import type { Profile, Course } from '../../lib/supabase';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
     Save,
     ArrowLeft,
-    Shield,
     LogOut,
     Users,
-    Calendar,
     BookOpen,
     Zap,
     CheckCircle2,
-    Filter,
     Search,
     UserPlus,
     Layout,
     Clock,
-    Sparkles,
-    ChevronRight,
-    X
+    Sparkles
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -320,8 +315,8 @@ const CreateAssignment: React.FC = () => {
                                                 initial={{ opacity: 0, scale: 0.95 }}
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 className={`flex items-center gap-5 p-5 rounded-[32px] border-2 cursor-pointer transition-all duration-300 group ${selectedStudents.has(student.id)
-                                                        ? 'border-indigo-600 bg-indigo-600 shadow-xl shadow-indigo-600/20'
-                                                        : 'border-gray-50 hover:border-indigo-100 bg-white'
+                                                    ? 'border-indigo-600 bg-indigo-600 shadow-xl shadow-indigo-600/20'
+                                                    : 'border-gray-50 hover:border-indigo-100 bg-white'
                                                     }`}
                                             >
                                                 <div className="relative">
@@ -332,8 +327,8 @@ const CreateAssignment: React.FC = () => {
                                                         className="hidden peer"
                                                     />
                                                     <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedStudents.has(student.id)
-                                                            ? 'bg-white border-white scale-110'
-                                                            : 'bg-gray-50 border-gray-100'
+                                                        ? 'bg-white border-white scale-110'
+                                                        : 'bg-gray-50 border-gray-100'
                                                         }`}>
                                                         {selectedStudents.has(student.id) && <CheckCircle2 className="w-4 h-4 text-indigo-600" />}
                                                     </div>

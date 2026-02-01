@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { Course, Assignment } from '../../lib/supabase';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { BookOpen, FileText, Trophy, Calendar, ArrowRight, Clock, Activity, Zap, Target, Rocket, ChevronRight, Layout } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
