@@ -1,0 +1,144 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@theme {
+  --font-sans: Inter, system-ui, sans-serif;
+
+  /* Primary Colors (Frontend - Indigo) */
+  --color-primary-50: #eef2ff;
+  --color-primary-100: #e0e7ff;
+  --color-primary-200: #c7d2fe;
+  --color-primary-300: #a5b4fc;
+  --color-primary-400: #818cf8;
+  --color-primary-500: #6366f1;
+  --color-primary-600: #4f46e5;
+  --color-primary-700: #4338ca;
+  --color-primary-800: #3730a3;
+  --color-primary-900: #312e81;
+
+  /* Backend Colors (Emerald) */
+  --color-backend-50: #ecfdf5;
+  --color-backend-100: #d1fae5;
+  --color-backend-200: #a7f3d0;
+  --color-backend-300: #6ee7b7;
+  --color-backend-400: #34d399;
+  --color-backend-500: #10b981;
+  --color-backend-600: #059669;
+  --color-backend-700: #047857;
+  --color-backend-800: #065f46;
+  --color-backend-900: #064e3b;
+
+  /* Fullstack Colors (Violet) */
+  --color-fullstack-50: #faf5ff;
+  --color-fullstack-100: #f3e8ff;
+  --color-fullstack-200: #e9d5ff;
+  --color-fullstack-300: #d8b4fe;
+  --color-fullstack-400: #c084fc;
+  --color-fullstack-500: #a855f7;
+  --color-fullstack-600: #9333ea;
+  --color-fullstack-700: #7e22ce;
+  --color-fullstack-800: #6b21a8;
+  --color-fullstack-900: #581c87;
+}
+
+* {
+  border-color: rgb(229 231 235);
+}
+
+body {
+  background-color: white;
+  color: rgb(17 24 39);
+  font-family: var(--font-sans);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Component Classes */
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-primary-600);
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-700);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  color: rgb(17 24 39);
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: rgb(249 250 251);
+}
+
+.card {
+  background-color: white;
+  border: 1px solid rgb(229 231 235);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--color-primary-500);
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  color: rgb(55 65 81);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.sidebar-link:hover {
+  background-color: rgb(243 244 246);
+  color: rgb(17 24 39);
+}
+
+.sidebar-link.active {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-700);
+  font-weight: 500;
+}
+
+.glass {
+  background-color: rgb(255 255 255 / 0.8);
+  backdrop-filter: blur(12px);
+}
