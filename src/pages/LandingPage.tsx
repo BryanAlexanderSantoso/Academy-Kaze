@@ -24,10 +24,10 @@ const DashboardPreview = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 pointer-events-none" />
 
             {/* Mock Dashboard Content - Based on actual DashboardOverview */}
-            <div className="space-y-6 md:space-y-8 relative z-10 scale-[0.85] lg:scale-100 origin-top-left lg:origin-top h-full w-[120%] lg:w-full">
+            <div className="space-y-4 md:space-y-6 lg:space-y-8 relative z-10 w-full">
 
                 {/* Welcome Matrix Card */}
-                <div className="relative bg-gray-900 rounded-[40px] p-8 md:p-10 text-white overflow-hidden shadow-2xl shadow-indigo-900/20">
+                <div className="relative bg-gray-900 rounded-[2rem] md:rounded-[40px] p-6 md:p-10 text-white overflow-hidden shadow-2xl shadow-indigo-900/20">
                     <div className="absolute top-0 right-0 w-[60%] h-full bg-indigo-600 opacity-20 blur-[120px] -translate-y-1/2 translate-x-1/4" />
 
                     <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -61,7 +61,7 @@ const DashboardPreview = () => {
                 </div>
 
                 {/* Tactical Grid */}
-                <div className="grid grid-cols-3 gap-3 md:gap-5 pr-16 md:pr-0">
+                <div className="grid grid-cols-3 gap-3 md:gap-5">
                     {[
                         { label: 'Nodes', value: '08', icon: BookOpen, color: 'indigo' },
                         { label: 'Tasks', value: '12', icon: Activity, color: 'emerald' },
@@ -78,7 +78,7 @@ const DashboardPreview = () => {
                 </div>
 
                 {/* Curriculum Item Preview */}
-                <div className="bg-white border border-gray-100 rounded-[30px] p-5 md:p-6 shadow-sm flex items-center gap-5 pr-20 md:pr-6">
+                <div className="bg-white border border-gray-100 rounded-[24px] md:rounded-[30px] p-4 md:p-6 shadow-sm flex items-center gap-4 md:gap-5">
                     <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center shrink-0">
                         <Layout className="w-6 h-6 text-indigo-600" />
                     </div>
@@ -162,7 +162,7 @@ const LandingPage: React.FC = () => {
         <div className="min-h-screen bg-white selection:bg-indigo-100 selection:text-indigo-900 font-sans">
             {/* Header */}
             <header className="fixed top-0 inset-x-0 bg-white/80 backdrop-blur-xl border-b border-gray-100 z-50">
-                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
                             <span className="font-black italic text-xl">K</span>
@@ -189,34 +189,34 @@ const LandingPage: React.FC = () => {
             </header>
 
             {/* Hero Section */}
-            <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+            <section className="relative pt-28 pb-16 lg:pt-48 lg:pb-32 overflow-hidden">
                 <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-indigo-50 rounded-bl-[100px] -z-10" />
                 <div className="absolute bottom-0 left-0 w-[30%] h-[30%] bg-violet-50 rounded-tr-[100px] -z-10" />
 
-                <div className="max-w-7xl mx-auto px-6">
+                <div className="max-w-7xl mx-auto px-4 md:px-6">
                     <div className="grid lg:grid-cols-2 gap-16 lg:gap-8 items-center">
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold uppercase tracking-widest mb-8 border border-indigo-100">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-indigo-50 text-indigo-700 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest mb-6 md:mb-8 border border-indigo-100">
                                 <Zap className="w-3 h-3 fill-current" />
                                 Next_Gen Learning Platform
                             </div>
 
-                            <h1 className="text-5xl lg:text-7xl font-black text-gray-900 mb-8 leading-[0.95] tracking-tight">
+                            <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-gray-900 mb-6 md:mb-8 leading-[0.95] tracking-tight">
                                 Code Your <br />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 animate-gradient-x">
                                     Future Reality
                                 </span>.
                             </h1>
 
-                            <p className="text-xl text-gray-500 mb-10 leading-relaxed max-w-lg font-medium">
+                            <p className="text-lg md:text-xl text-gray-500 mb-8 md:mb-10 leading-relaxed max-w-lg mx-auto lg:mx-0 font-medium">
                                 Master modern development. From logic to deployment, we provide the structured path, expert mentorship, and real-world projects you need.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                            <div className="flex flex-col sm:flex-row gap-4 mb-10 md:mb-12 justify-center lg:justify-start">
                                 <Link
                                     to="/signup"
                                     className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all hover:shadow-2xl hover:shadow-indigo-600/30 flex items-center justify-center gap-2 group active:scale-95"
@@ -233,7 +233,7 @@ const LandingPage: React.FC = () => {
                                 </Link>
                             </div>
 
-                            <div className="flex items-center gap-8 text-sm font-semibold text-gray-500">
+                            <div className="flex items-center gap-4 md:gap-8 text-xs md:text-sm font-semibold text-gray-500 justify-center lg:justify-start flex-wrap">
                                 <div className="flex items-center gap-2">
                                     <CheckCircle className="w-5 h-5 text-emerald-500" />
                                     <span>Certificated</span>
@@ -259,7 +259,7 @@ const LandingPage: React.FC = () => {
                             <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-[40px] rotate-3 opacity-20 blur-3xl" />
 
                             {/* The Frame */}
-                            <div className="relative bg-gray-900 rounded-[32px] p-2 shadow-2xl border-4 border-gray-900 aspect-[4/3] md:aspect-auto md:h-[600px] overflow-hidden transform transition-transform hover:scale-[1.02] duration-500">
+                            <div className="relative bg-gray-900 rounded-[24px] md:rounded-[32px] p-2 shadow-2xl border-4 border-gray-900 aspect-[3/4] sm:aspect-[4/3] md:aspect-auto md:h-[600px] overflow-hidden transform transition-transform hover:scale-[1.02] duration-500">
                                 {/* Browser Chrome */}
                                 <div className="bg-gray-900 px-4 py-3 flex items-center gap-4">
                                     <div className="flex gap-2">
@@ -303,9 +303,9 @@ const LandingPage: React.FC = () => {
             </section>
 
             {/* Stats Section with Glass Effect */}
-            <section className="py-12 bg-gray-900 text-white relative overflow-hidden">
+            <section className="py-8 md:py-12 bg-gray-900 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
-                <div className="max-w-7xl mx-auto px-6 relative z-10">
+                <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
                         {stats.map((stat, index) => (
                             <motion.div
@@ -318,8 +318,8 @@ const LandingPage: React.FC = () => {
                                 <div className="mb-4 inline-flex p-3 rounded-2xl bg-white/5 border border-white/10 group-hover:bg-indigo-500/20 group-hover:border-indigo-500/50 transition-all">
                                     <stat.icon className="w-6 h-6 text-indigo-400 group-hover:text-indigo-300" />
                                 </div>
-                                <div className="text-4xl lg:text-5xl font-black mb-2 tracking-tight">{stat.value}</div>
-                                <div className="text-sm text-gray-400 font-medium uppercase tracking-widest">{stat.label}</div>
+                                <div className="text-3xl lg:text-5xl font-black mb-2 tracking-tight">{stat.value}</div>
+                                <div className="text-xs md:text-sm text-gray-400 font-medium uppercase tracking-widest">{stat.label}</div>
                             </motion.div>
                         ))}
                     </div>
@@ -327,9 +327,9 @@ const LandingPage: React.FC = () => {
             </section>
 
             {/* Features Section */}
-            <section className="py-24 lg:py-32 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-20">
+            <section className="py-16 lg:py-32 bg-gray-50">
+                <div className="max-w-7xl mx-auto px-4 md:px-6">
+                    <div className="text-center mb-12 md:mb-20">
                         <motion.h2
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
@@ -363,8 +363,8 @@ const LandingPage: React.FC = () => {
             </section>
 
             {/* Paths Section - Card Design */}
-            <section className="py-24 lg:py-32 bg-white">
-                <div className="max-w-7xl mx-auto px-6">
+            <section className="py-16 md:py-32 bg-white">
+                <div className="max-w-7xl mx-auto px-4 md:px-6">
                     <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
                         <div className="max-w-2xl">
                             <h2 className="text-4xl lg:text-5xl font-black text-gray-900 mb-6 tracking-tight">
@@ -386,7 +386,7 @@ const LandingPage: React.FC = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="group relative bg-white rounded-[40px] p-10 border border-gray-100 hover:border-indigo-600 transition-all hover:shadow-2xl hover:shadow-indigo-600/10"
+                                className="group relative bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-gray-100 hover:border-indigo-600 transition-all hover:shadow-2xl hover:shadow-indigo-600/10"
                             >
                                 <div className={`absolute top-0 right-0 px-6 py-2 bg-${path.color}-50 rounded-bl-[30px] rounded-tr-[30px]`}>
                                     <span className={`text-[10px] font-black uppercase tracking-widest text-${path.color}-600`}>

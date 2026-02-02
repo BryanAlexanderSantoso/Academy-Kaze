@@ -148,32 +148,32 @@ const PremiumPayment: React.FC = () => {
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-8 pb-20">
-            <div className="flex items-center gap-6 mb-10">
+        <div className="max-w-4xl mx-auto space-y-6 md:space-y-8 pb-20 px-4 md:px-0">
+            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-6 mb-8 md:mb-10">
                 <button
                     onClick={() => navigate(-1)}
-                    className="p-4 bg-white border border-gray-100 text-gray-400 hover:text-indigo-600 hover:border-indigo-100 rounded-3xl transition-all shadow-sm"
+                    className="w-fit p-3 md:p-4 bg-white border border-gray-100 text-gray-400 hover:text-indigo-600 hover:border-indigo-100 rounded-3xl transition-all shadow-sm"
                 >
                     <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div>
-                    <h1 className="text-4xl font-black text-gray-900 tracking-tighter uppercase mb-1">Elite Access Activation</h1>
-                    <p className="text-gray-500 font-medium">Buka gerbang kurikulum premium dan mulai karir profesional Anda.</p>
+                    <h1 className="text-2xl md:text-4xl font-black text-gray-900 tracking-tighter uppercase mb-1">Elite Access Activation</h1>
+                    <p className="text-sm md:text-base text-gray-500 font-medium">Buka gerbang kurikulum premium dan mulai karir profesional Anda.</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 {/* Left: Payment Info */}
                 <div className="space-y-6">
-                    <div className="card bg-primary-600 text-white p-8 overflow-hidden relative">
+                    <div className="card bg-primary-600 text-white p-6 md:p-8 overflow-hidden relative rounded-[2rem]">
                         <CreditCard className="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 rotate-12" />
-                        <h3 className="text-xl font-bold mb-2">Hanya Sekali Bayar</h3>
+                        <h3 className="text-lg md:text-xl font-bold mb-2">Hanya Sekali Bayar</h3>
                         <p className="text-primary-100 text-sm mb-6">Dapatkan akses seumur hidup ke seluruh konten kurikulum Kaze For Developers.</p>
-                        <div className="text-4xl font-black mb-2">Rp 50.000</div>
+                        <div className="text-3xl md:text-4xl font-black mb-2">Rp 50.000</div>
                         <p className="text-xs text-primary-200">Investasi terbaik untuk masa depan Anda.</p>
                     </div>
 
-                    <div className="card border-2 border-yellow-100 bg-yellow-50/30 p-6 space-y-4">
+                    <div className="card border-2 border-yellow-100 bg-yellow-50/30 p-5 md:p-6 space-y-4 rounded-[2rem]">
                         <div className="flex items-center gap-2 text-yellow-700 font-bold">
                             <Info className="w-5 h-5" />
                             CARA PEMBAYARAN MANUAL
@@ -183,7 +183,7 @@ const PremiumPayment: React.FC = () => {
                             <li>Tentukan nominal <b>Rp 50.000</b>.</li>
                             <li>Selesaikan pembayaran sampai muncul tanda <b>BERHASIL</b>.</li>
                             <li>Screenshot bukti pembayaran tersebut.</li>
-                            <li>Upload buktinya pada form di samping.</li>
+                            <li>Upload buktinya pada form di bawah.</li>
                         </ol>
                         <img
                             src="/qris_payment.jpg"
@@ -199,7 +199,7 @@ const PremiumPayment: React.FC = () => {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="card p-8 text-center border-green-200 bg-green-50/50"
+                            className="card p-6 md:p-8 text-center border-green-200 bg-green-50/50 rounded-[2rem]"
                         >
                             <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
                             <h3 className="text-xl font-bold text-gray-900 mb-2">Formulir Terkirim!</h3>
@@ -212,11 +212,11 @@ const PremiumPayment: React.FC = () => {
                             </button>
                         </motion.div>
                     ) : (
-                        <div className="card p-8">
+                        <div className="card p-6 md:p-8 rounded-[2rem]">
                             <h3 className="text-xl font-bold text-gray-900 mb-6">Konfirmasi Pembayaran</h3>
                             <div className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">Upload Bukti Transfer</label>
+                                    <label className="text-xs md:text-sm font-bold text-gray-700 uppercase tracking-widest">Upload Bukti Transfer</label>
                                     <input
                                         type="file"
                                         ref={fileInputRef}
@@ -228,12 +228,12 @@ const PremiumPayment: React.FC = () => {
                                     {!selectedFile ? (
                                         <div
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="w-full h-48 border-4 border-dashed border-gray-200 rounded-3xl hover:border-indigo-200 hover:bg-indigo-50/30 transition-all flex flex-col items-center justify-center gap-4 cursor-pointer group"
+                                            className="w-full h-40 md:h-48 border-4 border-dashed border-gray-200 rounded-3xl hover:border-indigo-200 hover:bg-indigo-50/30 transition-all flex flex-col items-center justify-center gap-4 cursor-pointer group"
                                         >
-                                            <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300 group-hover:text-indigo-500 group-hover:scale-110 transition-all">
-                                                <Upload className="w-8 h-8" />
+                                            <div className="w-12 h-12 md:w-16 md:h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300 group-hover:text-indigo-500 group-hover:scale-110 transition-all">
+                                                <Upload className="w-6 h-6 md:w-8 md:h-8" />
                                             </div>
-                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Klik untuk pilih gambar</p>
+                                            <p className="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-widest text-center px-4">Tap untuk pilih gambar</p>
                                         </div>
                                     ) : (
                                         <div className="relative rounded-3xl overflow-hidden border border-gray-200 bg-gray-50">
@@ -255,18 +255,18 @@ const PremiumPayment: React.FC = () => {
                                 <button
                                     onClick={handleManualPayment}
                                     disabled={loading || !selectedFile}
-                                    className="btn-primary w-full py-4 text-lg font-black flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="btn-primary w-full py-3 md:py-4 text-base md:text-lg font-black flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl"
                                 >
                                     {loading ? (
                                         <>
                                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                            Mengirim Bukti...
+                                            Mengirim...
                                         </>
                                     ) : (
-                                        'KIRIM BUKTI PEMBAYARAN'
+                                        'KIRIM BUKTI'
                                     )}
                                 </button>
-                                <p className="text-xs text-center text-gray-400 mt-2">
+                                <p className="text-[10px] md:text-xs text-center text-gray-400 mt-2">
                                     Pastikan bukti transfer terlihat jelas
                                 </p>
                             </div>
@@ -275,16 +275,16 @@ const PremiumPayment: React.FC = () => {
 
                     {/* Transaction History */}
                     {existingPayments.length > 0 && (
-                        <div className="card p-6">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <div className="card p-5 md:p-6 rounded-[2rem]">
+                            <h3 className="text-base md:text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                                 <Clock className="w-5 h-5 text-gray-400" />
                                 Riwayat Pembayaran
                             </h3>
                             <div className="space-y-3">
                                 {existingPayments.map((p) => (
-                                    <div key={p.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                    <div key={p.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl border border-gray-100">
                                         <div className="flex items-center gap-3">
-                                            <div className={`p-2 rounded-full ${p.status === 'approved' ? 'bg-green-100' :
+                                            <div className={`p-2 rounded-xl ${p.status === 'approved' ? 'bg-green-100' :
                                                 p.status === 'rejected' ? 'bg-red-100' : 'bg-yellow-100'
                                                 }`}>
                                                 {p.status === 'approved' ? <CheckCircle className="w-4 h-4 text-green-600" /> :
@@ -293,18 +293,15 @@ const PremiumPayment: React.FC = () => {
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold text-gray-900">Rp {Number(p.amount).toLocaleString()}</p>
-                                                <p className="text-xs text-gray-500">{new Date(p.created_at).toLocaleDateString()}</p>
+                                                <p className="text-[10px] text-gray-500">{new Date(p.created_at).toLocaleDateString()}</p>
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-full ${p.status === 'approved' ? 'bg-green-200 text-green-800' :
+                                            <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-full ${p.status === 'approved' ? 'bg-green-200 text-green-800' :
                                                 p.status === 'rejected' ? 'bg-red-200 text-red-800' : 'bg-yellow-200 text-yellow-800'
                                                 }`}>
                                                 {p.status}
                                             </span>
-                                            {p.admin_feedback && (
-                                                <p className="text-[10px] text-red-500 mt-1 max-w-[120px] truncate">{p.admin_feedback}</p>
-                                            )}
                                         </div>
                                     </div>
                                 ))}
