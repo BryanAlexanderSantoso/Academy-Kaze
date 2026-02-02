@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { signUp } from '../lib/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    GraduationCap, Mail, Lock, User,
+    Mail, Lock, User,
     Zap, AlertCircle,
     UserPlus, Shield, Fingerprint, Activity
 } from 'lucide-react';
@@ -57,11 +57,15 @@ const Signup: React.FC = () => {
                 <div className="hidden lg:flex flex-col justify-between p-16 bg-gray-50/50 relative overflow-hidden border-r border-gray-100">
                     <div className="relative z-10">
                         <div className="flex items-center gap-4 mb-16">
-                            <div className="w-14 h-14 bg-indigo-600 rounded-[22px] flex items-center justify-center shadow-xl shadow-indigo-600/20">
-                                <GraduationCap className="w-8 h-8 text-white" />
+                            <div className="w-14 h-14 overflow-hidden flex items-center justify-center">
+                                <img
+                                    src="https://ik.imagekit.io/psdoxljjy/logo-removebg-preview.png?updatedAt=1748393870807"
+                                    alt="Kaze Logo"
+                                    className="w-full h-full object-contain"
+                                />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">Kaze Collective</h2>
+                                <h2 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">Kaze For Developer</h2>
                                 <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest leading-none">Architectural Studio</p>
                             </div>
                         </div>

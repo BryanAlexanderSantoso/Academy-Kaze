@@ -4,7 +4,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { signOut } from '../lib/auth';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    GraduationCap,
     LayoutDashboard,
     BookOpen,
     FileText,
@@ -42,10 +41,14 @@ const MemberDashboard: React.FC = () => {
             {/* Mobile Header (Sticky) */}
             <div className="lg:hidden fixed top-0 left-0 right-0 z-[60] bg-white/80 backdrop-blur-xl border-b border-gray-100 px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
-                        <GraduationCap className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 overflow-hidden flex items-center justify-center">
+                        <img
+                            src="https://ik.imagekit.io/psdoxljjy/logo-removebg-preview.png?updatedAt=1748393870807"
+                            alt="Kaze Logo"
+                            className="w-full h-full object-contain"
+                        />
                     </div>
-                    <span className="font-black text-xs uppercase tracking-tighter italic">Command Hub</span>
+                    <span className="font-black text-xs uppercase tracking-tighter italic">Kaze For Developer</span>
                 </div>
                 <div className="flex items-center gap-4">
                     <button
@@ -67,9 +70,13 @@ const MemberDashboard: React.FC = () => {
             <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-32 bg-white border-r border-gray-100 flex-col items-center py-10 z-50">
                 <div
                     onClick={() => navigate('/')}
-                    className="w-16 h-16 bg-gray-900 rounded-[22px] flex items-center justify-center mb-16 shadow-xl shadow-gray-900/10 cursor-pointer group"
+                    className="w-16 h-16 cursor-pointer group flex items-center justify-center overflow-hidden mb-16"
                 >
-                    <GraduationCap className="w-8 h-8 text-white group-hover:scale-110 transition-transform" />
+                    <img
+                        src="https://ik.imagekit.io/psdoxljjy/logo-removebg-preview.png?updatedAt=1748393870807"
+                        alt="Kaze Logo"
+                        className="w-full h-full object-contain group-hover:scale-110 transition-transform"
+                    />
                 </div>
 
                 <div className="flex-1 flex flex-col gap-10">
@@ -137,10 +144,14 @@ const MemberDashboard: React.FC = () => {
                         >
                             <div className="flex items-center justify-between mb-12">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center">
-                                        <GraduationCap className="w-5 h-5 text-white" />
+                                    <div className="w-10 h-10 overflow-hidden flex items-center justify-center">
+                                        <img
+                                            src="https://ik.imagekit.io/psdoxljjy/logo-removebg-preview.png?updatedAt=1748393870807"
+                                            alt="Kaze Logo"
+                                            className="w-full h-full object-contain"
+                                        />
                                     </div>
-                                    <span className="font-black text-sm uppercase tracking-tighter italic">Command Hub</span>
+                                    <span className="font-black text-sm uppercase tracking-tighter italic">Kaze For Developer</span>
                                 </div>
                                 <button onClick={() => setSidebarOpen(false)} className="p-2 bg-gray-50 rounded-lg">
                                     <X size={20} />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import TitleUpdater from './components/TitleUpdater';
 
 // Landing
 import LandingPage from './pages/LandingPage';
@@ -8,8 +9,11 @@ import LandingPage from './pages/LandingPage';
 // Auth Pages
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import AdminLogin from './pages/AdminLogin';
 import Onboarding from './pages/Onboarding';
+
 
 // Member Pages
 import MemberDashboard from './pages/MemberDashboard';
@@ -129,6 +133,21 @@ function AppRoutes() {
           </PublicRoute>
         }
       />
+      <Route
+        path="/forgot-password"
+        element={
+          <PublicRoute>
+            <ForgotPassword />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/reset-password"
+        element={
+          <ResetPassword />
+        }
+      />
+
 
       {/* Onboarding (Protected - Member only) */}
       <Route
@@ -250,6 +269,7 @@ function AppRoutes() {
 function App() {
   return (
     <BrowserRouter>
+      <TitleUpdater />
       <AuthProvider>
         <AppRoutes />
       </AuthProvider>

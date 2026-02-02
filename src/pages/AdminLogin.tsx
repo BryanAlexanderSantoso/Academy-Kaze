@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { adminLogin } from '../lib/auth';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Lock, ArrowRight, ChevronRight, AlertCircle, Fingerprint, Activity } from 'lucide-react';
+import { Lock, ArrowRight, ChevronRight, AlertCircle, Fingerprint, Activity } from 'lucide-react';
 
 const AdminLogin: React.FC = () => {
     const [password, setPassword] = useState('');
@@ -62,8 +62,12 @@ const AdminLogin: React.FC = () => {
                                 transition={{ duration: 3, repeat: Infinity }}
                                 className="absolute inset-0 bg-indigo-500/20 blur-2xl rounded-full"
                             />
-                            <div className="relative p-6 bg-indigo-600/10 rounded-3xl border border-indigo-500/20 shadow-inner">
-                                <Shield className="w-10 h-10 text-indigo-500" />
+                            <div className="relative p-6 bg-indigo-600/10 rounded-3xl border border-indigo-500/20 shadow-inner w-24 h-24 flex items-center justify-center overflow-hidden">
+                                <img
+                                    src="https://ik.imagekit.io/psdoxljjy/logo-removebg-preview.png?updatedAt=1748393870807"
+                                    alt="Kaze Logo"
+                                    className="w-full h-full object-contain"
+                                />
                             </div>
                         </div>
                         <h1 className="text-2xl font-black text-white tracking-widest uppercase mb-2">Clearance Entry</h1>
@@ -128,7 +132,7 @@ const AdminLogin: React.FC = () => {
                 <div className="mt-8 text-center">
                     <p className="text-[8px] font-black text-gray-800 uppercase tracking-[0.5em] leading-relaxed">
                         Authorized Personnel Only <br />
-                        Kaze Command Systems © 2026
+                        Kaze For Developer Command Systems © 2026
                     </p>
                 </div>
             </motion.div>

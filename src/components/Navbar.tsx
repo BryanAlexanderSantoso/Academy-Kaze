@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Code, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const Navbar: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -22,11 +22,15 @@ const Navbar: React.FC = () => {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-2 group">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center group-hover:shadow-lg group-hover:shadow-primary-500/30 transition-all">
-                            <Code className="w-6 h-6 text-white" />
+                        <div className="w-10 h-10 overflow-hidden flex items-center justify-center transition-all">
+                            <img
+                                src="https://ik.imagekit.io/psdoxljjy/logo-removebg-preview.png?updatedAt=1748393870807"
+                                alt="Kaze Logo"
+                                className="w-full h-full object-contain"
+                            />
                         </div>
                         <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-                            Kaze Developer
+                            Kaze For Developer
                         </span>
                     </Link>
 
@@ -37,8 +41,8 @@ const Navbar: React.FC = () => {
                                 key={link.path}
                                 to={link.path}
                                 className={`relative font-medium transition-colors ${isActive(link.path)
-                                        ? 'text-primary-600'
-                                        : 'text-gray-700 hover:text-primary-600'
+                                    ? 'text-primary-600'
+                                    : 'text-gray-700 hover:text-primary-600'
                                     }`}
                             >
                                 {link.name}
@@ -92,8 +96,8 @@ const Navbar: React.FC = () => {
                                     to={link.path}
                                     onClick={() => setIsOpen(false)}
                                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${isActive(link.path)
-                                            ? 'bg-primary-50 text-primary-600'
-                                            : 'text-gray-700 hover:bg-gray-50'
+                                        ? 'bg-primary-50 text-primary-600'
+                                        : 'text-gray-700 hover:bg-gray-50'
                                         }`}
                                 >
                                     {link.name}

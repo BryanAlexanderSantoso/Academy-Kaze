@@ -41,7 +41,7 @@ const tutorialSteps = [
     {
         title: "The Kaze Nucleus",
         subtitle: "Synchronizing Your Learning Experience",
-        description: "Welcome to Kaze Collective. You are entering a mission-critical learning environment designed to transform you into an industry-grade software architect.",
+        description: "Welcome to Kaze For Developer. You are entering a mission-critical learning environment designed to transform you into an industry-grade software architect.",
         icon: Sparkles,
         color: "indigo",
         tag: "System_Initialize"
@@ -238,7 +238,7 @@ const Onboarding: React.FC = () => {
                                     Select Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600">Trajectory.</span>
                                 </h1>
                                 <p className="text-gray-400 text-xl max-w-2xl mx-auto font-medium">
-                                    Choose the specialization that will define your professional legacy within the Collective.
+                                    Choose the specialization that will define your professional legacy within Kaze For Developer.
                                 </p>
                             </div>
 
@@ -310,7 +310,7 @@ const Onboarding: React.FC = () => {
                 <p className="text-[10px] font-black text-gray-900 uppercase tracking-[1em] rotate-180" style={{ writingMode: 'vertical-rl' }}>FORGE_PROTOCOL_V.4.2</p>
             </div>
             <div className="fixed top-1/2 right-10 -translate-y-1/2 hidden 2xl:block opacity-10">
-                <p className="text-[10px] font-black text-gray-900 uppercase tracking-[1em]" style={{ writingMode: 'vertical-rl' }}>KAZE_COMMAND_CENTRAL</p>
+                <p className="text-[10px] font-black text-gray-900 uppercase tracking-[1em]" style={{ writingMode: 'vertical-rl' }}>KAZE_FOR_DEVELOPER</p>
             </div>
         </div>
     );

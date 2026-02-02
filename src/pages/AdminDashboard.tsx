@@ -5,7 +5,6 @@ import { supabase } from '../lib/supabase';
 import type { Profile, Assignment } from '../lib/supabase';
 import { motion } from 'framer-motion';
 import {
-    Shield,
     Users,
     BookOpen,
     LogOut,
@@ -103,7 +102,13 @@ const AdminDashboard: React.FC = () => {
             <div className="min-h-screen bg-white flex flex-col items-center justify-center">
                 <div className="relative">
                     <div className="w-20 h-20 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
-                    <Shield className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-indigo-600" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 overflow-hidden flex items-center justify-center">
+                        <img
+                            src="https://ik.imagekit.io/psdoxljjy/logo-removebg-preview.png?updatedAt=1748393870807"
+                            alt="Kaze Logo"
+                            className="w-full h-full object-contain"
+                        />
+                    </div>
                 </div>
                 <p className="mt-6 text-gray-400 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Syncing Command Center...</p>
             </div>
@@ -123,8 +128,15 @@ const AdminDashboard: React.FC = () => {
         <div className="min-h-screen bg-gray-50/50 selection:bg-indigo-100 selection:text-indigo-900">
             {/* Sidebar Rail */}
             <div className="fixed left-0 top-0 bottom-0 w-24 bg-white border-r border-gray-100 flex flex-col items-center py-10 z-50 shadow-sm">
-                <div className="w-14 h-14 bg-indigo-600 rounded-[20px] flex items-center justify-center mb-16 shadow-xl shadow-indigo-600/20">
-                    <Shield className="w-7 h-7 text-white" />
+                <div
+                    onClick={() => navigate('/')}
+                    className="w-14 h-14 flex items-center justify-center mb-16 cursor-pointer group overflow-hidden"
+                >
+                    <img
+                        src="https://ik.imagekit.io/psdoxljjy/logo-removebg-preview.png?updatedAt=1748393870807"
+                        alt="Kaze Logo"
+                        className="w-full h-full object-contain group-hover:scale-110 transition-transform"
+                    />
                 </div>
 
                 <div className="flex-1 flex flex-col gap-10">
@@ -157,7 +169,7 @@ const AdminDashboard: React.FC = () => {
                 <header className="bg-white/80 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-40">
                     <div className="max-w-[1600px] mx-auto px-10 py-7 flex items-center justify-between">
                         <div>
-                            <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600 mb-1">Control Hub</h2>
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600 mb-1">Kaze For Developer</h2>
                             <h1 className="text-2xl font-black tracking-tighter text-gray-900 uppercase italic">Intelligence Oversight</h1>
                         </div>
 

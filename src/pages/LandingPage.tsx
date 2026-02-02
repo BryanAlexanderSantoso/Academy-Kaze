@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import {
     BookOpen,
     Users,
-    Award,
     Code,
     Laptop,
     Shield,
@@ -13,7 +12,89 @@ import {
     Zap,
     Target,
     TrendingUp,
+    Activity,
+    Rocket,
+    Layout,
+    Trophy,
 } from 'lucide-react';
+
+const DashboardPreview = () => {
+    return (
+        <div className="bg-gray-50 p-4 md:p-6 rounded-3xl overflow-hidden h-full relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 pointer-events-none" />
+
+            {/* Mock Dashboard Content - Based on actual DashboardOverview */}
+            <div className="space-y-6 md:space-y-8 relative z-10 scale-[0.85] lg:scale-100 origin-top-left lg:origin-top h-full w-[120%] lg:w-full">
+
+                {/* Welcome Matrix Card */}
+                <div className="relative bg-gray-900 rounded-[40px] p-8 md:p-10 text-white overflow-hidden shadow-2xl shadow-indigo-900/20">
+                    <div className="absolute top-0 right-0 w-[60%] h-full bg-indigo-600 opacity-20 blur-[120px] -translate-y-1/2 translate-x-1/4" />
+
+                    <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div className="space-y-4">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-[9px] font-black uppercase tracking-widest text-indigo-300">
+                                <Rocket className="w-3 h-3" />
+                                Session_Active
+                            </div>
+                            <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase italic leading-[0.9]">
+                                Welcome, <br />
+                                <span className="text-indigo-400">Alex!</span>
+                            </h2>
+                            <p className="text-gray-400 text-sm font-medium leading-relaxed italic">
+                                Learning path set to <span className="text-white">Fullstack Mastery</span>.
+                            </p>
+                        </div>
+
+                        <div className="flex justify-start md:justify-end">
+                            <div className="relative inline-flex items-center justify-center scale-75 md:scale-90 origin-left md:origin-right">
+                                <svg className="w-32 h-32 transform -rotate-90">
+                                    <circle className="text-white/5" strokeWidth="8" stroke="currentColor" fill="transparent" r="58" cx="64" cy="64" />
+                                    <circle className="text-indigo-500" strokeWidth="8" strokeDasharray={2 * Math.PI * 58} strokeDashoffset={2 * Math.PI * 58 * (1 - 0.24)} strokeLinecap="round" stroke="currentColor" fill="transparent" r="58" cx="64" cy="64" />
+                                </svg>
+                                <div className="absolute flex flex-col items-center">
+                                    <span className="text-2xl font-black tracking-tighter italic">24%</span>
+                                    <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest leading-none">Global Sync</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Tactical Grid */}
+                <div className="grid grid-cols-3 gap-3 md:gap-5 pr-16 md:pr-0">
+                    {[
+                        { label: 'Nodes', value: '08', icon: BookOpen, color: 'indigo' },
+                        { label: 'Tasks', value: '12', icon: Activity, color: 'emerald' },
+                        { label: 'Score', value: '98', icon: Target, color: 'amber' }
+                    ].map((stat, i) => (
+                        <div key={i} className="bg-white border border-gray-100 p-4 md:p-5 rounded-[24px] shadow-sm relative overflow-hidden">
+                            <stat.icon size={40} className={`absolute -right-2 -top-2 opacity-5 text-${stat.color}-600`} />
+                            <h3 className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-400 mb-3">{stat.label}</h3>
+                            <div className="flex items-end gap-2">
+                                <span className="text-xl md:text-2xl font-black tracking-tighter text-gray-900">{stat.value}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Curriculum Item Preview */}
+                <div className="bg-white border border-gray-100 rounded-[30px] p-5 md:p-6 shadow-sm flex items-center gap-5 pr-20 md:pr-6">
+                    <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center shrink-0">
+                        <Layout className="w-6 h-6 text-indigo-600" />
+                    </div>
+                    <div>
+                        <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[8px] font-black uppercase tracking-widest rounded-md">Current Module</span>
+                        <h4 className="text-lg font-black text-gray-900 tracking-tighter uppercase italic mt-1">Advanced React Patterns</h4>
+                        <div className="h-1.5 w-32 bg-gray-100 rounded-full mt-2 overflow-hidden">
+                            <div className="h-full bg-indigo-500 w-2/3 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    );
+};
 
 const LandingPage: React.FC = () => {
     const features = [
@@ -21,25 +102,25 @@ const LandingPage: React.FC = () => {
             icon: BookOpen,
             title: 'Structured Learning',
             description: 'Organized courses with chapters, materials, and progress tracking',
-            color: 'primary',
+            color: 'indigo',
         },
         {
             icon: Users,
             title: 'Personal Mentoring',
             description: 'Direct feedback and grading from experienced instructors',
-            color: 'backend',
+            color: 'violet',
         },
         {
             icon: Code,
             title: 'Real Projects',
             description: 'Build actual applications with hands-on assignments',
-            color: 'fullstack',
+            color: 'emerald',
         },
         {
-            icon: Award,
-            title: 'Track Progress',
-            description: 'Monitor your advancement with detailed analytics',
-            color: 'primary',
+            icon: Trophy,
+            title: 'Gamified Progress',
+            description: 'Earn achievements and track your stats',
+            color: 'amber',
         },
     ];
 
@@ -49,203 +130,196 @@ const LandingPage: React.FC = () => {
             icon: Laptop,
             description: 'Master React, TypeScript, and modern UI/UX',
             skills: ['React.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
-            color: 'primary',
+            color: 'indigo',
+            badge: 'POPULAR'
         },
         {
             name: 'Backend Development',
             icon: Code,
             description: 'Build robust APIs and server-side applications',
             skills: ['Node.js', 'PostgreSQL', 'Supabase', 'REST APIs'],
-            color: 'backend',
+            color: 'violet',
+            badge: 'ESSENTIAL'
         },
         {
             name: 'Fullstack Development',
             icon: Zap,
             description: 'Combine frontend and backend expertise',
             skills: ['Full Stack', 'Database Design', 'Deployment', 'DevOps'],
-            color: 'fullstack',
+            color: 'emerald',
+            badge: 'PREMIUM'
         },
     ];
 
     const stats = [
-        { label: 'Active Students', value: '100+', icon: Users },
-        { label: 'Courses Available', value: '20+', icon: BookOpen },
-        { label: 'Projects Built', value: '500+', icon: Code },
-        { label: 'Success Rate', value: '95%', icon: TrendingUp },
+        { label: 'Active Students', value: '1,200+', icon: Users },
+        { label: 'Course Modules', value: '150+', icon: BookOpen },
+        { label: 'Code Functions', value: '50K+', icon: Code },
+        { label: 'Success Rate', value: '96%', icon: TrendingUp },
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="min-h-screen bg-white selection:bg-indigo-100 selection:text-indigo-900 font-sans">
             {/* Header */}
-            <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center">
-                                <Code className="w-6 h-6 text-white" />
-                            </div>
-                            <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-                                Kaze For Developers
-                            </span>
+            <header className="fixed top-0 inset-x-0 bg-white/80 backdrop-blur-xl border-b border-gray-100 z-50">
+                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                            <span className="font-black italic text-xl">K</span>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <Link
-                                to="/login"
-                                className="px-4 py-2 text-gray-700 hover:text-primary-600 font-medium transition-colors"
-                            >
-                                Sign In
-                            </Link>
-                            <Link
-                                to="/signup"
-                                className="px-6 py-2.5 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-primary-500/30 transition-all"
-                            >
-                                Get Started
-                            </Link>
-                        </div>
+                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+                            Kaze<span className="font-light">Developer</span>
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-6">
+                        <Link
+                            to="/login"
+                            className="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors"
+                        >
+                            Sign In
+                        </Link>
+                        <Link
+                            to="/signup"
+                            className="px-6 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-bold hover:bg-black transition-all hover:shadow-xl hover:shadow-gray-900/20 active:scale-95 flex items-center gap-2"
+                        >
+                            Get Started <ArrowRight className="w-4 h-4" />
+                        </Link>
                     </div>
                 </div>
             </header>
 
             {/* Hero Section */}
-            <section className="relative overflow-hidden py-20 lg:py-32">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary-50/50 via-transparent to-backend-50/30"></div>
+            <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+                <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-indigo-50 rounded-bl-[100px] -z-10" />
+                <div className="absolute bottom-0 left-0 w-[30%] h-[30%] bg-violet-50 rounded-tr-[100px] -z-10" />
 
-                <div className="max-w-7xl mx-auto px-6 relative">
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        {/* Left: Content */}
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="grid lg:grid-cols-2 gap-16 lg:gap-8 items-center">
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-6">
-                                <Zap className="w-4 h-4" />
-                                <span>Modern Development Education</span>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-full text-xs font-bold uppercase tracking-widest mb-8 border border-indigo-100">
+                                <Zap className="w-3 h-3 fill-current" />
+                                Next_Gen Learning Platform
                             </div>
 
-                            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                                Master Coding with{' '}
-                                <span className="bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-                                    Expert Guidance
-                                </span>
+                            <h1 className="text-5xl lg:text-7xl font-black text-gray-900 mb-8 leading-[0.95] tracking-tight">
+                                Code Your <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 animate-gradient-x">
+                                    Future Reality
+                                </span>.
                             </h1>
 
-                            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                                Learn frontend, backend, or fullstack development through structured courses,
-                                real projects, and personalized mentorship.
+                            <p className="text-xl text-gray-500 mb-10 leading-relaxed max-w-lg font-medium">
+                                Master modern development. From logic to deployment, we provide the structured path, expert mentorship, and real-world projects you need.
                             </p>
 
-                            <div className="flex flex-col sm:flex-row gap-4 mb-10">
+                            <div className="flex flex-col sm:flex-row gap-4 mb-12">
                                 <Link
                                     to="/signup"
-                                    className="px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-xl font-semibold text-lg hover:shadow-xl hover:shadow-primary-500/30 transition-all flex items-center justify-center gap-2 group"
+                                    className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all hover:shadow-2xl hover:shadow-indigo-600/30 flex items-center justify-center gap-2 group active:scale-95"
                                 >
-                                    Start Learning
+                                    Start Your Journey
                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                 </Link>
                                 <Link
                                     to="/admin"
-                                    className="px-8 py-4 bg-white text-gray-700 border-2 border-gray-200 rounded-xl font-semibold text-lg hover:border-primary-600 hover:text-primary-600 transition-all flex items-center justify-center gap-2"
+                                    className="px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-2xl font-bold text-lg hover:border-gray-300 hover:bg-gray-50 transition-all flex items-center justify-center gap-2 active:scale-95"
                                 >
-                                    <Shield className="w-5 h-5" />
-                                    Admin Portal
+                                    <Shield className="w-5 h-5 text-gray-400" />
+                                    Admin Access
                                 </Link>
                             </div>
 
-                            <div className="flex items-center gap-6 text-sm">
-                                <div className="flex items-center gap-2 text-gray-600">
-                                    <CheckCircle className="w-5 h-5 text-green-600" />
-                                    <span>No credit card required</span>
+                            <div className="flex items-center gap-8 text-sm font-semibold text-gray-500">
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle className="w-5 h-5 text-emerald-500" />
+                                    <span>Certificated</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-gray-600">
-                                    <CheckCircle className="w-5 h-5 text-green-600" />
-                                    <span>Free to start</span>
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle className="w-5 h-5 text-emerald-500" />
+                                    <span>Mentorship</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <CheckCircle className="w-5 h-5 text-emerald-500" />
+                                    <span>Career Ready</span>
                                 </div>
                             </div>
                         </motion.div>
 
-                        {/* Right: App Preview */}
+                        {/* Interactive App Preview */}
                         <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.6, delay: 0.2 }}
-                            className="relative"
+                            initial={{ opacity: 0, scale: 0.95, rotate: -2 }}
+                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="relative perspective-[2000px]"
                         >
-                            <div className="absolute -inset-4 bg-gradient-to-r from-primary-600 to-backend-600 rounded-3xl opacity-20 blur-2xl"></div>
+                            <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-[40px] rotate-3 opacity-20 blur-3xl" />
 
-                            <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
-                                {/* Browser Bar */}
-                                <div className="bg-gray-100 px-4 py-3 flex items-center gap-2 border-b border-gray-200">
+                            {/* The Frame */}
+                            <div className="relative bg-gray-900 rounded-[32px] p-2 shadow-2xl border-4 border-gray-900 aspect-[4/3] md:aspect-auto md:h-[600px] overflow-hidden transform transition-transform hover:scale-[1.02] duration-500">
+                                {/* Browser Chrome */}
+                                <div className="bg-gray-900 px-4 py-3 flex items-center gap-4">
                                     <div className="flex gap-2">
-                                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                        <div className="w-3 h-3 bg-red-500 rounded-full" />
+                                        <div className="w-3 h-3 bg-amber-500 rounded-full" />
+                                        <div className="w-3 h-3 bg-emerald-500 rounded-full" />
                                     </div>
-                                    <div className="flex-1 bg-white rounded-md px-3 py-1 text-xs text-gray-500 ml-2">
-                                        kaze-developer.app/dashboard
+                                    <div className="flex-1 bg-gray-800 rounded-lg px-4 py-1.5 flex items-center justify-center">
+                                        <div className="flex items-center gap-2 opacity-50">
+                                            <div className="w-3 h-3 rounded-full bg-indigo-500" />
+                                            <span className="text-[10px] text-gray-300 font-mono">kaze.dev/dashboard</span>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* App Screenshot/Preview */}
-                                <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-                                    <div className="space-y-4">
-                                        {/* Header */}
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <div className="h-6 w-32 bg-gray-300 rounded animate-pulse mb-2"></div>
-                                                <div className="h-4 w-48 bg-gray-200 rounded animate-pulse"></div>
-                                            </div>
-                                            <div className="w-10 h-10 bg-primary-600 rounded-full"></div>
-                                        </div>
-
-                                        {/* Stats Cards */}
-                                        <div className="grid grid-cols-3 gap-3">
-                                            {[1, 2, 3].map((i) => (
-                                                <div key={i} className="bg-white rounded-lg p-4 shadow-sm">
-                                                    <div className="h-3 w-16 bg-gray-200 rounded mb-2"></div>
-                                                    <div className="h-6 w-12 bg-primary-600 rounded"></div>
-                                                </div>
-                                            ))}
-                                        </div>
-
-                                        {/* Course List */}
-                                        <div className="bg-white rounded-xl p-4 shadow-sm">
-                                            <div className="h-5 w-24 bg-gray-300 rounded mb-4"></div>
-                                            <div className="space-y-3">
-                                                {[1, 2, 3].map((i) => (
-                                                    <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                                                        <div className="w-12 h-12 bg-primary-600 rounded-lg"></div>
-                                                        <div className="flex-1">
-                                                            <div className="h-4 w-32 bg-gray-300 rounded mb-2"></div>
-                                                            <div className="h-3 w-48 bg-gray-200 rounded"></div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
+                                {/* Content Area */}
+                                <div className="bg-white rounded-[24px] h-full overflow-hidden relative">
+                                    <DashboardPreview />
                                 </div>
                             </div>
+
+                            {/* Floating Badge */}
+                            <motion.div
+                                animate={{ y: [0, -10, 0] }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                className="absolute -bottom-8 -left-8 bg-white p-4 rounded-2xl shadow-xl border border-gray-100 hidden md:block"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                                        <TrendingUp className="w-5 h-5 text-emerald-600" />
+                                    </div>
+                                    <div>
+                                        <div className="text-xs text-gray-500 font-bold uppercase">Learning Velocity</div>
+                                        <div className="text-lg font-black text-gray-900">+128%</div>
+                                    </div>
+                                </div>
+                            </motion.div>
                         </motion.div>
                     </div>
                 </div>
             </section>
 
-            {/* Stats Section */}
-            <section className="py-16 bg-white border-y border-gray-200">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Stats Section with Glass Effect */}
+            <section className="py-12 bg-gray-900 text-white relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
+                <div className="max-w-7xl mx-auto px-6 relative z-10">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
                         {stats.map((stat, index) => (
                             <motion.div
                                 key={index}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="text-center"
+                                className="text-center group"
                             >
-                                <stat.icon className="w-8 h-8 text-primary-600 mx-auto mb-3" />
-                                <div className="text-4xl font-bold text-gray-900 mb-2">{stat.value}</div>
-                                <div className="text-gray-600">{stat.label}</div>
+                                <div className="mb-4 inline-flex p-3 rounded-2xl bg-white/5 border border-white/10 group-hover:bg-indigo-500/20 group-hover:border-indigo-500/50 transition-all">
+                                    <stat.icon className="w-6 h-6 text-indigo-400 group-hover:text-indigo-300" />
+                                </div>
+                                <div className="text-4xl lg:text-5xl font-black mb-2 tracking-tight">{stat.value}</div>
+                                <div className="text-sm text-gray-400 font-medium uppercase tracking-widest">{stat.label}</div>
                             </motion.div>
                         ))}
                     </div>
@@ -253,31 +327,19 @@ const LandingPage: React.FC = () => {
             </section>
 
             {/* Features Section */}
-            <section className="py-20 lg:py-32">
+            <section className="py-24 lg:py-32 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-16">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold mb-4"
-                        >
-                            <Target className="w-4 h-4" />
-                            <span>Why Choose Kaze</span>
-                        </motion.div>
+                    <div className="text-center mb-20">
                         <motion.h2
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
+                            className="text-4xl lg:text-5xl font-black text-gray-900 mb-6 tracking-tight"
                         >
-                            Everything You Need to Succeed
+                            Engineered for <span className="text-indigo-600">Growth</span>
                         </motion.h2>
-                        <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            className="text-xl text-gray-600 max-w-2xl mx-auto"
-                        >
-                            Comprehensive tools and resources to accelerate your development journey
-                        </motion.p>
+                        <p className="text-xl text-gray-500 max-w-2xl mx-auto">
+                            Our platform combines industry-standard tools with gamified learning to keep you engaged and progressing.
+                        </p>
                     </div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -287,37 +349,34 @@ const LandingPage: React.FC = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-200"
+                                className="bg-white rounded-3xl p-8 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100"
                             >
-                                <div className={`w-14 h-14 bg-${feature.color}-100 rounded-xl flex items-center justify-center mb-4`}>
+                                <div className={`w-14 h-14 bg-${feature.color}-50 rounded-2xl flex items-center justify-center mb-6`}>
                                     <feature.icon className={`w-7 h-7 text-${feature.color}-600`} />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
-                                <p className="text-gray-600">{feature.description}</p>
+                                <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                                <p className="text-gray-500 leading-relaxed text-sm">{feature.description}</p>
                             </motion.div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* Learning Paths Section */}
-            <section className="py-20 lg:py-32 bg-white">
+            {/* Paths Section - Card Design */}
+            <section className="py-24 lg:py-32 bg-white">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-16">
-                        <motion.h2
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4"
-                        >
-                            Choose Your Learning Path
-                        </motion.h2>
-                        <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            className="text-xl text-gray-600"
-                        >
-                            Specialized tracks designed for your career goals
-                        </motion.p>
+                    <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
+                        <div className="max-w-2xl">
+                            <h2 className="text-4xl lg:text-5xl font-black text-gray-900 mb-6 tracking-tight">
+                                Choose Your <span className="text-indigo-600">Trajectory</span>
+                            </h2>
+                            <p className="text-xl text-gray-500">
+                                Specialized tracks designed to take you from novice to professional.
+                            </p>
+                        </div>
+                        <Link to="/signup" className="text-indigo-600 font-bold flex items-center gap-2 hover:gap-3 transition-all">
+                            View Full Curriculum <ArrowRight className="w-5 h-5" />
+                        </Link>
                     </div>
 
                     <div className="grid lg:grid-cols-3 gap-8">
@@ -327,67 +386,73 @@ const LandingPage: React.FC = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all border-2 border-gray-200 hover:border-primary-600"
+                                className="group relative bg-white rounded-[40px] p-10 border border-gray-100 hover:border-indigo-600 transition-all hover:shadow-2xl hover:shadow-indigo-600/10"
                             >
-                                <div className={`w-16 h-16 bg-${path.color}-100 rounded-2xl flex items-center justify-center mb-6`}>
+                                <div className={`absolute top-0 right-0 px-6 py-2 bg-${path.color}-50 rounded-bl-[30px] rounded-tr-[30px]`}>
+                                    <span className={`text-[10px] font-black uppercase tracking-widest text-${path.color}-600`}>
+                                        {path.badge}
+                                    </span>
+                                </div>
+
+                                <div className={`w-16 h-16 bg-${path.color}-50 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform`}>
                                     <path.icon className={`w-8 h-8 text-${path.color}-600`} />
                                 </div>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-3">{path.name}</h3>
-                                <p className="text-gray-600 mb-6">{path.description}</p>
-                                <div className="space-y-2">
+
+                                <h3 className="text-2xl font-black text-gray-900 mb-4">{path.name}</h3>
+                                <p className="text-gray-500 mb-8 font-medium">{path.description}</p>
+
+                                <div className="space-y-3 mb-10">
                                     {path.skills.map((skill, i) => (
-                                        <div key={i} className="flex items-center gap-2 text-sm">
-                                            <CheckCircle className={`w-4 h-4 text-${path.color}-600`} />
-                                            <span className="text-gray-700">{skill}</span>
+                                        <div key={i} className="flex items-center gap-3 text-sm">
+                                            <div className={`w-1.5 h-1.5 rounded-full bg-${path.color}-500`} />
+                                            <span className="text-gray-600 font-medium">{skill}</span>
                                         </div>
                                     ))}
                                 </div>
+
+                                <Link
+                                    to="/signup"
+                                    className={`w-full block py-4 text-center rounded-2xl bg-${path.color}-50 text-${path.color}-700 font-bold hover:bg-${path.color}-600 hover:text-white transition-all`}
+                                >
+                                    Select Path
+                                </Link>
                             </motion.div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section className="py-20 lg:py-32">
-                <div className="max-w-7xl mx-auto px-6">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        className="bg-gradient-to-br from-primary-600 to-primary-700 rounded-3xl p-12 lg:p-16 text-center shadow-2xl relative overflow-hidden"
-                    >
-                        <div className="absolute inset-0 bg-black/10"></div>
-                        <div className="relative z-10">
-                            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-                                Ready to Start Your Journey?
-                            </h2>
-                            <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-                                Join hundreds of students learning to build modern web applications
-                            </p>
-                            <Link
-                                to="/signup"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary-600 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all group"
-                            >
-                                Get Started Now
-                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
-
             {/* Footer */}
-            <footer className="bg-gray-900 text-gray-400 py-12">
+            <footer className="bg-gray-900 border-t border-gray-800 pt-20 pb-10">
                 <div className="max-w-7xl mx-auto px-6">
-                    <div className="flex flex-col md:flex-row items-center justify-between">
-                        <div className="flex items-center gap-2 mb-4 md:mb-0">
-                            <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-primary-700 rounded-lg flex items-center justify-center">
-                                <Code className="w-5 h-5 text-white" />
-                            </div>
-                            <span className="text-lg font-bold text-white">Kaze For Developers</span>
+                    <div className="flex flex-col items-center">
+                        <div className="mb-8 flex justify-center">
+                            <a
+                                href="https://kazeserenity.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transition-all group"
+                            >
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 group-hover:text-indigo-400 transition-colors">Under the auspices of</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Kaze Serenity</span>
+                            </a>
                         </div>
-                        <p className="text-sm">
-                            © 2026 Kaze For Developers. Built with ❤️ for aspiring developers.
+
+                        <div className="flex items-center gap-3 mb-8">
+                            <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white">
+                                <span className="font-bold italic">K</span>
+                            </div>
+                            <span className="text-xl font-bold text-white">Kaze<span className="font-light text-gray-400">Developer</span></span>
+                        </div>
+
+                        <div className="flex gap-8 text-sm text-gray-400 font-medium mb-12">
+                            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+                            <Link to="/login" className="hover:text-white transition-colors">Sign In</Link>
+                            <Link to="/signup" className="hover:text-white transition-colors">Register</Link>
+                        </div>
+
+                        <p className="text-xs text-gray-600 font-medium">
+                            © 2026 Kaze Serenity. All rights reserved.
                         </p>
                     </div>
                 </div>
@@ -397,3 +462,4 @@ const LandingPage: React.FC = () => {
 };
 
 export default LandingPage;
+

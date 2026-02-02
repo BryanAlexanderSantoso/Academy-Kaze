@@ -4,7 +4,7 @@ import { signIn } from '../lib/auth';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    GraduationCap, Mail, Lock, ShieldCheck,
+    Mail, Lock, ShieldCheck,
     Sparkles, Globe, Cpu, ChevronRight, AlertCircle,
     Fingerprint, Shield, Key
 } from 'lucide-react';
@@ -80,11 +80,15 @@ const Login: React.FC = () => {
                 <div className="hidden lg:flex flex-col justify-between p-16 bg-gray-50/50 relative overflow-hidden border-r border-gray-100">
                     <div className="relative z-10">
                         <div className="flex items-center gap-4 mb-16">
-                            <div className="w-14 h-14 bg-indigo-600 rounded-[22px] flex items-center justify-center shadow-xl shadow-indigo-600/20">
-                                <GraduationCap className="w-8 h-8 text-white" />
+                            <div className="w-14 h-14 overflow-hidden flex items-center justify-center">
+                                <img
+                                    src="https://ik.imagekit.io/psdoxljjy/logo-removebg-preview.png?updatedAt=1748393870807"
+                                    alt="Kaze Logo"
+                                    className="w-full h-full object-contain"
+                                />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">Kaze Collective</h2>
+                                <h2 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">Kaze For Developer</h2>
                                 <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest leading-none">Developer Terminal</p>
                             </div>
                         </div>
@@ -151,7 +155,8 @@ const Login: React.FC = () => {
                         <div className="space-y-2">
                             <div className="flex justify-between items-center ml-4 mr-4">
                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Security Cipher Key</label>
-                                <button type="button" className="text-[9px] font-black text-indigo-600 uppercase tracking-widest hover:text-indigo-800 transition-colors">Recovery</button>
+                                <Link to="/forgot-password" title="Recovery Protocol" className="text-[9px] font-black text-indigo-600 uppercase tracking-widest hover:text-indigo-800 transition-colors">Recovery</Link>
+
                             </div>
                             <div className="relative group/input">
                                 <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within/input:text-indigo-600 transition-colors" />

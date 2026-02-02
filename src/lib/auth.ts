@@ -121,3 +121,30 @@ export const updateLearningPath = async (userId: string, learningPath: 'fe' | 'b
         return { data: null, error: error.message };
     }
 };
+
+// Reset password request
+export const resetPassword = async (email: string) => {
+    try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        return { error: null };
+    } catch (error: any) {
+        return { error: error.message };
+    }
+};
+
+// Update password
+export const updatePassword = async (newPassword: string) => {
+    try {
+        const { error } = await supabase.auth.updateUser({
+            password: newPassword
+        });
+        if (error) throw error;
+        return { error: null };
+    } catch (error: any) {
+        return { error: error.message };
+    }
+};
+
