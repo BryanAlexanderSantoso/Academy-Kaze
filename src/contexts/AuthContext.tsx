@@ -55,6 +55,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const loadUserProfile = async (authUser: User) => {
         const { data: profile } = await getCurrentUserProfile(authUser.id);
         if (profile) {
+            // Auto-migrate: If premium but no expiry, set to 30 days from now
+            if (profile.is_premium && !profile.premium_until) {
+                const expiryDate = new Date();
+                expiryDate.setDate(expiryDate.getDate() + 30);
+
+                await supabase
+                    .from('profiles')
+                    .update({ premium_until: expiryDate.toISOString() })
+                    .eq('id', profile.id);
+
+                profile.premium_until = expiryDate.toISOString();
+            }
+
             setUser({
                 id: profile.id,
                 email: profile.email,
