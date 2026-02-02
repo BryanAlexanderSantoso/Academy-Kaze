@@ -121,6 +121,19 @@ const PremiumPayment: React.FC = () => {
                         <ShieldCheck className="w-10 h-10 text-white" />
                     </div>
                     <h2 className="text-3xl font-black text-gray-900 mb-2">AKSES PREMIUM AKTIF!</h2>
+                    {user.premium_until && (
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full font-bold text-sm mb-6 border border-green-200">
+                            <Clock className="w-4 h-4" />
+                            {(() => {
+                                const today = new Date();
+                                const expiry = new Date(user.premium_until);
+                                if (expiry < today) return 'EXPIRED';
+                                const diffTime = expiry.getTime() - today.getTime();
+                                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                return `${diffDays} HARI TERSISA`;
+                            })()}
+                        </div>
+                    )}
                     <p className="text-gray-600 mb-8">
                         Selamat! Akun Anda sudah memiliki akses penuh ke semua materi.
                         Selamat belajar dan semoga sukses jadi developer handal!
