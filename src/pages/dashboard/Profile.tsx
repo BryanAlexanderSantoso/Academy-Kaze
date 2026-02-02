@@ -111,7 +111,26 @@ const Profile: React.FC = () => {
                             <Mail className="w-5 h-5 text-gray-600" />
                             <h3 className="font-semibold text-gray-900">Status</h3>
                         </div>
-                        <p className="text-sm text-green-600 font-medium">Active Student</p>
+                        <div className="flex flex-col">
+                            <p className="text-sm font-bold text-gray-900 tracking-tight flex items-center gap-2">
+                                {user?.is_premium ? 'PREMIUM ACCESS' : 'FREE TIER'}
+                                {user?.is_premium && (
+                                    <span className="text-[10px] bg-yellow-400 text-black px-1.5 rounded font-black">PRO</span>
+                                )}
+                            </p>
+                            {user?.is_premium && user?.premium_until && (
+                                <p className="text-xs text-green-600 font-bold mt-1">
+                                    {(() => {
+                                        const today = new Date();
+                                        const expiry = new Date(user.premium_until);
+                                        if (expiry < today) return 'Expired';
+                                        const diffTime = expiry.getTime() - today.getTime();
+                                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                        return `${diffDays} days remaining`;
+                                    })()}
+                                </p>
+                            )}
+                        </div>
                     </div>
                 </div>
             </motion.div>
