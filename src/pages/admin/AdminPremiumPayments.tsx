@@ -74,9 +74,15 @@ const AdminPremiumPayments: React.FC = () => {
 
             // 2. If approved, explicitly update the User's Profile to premium
             if (status === 'approved') {
+                const expiryDate = new Date();
+                expiryDate.setDate(expiryDate.getDate() + 30); // Add 30 days
+
                 const { error: profileError } = await supabase
                     .from('profiles')
-                    .update({ is_premium: true })
+                    .update({
+                        is_premium: true,
+                        premium_until: expiryDate.toISOString()
+                    })
                     .eq('id', payment.user_id);
 
                 if (profileError) {

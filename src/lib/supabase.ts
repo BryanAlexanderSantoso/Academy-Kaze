@@ -13,6 +13,7 @@ export interface Profile {
     role: 'admin' | 'member';
     learning_path: 'fe' | 'be' | 'fs' | null;
     is_premium: boolean;
+    premium_until: string | null;
     progress_percentage: number;
     created_at: string;
 }

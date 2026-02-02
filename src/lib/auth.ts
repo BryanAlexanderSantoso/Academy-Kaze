@@ -7,6 +7,7 @@ export interface AuthUser {
     full_name: string;
     learning_path?: 'fe' | 'be' | 'fs' | null;
     is_premium?: boolean;
+    premium_until?: string | null;
 }
 
 // Admin login with numeric password

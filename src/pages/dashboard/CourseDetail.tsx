@@ -312,7 +312,13 @@ const CourseDetail: React.FC = () => {
                                                 </div>
                                             </div>
                                             <a
-                                                href={selectedChapter.file_url.startsWith('http') ? selectedChapter.file_url : `https://${selectedChapter.file_url}`}
+                                                href={(() => {
+                                                    const url = selectedChapter.file_url?.trim();
+                                                    if (!url) return '#';
+                                                    return url.startsWith('http://') || url.startsWith('https://')
+                                                        ? url
+                                                        : `https://${url}`;
+                                                })()}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest rounded-[20px] shadow-lg shadow-indigo-600/20 transition-all active:scale-95 flex items-center gap-2"

@@ -262,12 +262,27 @@ const DashboardOverview: React.FC = () => {
                         <div className="space-y-6 relative z-10">
                             <div className="flex flex-col gap-2 p-6 bg-gray-50 rounded-[30px] border border-gray-100">
                                 <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Authentication Level</span>
-                                <div className="flex items-center justify-between">
-                                    <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest ${user?.is_premium ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'bg-white text-gray-400 border border-gray-100'}`}>
-                                        {user?.is_premium ? 'PREMIUM_CORE' : 'FREE_TIER'}
-                                    </span>
-                                    {!user?.is_premium && (
-                                        <Link to="/dashboard/premium" className="text-indigo-600 font-black text-[9px] uppercase tracking-widest border-b border-indigo-200">Request_Uplink</Link>
+                                <div className="flex flex-col items-start gap-2">
+                                    <div className="flex items-center justify-between w-full">
+                                        <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest ${user?.is_premium ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'bg-white text-gray-400 border border-gray-100'}`}>
+                                            {user?.is_premium ? 'PREMIUM_CORE' : 'FREE_TIER'}
+                                        </span>
+                                        {!user?.is_premium && (
+                                            <Link to="/dashboard/premium" className="text-indigo-600 font-black text-[9px] uppercase tracking-widest border-b border-indigo-200">Request_Uplink</Link>
+                                        )}
+                                    </div>
+                                    {user?.is_premium && user?.premium_until && (
+                                        <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1.5">
+                                            <Clock className="w-3 h-3" />
+                                            {(() => {
+                                                const today = new Date();
+                                                const expiry = new Date(user.premium_until);
+                                                if (expiry < today) return 'EXPIRED';
+                                                const diffTime = expiry.getTime() - today.getTime();
+                                                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                                return `${diffDays} DAYS REMAINING`;
+                                            })()}
+                                        </span>
                                     )}
                                 </div>
                             </div>
