@@ -12,7 +12,6 @@ import {
     Save,
     ArrowLeft,
     Layers,
-    Sparkles,
     Edit,
     Monitor,
     BookOpen,
@@ -131,8 +130,7 @@ const ManageChapters: React.FC = () => {
                 content_body: editingChapter.content_body || null,
                 file_url: editingChapter.file_url || null,
                 file_name: editingChapter.file_name || null,
-                order_index: editingChapter.order_index,
-                is_preview: editingChapter.is_preview
+                order_index: editingChapter.order_index
             };
 
             if (editingChapter.id) {
@@ -187,8 +185,7 @@ const ManageChapters: React.FC = () => {
             course_id: chapter.course_id,
             title: chapter.title,
             material_type: chapter.material_type,
-            file_url: chapter.file_url,
-            is_preview: chapter.is_preview
+            file_url: chapter.file_url
         }));
 
         const { error } = await supabase.from('course_chapters').upsert(updates);
@@ -325,9 +322,6 @@ const ManageChapters: React.FC = () => {
                                                     <h3 className="font-black text-gray-900 tracking-tight uppercase group-hover:text-indigo-600 transition-colors truncate">
                                                         {chapter.title || 'Untitled Node'}
                                                     </h3>
-                                                    {chapter.is_preview && (
-                                                        <span className="px-2 py-0.5 bg-indigo-600 text-[8px] font-black text-white rounded uppercase tracking-widest">Preview</span>
-                                                    )}
                                                 </div>
                                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                                     {chapter.material_type} module • Index {chapter.order_index + 1}
@@ -479,25 +473,6 @@ const ManageChapters: React.FC = () => {
                                             />
                                         </div>
                                     )}
-                                </div>
-
-                                <div className="flex items-center justify-between p-8 bg-gray-50 rounded-[32px]">
-                                    <div className="flex items-center gap-4">
-                                        <div className="relative flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                id="is_preview_edit"
-                                                checked={editingChapter?.is_preview || false}
-                                                onChange={(e) => setEditingChapter({ ...editingChapter!, is_preview: e.target.checked })}
-                                                className="peer w-8 h-8 appearance-none bg-white border border-gray-200 rounded-xl checked:bg-indigo-600 transition-all cursor-pointer"
-                                            />
-                                            <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
-                                        </div>
-                                        <div>
-                                            <label htmlFor="is_preview_edit" className="text-sm font-black text-gray-900 uppercase tracking-tight cursor-pointer">Preview Tier Access</label>
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">Accessible by non-premium operatives.</p>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 

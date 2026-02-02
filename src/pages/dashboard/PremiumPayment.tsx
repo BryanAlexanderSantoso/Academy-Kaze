@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import {
     CreditCard,
-    Upload,
     CheckCircle,
     AlertCircle,
     Clock,
     ShieldCheck,
     ArrowLeft,
-    Info
+    Info,
+    Upload,
+    X,
+    ImageIcon
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,17 +20,11 @@ const PremiumPayment: React.FC = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [uploading, setUploading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [existingPayments, setExistingPayments] = useState<any[]>([]);
-
-    const [formData, setFormData] = useState({
-        full_name: user?.full_name || '',
-        payment_method: 'QRIS',
-        transaction_id: '',
-        amount: 50000,
-        proof_url: ''
-    });
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (user) loadExistingPayments();
@@ -44,62 +40,70 @@ const PremiumPayment: React.FC = () => {
         if (data) setExistingPayments(data);
     };
 
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file) return;
-
-        setUploading(true);
-        try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
-            const filePath = `proofs/${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('payment-proofs')
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('payment-proofs')
-                .getPublicUrl(filePath);
-
-            setFormData(prev => ({ ...prev, proof_url: publicUrl }));
-        } catch (error) {
-            console.error('Error uploading proof:', error);
-            alert('Gagal upload bukti pembayaran. Pastikan bucket "payment-proofs" sudah dibuat di Supabase Dashboard (Storage).');
-        } finally {
-            setUploading(false);
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Ukuran file maksimal 5MB');
+                return;
+            }
+            setSelectedFile(file);
+            const url = URL.createObjectURL(file);
+            setPreviewUrl(url);
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!formData.proof_url) {
-            alert('Harap upload bukti pembayaran!');
+    const handleClearFile = () => {
+        setSelectedFile(null);
+        setPreviewUrl(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const handleManualPayment = async () => {
+        if (!selectedFile) {
+            alert('Mohon upload bukti transfer terlebih dahulu.');
             return;
         }
 
         setLoading(true);
         try {
-            const { error } = await supabase
-                .from('premium_payments')
-                .insert([{
-                    user_id: user?.id,
-                    full_name: formData.full_name,
-                    payment_method: formData.payment_method,
-                    transaction_id: formData.transaction_id,
-                    amount: formData.amount,
-                    proof_url: formData.proof_url,
-                    status: 'pending'
-                }]);
+            const fileExt = selectedFile.name.split('.').pop();
+            const fileName = `${user?.id}-${Date.now()}.${fileExt}`;
+            const filePath = `${fileName}`;
 
-            if (error) throw error;
+            // Upload to Supabase Storage
+            const { error: uploadError } = await supabase.storage
+                .from('payment-proofs')
+                .upload(filePath, selectedFile);
+
+            if (uploadError) {
+                console.error('Upload error:', uploadError);
+                throw new Error('Gagal mengupload bukti pembayaran. Pastikan bucket "payment-proofs" tersedia.');
+            }
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('payment-proofs')
+                .getPublicUrl(filePath);
+
+            // Create Payment Record
+            const { error: insertError } = await supabase.from('premium_payments').insert([{
+                user_id: user?.id,
+                full_name: user?.full_name,
+                payment_method: 'manual_transfer',
+                transaction_id: `MANUAL-${Date.now()}`, // Temporary ID for manual
+                amount: 50000,
+                proof_url: publicUrl,
+                status: 'pending',
+            }]);
+
+            if (insertError) throw insertError;
+
             setSubmitted(true);
             loadExistingPayments();
-        } catch (error) {
-            console.error('Error submitting payment:', error);
-            alert('Gagal mengirim form pembayaran.');
+            handleClearFile();
+        } catch (error: any) {
+            console.error('Payment Error:', error);
+            alert(`Terjadi kesalahan: ${error.message || 'Gagal mengirim pembayaran'}`);
         } finally {
             setLoading(false);
         }
@@ -158,14 +162,14 @@ const PremiumPayment: React.FC = () => {
                     <div className="card border-2 border-yellow-100 bg-yellow-50/30 p-6 space-y-4">
                         <div className="flex items-center gap-2 text-yellow-700 font-bold">
                             <Info className="w-5 h-5" />
-                            CARA PEMBAYARAN
+                            CARA PEMBAYARAN MANUAL
                         </div>
                         <ol className="text-sm text-gray-600 space-y-3 list-decimal ml-4">
                             <li>Scan QRIS <b>Bryan Dev</b> di bawah ini.</li>
                             <li>Tentukan nominal <b>Rp 50.000</b>.</li>
                             <li>Selesaikan pembayaran sampai muncul tanda <b>BERHASIL</b>.</li>
                             <li>Screenshot bukti pembayaran tersebut.</li>
-                            <li>Upload buktinya melalui form di samping.</li>
+                            <li>Upload buktinya pada form di samping.</li>
                         </ol>
                         <img
                             src="/qris_payment.jpg"
@@ -196,83 +200,62 @@ const PremiumPayment: React.FC = () => {
                     ) : (
                         <div className="card p-8">
                             <h3 className="text-xl font-bold text-gray-900 mb-6">Konfirmasi Pembayaran</h3>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">Nama Lengkap (Sesuai Form)</label>
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-gray-700 uppercase tracking-widest">Upload Bukti Transfer</label>
                                     <input
-                                        type="text"
-                                        required
-                                        className="input"
-                                        placeholder="Contoh: Muhammad Pilar"
-                                        value={formData.full_name}
-                                        onChange={e => setFormData({ ...formData, full_name: e.target.value })}
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleFileSelect}
+                                        className="hidden"
+                                        accept="image/png, image/jpeg, image/jpg"
                                     />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">Metode Pembayaran</label>
-                                    <select
-                                        className="input"
-                                        value={formData.payment_method}
-                                        onChange={e => setFormData({ ...formData, payment_method: e.target.value })}
-                                    >
-                                        <option value="QRIS">QRIS (Gopay/OVO/Dana/M-Banking)</option>
-                                        <option value="Bank Transfer">Bank Transfer</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">ID Transaksi / Reff (Opsional)</label>
-                                    <input
-                                        type="text"
-                                        className="input"
-                                        placeholder="Contoh: TRX12345678"
-                                        value={formData.transaction_id}
-                                        onChange={e => setFormData({ ...formData, transaction_id: e.target.value })}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">Upload Bukti Pembayaran (SS)</label>
-                                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:border-primary-400 transition-colors bg-gray-50/50 relative overflow-hidden group">
-                                        {formData.proof_url ? (
-                                            <div className="space-y-2 text-center">
-                                                <img src={formData.proof_url} alt="Proof" className="h-40 mx-auto rounded-lg shadow-md" />
-                                                <p className="text-xs text-green-600 font-bold">Bukti sudah diupload!</p>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setFormData({ ...formData, proof_url: '' })}
-                                                    className="text-xs text-red-500 hover:underline"
-                                                >
-                                                    Ganti File
-                                                </button>
+
+                                    {!selectedFile ? (
+                                        <div
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="w-full h-48 border-4 border-dashed border-gray-200 rounded-3xl hover:border-indigo-200 hover:bg-indigo-50/30 transition-all flex flex-col items-center justify-center gap-4 cursor-pointer group"
+                                        >
+                                            <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-300 group-hover:text-indigo-500 group-hover:scale-110 transition-all">
+                                                <Upload className="w-8 h-8" />
                                             </div>
-                                        ) : (
-                                            <div className="space-y-1 text-center">
-                                                <Upload className="mx-auto h-12 w-12 text-gray-400 group-hover:text-primary-500 transition-colors" />
-                                                <div className="flex text-sm text-gray-600">
-                                                    <label className="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
-                                                        <span>Upload a file</span>
-                                                        <input type="file" className="sr-only" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
-                                                    </label>
-                                                    <p className="pl-1">or drag and drop</p>
-                                                </div>
-                                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Klik untuk pilih gambar</p>
+                                        </div>
+                                    ) : (
+                                        <div className="relative rounded-3xl overflow-hidden border border-gray-200 bg-gray-50">
+                                            <img src={previewUrl!} alt="Preview" className="w-full h-auto max-h-64 object-contain" />
+                                            <button
+                                                onClick={handleClearFile}
+                                                className="absolute top-2 right-2 p-2 bg-white/80 backdrop-blur rounded-full text-red-500 hover:bg-red-50 transition-colors shadow-sm"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                            <div className="p-3 bg-white border-t border-gray-100 flex items-center gap-3">
+                                                <ImageIcon className="w-4 h-4 text-indigo-500" />
+                                                <span className="text-xs font-bold text-gray-700 truncate">{selectedFile.name}</span>
                                             </div>
-                                        )}
-                                        {uploading && (
-                                            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
-                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-                                            </div>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <button
-                                    type="submit"
-                                    disabled={loading || uploading || !formData.proof_url}
-                                    className="btn-primary w-full py-4 text-lg font-black"
+                                    onClick={handleManualPayment}
+                                    disabled={loading || !selectedFile}
+                                    className="btn-primary w-full py-4 text-lg font-black flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {loading ? 'Mengirim...' : 'KIRIM KONFIRMASI'}
+                                    {loading ? (
+                                        <>
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            Mengirim Bukti...
+                                        </>
+                                    ) : (
+                                        'KIRIM BUKTI PEMBAYARAN'
+                                    )}
                                 </button>
-                            </form>
+                                <p className="text-xs text-center text-gray-400 mt-2">
+                                    Pastikan bukti transfer terlihat jelas
+                                </p>
+                            </div>
                         </div>
                     )}
 
@@ -321,3 +304,4 @@ const PremiumPayment: React.FC = () => {
 };
 
 export default PremiumPayment;
+
