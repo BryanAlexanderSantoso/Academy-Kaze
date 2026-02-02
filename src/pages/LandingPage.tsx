@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -99,7 +100,62 @@ const DashboardPreview = () => {
 };
 
 const LandingPage: React.FC = () => {
-    const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [realStats, setRealStats] = useState({
+        students: 0,
+        modules: 0,
+        premiumUsers: 0,
+        avgScore: 0
+    });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                // 1. Members Count
+                const { count: studentCount } = await supabase
+                    .from('profiles')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('role', 'member');
+
+                // 2. Modules (Chapters) Count
+                const { count: moduleCount } = await supabase
+                    .from('course_chapters')
+                    .select('*', { count: 'exact', head: true });
+
+                // 3. Premium Users
+                const { count: premiumCount } = await supabase
+                    .from('profiles')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('is_premium', true);
+
+                // 4. Success Rate (Avg Assignment Grade)
+                const { data: grades } = await supabase
+                    .from('assignments')
+                    .select('grade')
+                    .not('grade', 'is', null);
+
+                let avg = 0;
+                if (grades && grades.length > 0) {
+                    const sum = grades.reduce((acc, curr) => acc + (curr.grade || 0), 0);
+                    avg = Math.round(sum / grades.length);
+                }
+
+                setRealStats({
+                    students: studentCount || 0,
+                    modules: moduleCount || 0,
+                    premiumUsers: premiumCount || 0,
+                    avgScore: avg || 0
+                });
+            } catch (error) {
+                console.error("Error fetching stats:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
+    }, []);
 
     const features = [
         {
@@ -156,10 +212,10 @@ const LandingPage: React.FC = () => {
     ];
 
     const stats = [
-        { label: 'Active Students', value: '1,200+', icon: Users },
-        { label: 'Course Modules', value: '150+', icon: BookOpen },
-        { label: 'Code Functions', value: '50K+', icon: Code },
-        { label: 'Success Rate', value: '96%', icon: TrendingUp },
+        { label: 'Active Students', value: loading ? '...' : `${realStats.students}+`, icon: Users },
+        { label: 'Course Modules', value: loading ? '...' : `${realStats.modules}+`, icon: BookOpen },
+        { label: 'Premium Members', value: loading ? '...' : `${realStats.premiumUsers}+`, icon: Zap },
+        { label: 'Avg. Success Rate', value: loading ? '...' : `${realStats.avgScore || 96}%`, icon: TrendingUp },
     ];
 
     return (
