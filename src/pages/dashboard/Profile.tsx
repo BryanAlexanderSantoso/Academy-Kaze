@@ -118,9 +118,10 @@ const Profile: React.FC = () => {
                                     <span className="text-[10px] bg-yellow-400 text-black px-1.5 rounded font-black">PRO</span>
                                 )}
                             </p>
-                            {user?.is_premium && user?.premium_until && (
-                                <p className="text-xs text-green-600 font-bold mt-1">
+                            {user?.is_premium && (
+                                <p className={`text-xs font-bold mt-1 ${user.premium_until ? 'text-green-600' : 'text-yellow-600'}`}>
                                     {(() => {
+                                        if (!user.premium_until) return 'Lifetime Access';
                                         const today = new Date();
                                         const expiry = new Date(user.premium_until);
                                         if (expiry < today) return 'Expired';

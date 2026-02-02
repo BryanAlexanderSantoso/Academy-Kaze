@@ -271,10 +271,11 @@ const DashboardOverview: React.FC = () => {
                                             <Link to="/dashboard/premium" className="text-indigo-600 font-black text-[9px] uppercase tracking-widest border-b border-indigo-200">Request_Uplink</Link>
                                         )}
                                     </div>
-                                    {user?.is_premium && user?.premium_until && (
-                                        <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1.5">
-                                            <Clock className="w-3 h-3" />
+                                    {user?.is_premium && (
+                                        <span className={`text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 ${user.premium_until ? 'text-emerald-600' : 'text-amber-500'}`}>
+                                            {user.premium_until ? <Clock className="w-3 h-3" /> : <Zap className="w-3 h-3" />}
                                             {(() => {
+                                                if (!user.premium_until) return 'LIFETIME ACCESS';
                                                 const today = new Date();
                                                 const expiry = new Date(user.premium_until);
                                                 if (expiry < today) return 'EXPIRED';

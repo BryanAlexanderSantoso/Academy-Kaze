@@ -121,10 +121,11 @@ const PremiumPayment: React.FC = () => {
                         <ShieldCheck className="w-10 h-10 text-white" />
                     </div>
                     <h2 className="text-3xl font-black text-gray-900 mb-2">AKSES PREMIUM AKTIF!</h2>
-                    {user.premium_until && (
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full font-bold text-sm mb-6 border border-green-200">
-                            <Clock className="w-4 h-4" />
+                    {user?.is_premium && (
+                        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold text-sm mb-6 border ${user.premium_until ? 'bg-green-100 text-green-700 border-green-200' : 'bg-yellow-100 text-yellow-700 border-yellow-200'}`}>
+                            {user.premium_until ? <Clock className="w-4 h-4" /> : <ShieldCheck className="w-4 h-4" />}
                             {(() => {
+                                if (!user.premium_until) return 'LIFETIME ACCESS';
                                 const today = new Date();
                                 const expiry = new Date(user.premium_until);
                                 if (expiry < today) return 'EXPIRED';
