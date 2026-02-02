@@ -16,18 +16,20 @@ import {
     Rocket,
     Layout,
     Trophy,
+    Menu,
+    X,
 } from 'lucide-react';
 
 const DashboardPreview = () => {
+    // ... (DashboardPreview content remains the same)
     return (
         <div className="bg-gray-50 p-4 md:p-6 rounded-3xl overflow-hidden h-full relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-purple-50/50 pointer-events-none" />
-
-            {/* Mock Dashboard Content - Based on actual DashboardOverview */}
+            {/* ... */}
             <div className="space-y-4 md:space-y-6 lg:space-y-8 relative z-10 w-full">
-
+                {/* ... */}
                 {/* Welcome Matrix Card */}
                 <div className="relative bg-gray-900 rounded-[2rem] md:rounded-[40px] p-6 md:p-10 text-white overflow-hidden shadow-2xl shadow-indigo-900/20">
+                    {/* ... */}
                     <div className="absolute top-0 right-0 w-[60%] h-full bg-indigo-600 opacity-20 blur-[120px] -translate-y-1/2 translate-x-1/4" />
 
                     <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -97,6 +99,8 @@ const DashboardPreview = () => {
 };
 
 const LandingPage: React.FC = () => {
+    const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+
     const features = [
         {
             icon: BookOpen,
@@ -171,7 +175,9 @@ const LandingPage: React.FC = () => {
                             Kaze<span className="font-light">Developer</span>
                         </span>
                     </div>
-                    <div className="flex items-center gap-6">
+
+                    {/* Desktop Navigation */}
+                    <div className="hidden md:flex items-center gap-6">
                         <Link
                             to="/login"
                             className="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition-colors"
@@ -185,7 +191,42 @@ const LandingPage: React.FC = () => {
                             Get Started <ArrowRight className="w-4 h-4" />
                         </Link>
                     </div>
+
+                    {/* Mobile Menu Button */}
+                    <button
+                        className="md:hidden p-2 text-gray-600 bg-gray-50 rounded-lg active:scale-95"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    >
+                        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
                 </div>
+
+                {/* Mobile Menu Dropdown */}
+                {mobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="md:hidden border-t border-gray-100 bg-white shadow-xl overflow-hidden"
+                    >
+                        <div className="p-6 flex flex-col gap-4">
+                            <Link
+                                to="/login"
+                                className="w-full py-4 rounded-xl border border-gray-200 text-center font-bold text-gray-700 hover:bg-gray-50 uppercase tracking-widest text-sm"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                Sign In
+                            </Link>
+                            <Link
+                                to="/signup"
+                                className="w-full py-4 rounded-xl bg-indigo-600 text-white text-center font-bold shadow-lg shadow-indigo-500/30 active:scale-95 uppercase tracking-widest text-sm flex items-center justify-center gap-2"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                Get Started <ArrowRight className="w-4 h-4" />
+                            </Link>
+                        </div>
+                    </motion.div>
+                )}
             </header>
 
             {/* Hero Section */}
