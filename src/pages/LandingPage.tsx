@@ -11,16 +11,13 @@ import {
     ArrowRight,
     CheckCircle,
     Zap,
-    Target,
     TrendingUp,
-    Activity,
     Rocket,
     Layout,
     Trophy,
     Menu,
     X,
     Award,
-    Clock,
 } from 'lucide-react';
 
 const LandingPage: React.FC = () => {
