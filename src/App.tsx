@@ -28,6 +28,8 @@ import Profile from './pages/dashboard/Profile';
 
 // Admin Pages
 import AdminDashboard from './pages/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminSupport from './pages/admin/AdminSupport';
 import AdminCourses from './pages/admin/AdminCourses';
 import CreateCourse from './pages/admin/CreateCourse';
 import EditCourse from './pages/admin/EditCourse';
@@ -184,6 +186,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute requireAdmin>
             <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute requireAdmin>
+            <AdminUsers />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/support"
+        element={
+          <ProtectedRoute requireAdmin>
+            <AdminSupport />
           </ProtectedRoute>
         }
       />

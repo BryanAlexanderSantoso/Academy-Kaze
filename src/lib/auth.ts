@@ -5,7 +5,7 @@ export interface AuthUser {
     email: string;
     role: 'admin' | 'member';
     full_name: string;
-    learning_path?: 'fe' | 'be' | 'fs' | null;
+    learning_path?: 'fe' | 'be' | 'fs' | 'seo' | null;
     is_premium?: boolean;
     premium_until?: string | null;
 }
@@ -78,6 +78,26 @@ export const signIn = async (email: string, password: string) => {
         });
 
         if (error) throw error;
+
+        // Check if user is banned
+        if (data.user) {
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('is_banned')
+                .eq('id', data.user.id)
+                .single();
+
+            if (profileError) {
+                console.error('Error fetching profile:', profileError);
+            }
+
+            if (profile?.is_banned) {
+                // Sign out the user immediately
+                await supabase.auth.signOut();
+                throw new Error('Your account has been suspended. Please contact support for assistance.');
+            }
+        }
+
         return { data, error: null };
     } catch (error: any) {
         return { data: null, error: error.message };
@@ -107,7 +127,7 @@ export const getCurrentUserProfile = async (userId: string) => {
 };
 
 // Update learning path
-export const updateLearningPath = async (userId: string, learningPath: 'fe' | 'be' | 'fs') => {
+export const updateLearningPath = async (userId: string, learningPath: 'fe' | 'be' | 'fs' | 'seo') => {
     try {
         const { data, error } = await supabase
             .from('profiles')

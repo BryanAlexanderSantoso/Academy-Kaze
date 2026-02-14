@@ -20,7 +20,8 @@ import {
     Plus,
     Monitor,
     ChevronRight,
-    Terminal
+    Terminal,
+    MessageCircle
 } from 'lucide-react';
 
 const AdminDashboard: React.FC = () => {
@@ -142,6 +143,12 @@ const AdminDashboard: React.FC = () => {
                 <div className="flex-1 flex flex-col gap-10">
                     <button className="p-3.5 bg-indigo-50 text-indigo-600 rounded-2xl shadow-sm">
                         <LayoutDashboard className="w-6 h-6" />
+                    </button>
+                    <button onClick={() => navigate('/admin/users')} className="p-3.5 text-gray-300 hover:text-indigo-600 transition-all hover:bg-gray-50 rounded-2xl" title="User Management">
+                        <Users className="w-6 h-6" />
+                    </button>
+                    <button onClick={() => navigate('/admin/support')} className="p-3.5 text-gray-300 hover:text-indigo-600 transition-all hover:bg-gray-50 rounded-2xl" title="Live Support">
+                        <MessageCircle className="w-6 h-6" />
                     </button>
                     <button onClick={() => navigate('/admin/courses')} className="p-3.5 text-gray-300 hover:text-indigo-600 transition-all hover:bg-gray-50 rounded-2xl">
                         <BookOpen className="w-6 h-6" />

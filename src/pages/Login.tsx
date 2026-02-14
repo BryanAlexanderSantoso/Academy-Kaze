@@ -89,17 +89,17 @@ const Login: React.FC = () => {
                             </div>
                             <div>
                                 <h2 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">Kaze For Developer</h2>
-                                <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest leading-none">Developer Terminal</p>
+                                <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest leading-none">Learning Platform</p>
                             </div>
                         </div>
 
                         <div className="space-y-10">
                             <h1 className="text-7xl font-black text-gray-900 leading-[0.9] tracking-tighter uppercase italic">
                                 WELCOME BACK <br />
-                                <span className="text-indigo-600">OPERATIVE.</span>
+                                <span className="text-indigo-600">DEVELOPER.</span>
                             </h1>
                             <p className="text-gray-500 text-lg font-medium leading-relaxed max-w-sm italic">
-                                Access your personalized training environment. Continue your mission towards architectural mastery and fullstack elite status.
+                                Access your personalized learning dashboard. Continue your journey towards mastering web development.
                             </p>
                         </div>
                     </div>
@@ -109,15 +109,15 @@ const Login: React.FC = () => {
                             <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 mb-4">
                                 <Cpu className="w-5 h-5" />
                             </div>
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">System Core</p>
-                            <p className="text-xl font-black text-gray-900 tracking-tighter uppercase italic">V.4.2_LNK</p>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Platform Version</p>
+                            <p className="text-xl font-black text-gray-900 tracking-tighter uppercase italic">V.4.2</p>
                         </div>
                         <div className="p-8 bg-white rounded-[40px] shadow-sm border border-gray-100 group">
                             <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 mb-4">
                                 <Globe className="w-5 h-5" />
                             </div>
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Global Node</p>
-                            <p className="text-xl font-black text-gray-900 tracking-tighter uppercase italic">SYMB_ACTIVE</p>
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Server Status</p>
+                            <p className="text-xl font-black text-gray-900 tracking-tighter uppercase italic">ONLINE</p>
                         </div>
                     </div>
 
@@ -130,15 +130,15 @@ const Login: React.FC = () => {
                     <div className="mb-12">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 border border-indigo-100 rounded-full text-indigo-600 text-[10px] font-black uppercase tracking-widest mb-8">
                             <Key className="w-3.5 h-3.5" />
-                            Secure_Credentials
+                            Secure Login
                         </div>
-                        <h3 className="text-4xl font-black text-gray-900 mb-2 tracking-tighter uppercase italic">Access Terminal</h3>
-                        <p className="text-gray-400 font-bold text-sm uppercase tracking-tight">Synchronize your session to continue the curriculum.</p>
+                        <h3 className="text-4xl font-black text-gray-900 mb-2 tracking-tighter uppercase italic">Member Login</h3>
+                        <p className="text-gray-400 font-bold text-sm uppercase tracking-tight">Sign in to continue your learning journey.</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Credential email Uplink</label>
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Email Address</label>
                             <div className="relative group/input">
                                 <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within/input:text-indigo-600 transition-colors" />
                                 <input
@@ -146,7 +146,7 @@ const Login: React.FC = () => {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="w-full bg-gray-50 border-none focus:ring-0 focus:bg-white rounded-[30px] py-6 pl-16 pr-8 text-sm font-black text-gray-900 transition-all shadow-inner placeholder:text-gray-200"
-                                    placeholder="IDENTIFIER@COLLECTIVE.DEV"
+                                    placeholder="your.email@example.com"
                                     required
                                 />
                             </div>
@@ -154,7 +154,7 @@ const Login: React.FC = () => {
 
                         <div className="space-y-2">
                             <div className="flex justify-between items-center ml-4 mr-4">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Security Cipher Key</label>
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Password</label>
                                 <Link to="/forgot-password" title="Recovery Protocol" className="text-[9px] font-black text-indigo-600 uppercase tracking-widest hover:text-indigo-800 transition-colors">Recovery</Link>
 
                             </div>
@@ -191,7 +191,7 @@ const Login: React.FC = () => {
                             className="w-full bg-gray-900 hover:bg-black text-white font-black uppercase tracking-[0.3em] py-6 rounded-[30px] shadow-2xl shadow-gray-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden text-[10px] mt-4"
                         >
                             <span className="relative z-10 flex items-center justify-center gap-4">
-                                {loading ? 'DECRYPTING...' : 'DECRYPT & ACCESS'}
+                                {loading ? 'SIGNING IN...' : 'SIGN IN'}
                                 {!loading && <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
                             </span>
                         </button>
@@ -199,9 +199,9 @@ const Login: React.FC = () => {
 
                     <div className="mt-12 text-center space-y-8">
                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">
-                            New to the collective?{' '}
+                            New to Kaze?{' '}
                             <Link to="/signup" className="text-indigo-600 hover:text-indigo-800 transition-colors border-b-2 border-indigo-100 hover:border-indigo-600">
-                                Enroll_Now
+                                Register Now
                             </Link>
                         </p>
 
@@ -211,7 +211,7 @@ const Login: React.FC = () => {
                                 className="flex items-center gap-2 text-[9px] font-black text-gray-300 hover:text-indigo-500 transition-all uppercase tracking-[0.3em]"
                             >
                                 <ShieldCheck className="w-3.5 h-3.5" />
-                                Admin_Gateway
+                                Admin Portal
                             </Link>
                         </div>
                     </div>
@@ -220,7 +220,7 @@ const Login: React.FC = () => {
 
             {/* Aesthetic Accents */}
             <div className="fixed top-1/2 left-10 -translate-y-1/2 hidden 2xl:block opacity-5">
-                <p className="text-[10px] font-black text-gray-900 uppercase tracking-[1em] rotate-180" style={{ writingMode: 'vertical-rl' }}>TERMINAL_SYNC_READY</p>
+                <p className="text-[10px] font-black text-gray-900 uppercase tracking-[1em] rotate-180" style={{ writingMode: 'vertical-rl' }}>KAZE DEVELOPER</p>
             </div>
             <div className="fixed bottom-10 right-10 flex gap-4 opacity-5">
                 <Sparkles className="w-12 h-12 text-gray-900" />

@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { Course } from '../../lib/supabase';
 import { motion } from 'framer-motion';
-import { BookOpen, Clock, Search, Book, Sparkles, ChevronRight, Activity } from 'lucide-react';
+import { BookOpen, Clock, Search, Book, GraduationCap, ChevronRight } from 'lucide-react';
 
 const Courses: React.FC = () => {
     const { user } = useAuth();
@@ -42,97 +42,90 @@ const Courses: React.FC = () => {
         return (
             <div className="flex flex-col items-center justify-center h-[60vh]">
                 <div className="relative">
-                    <div className="w-16 h-16 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
-                    <Book className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-indigo-600" />
+                    <div className="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
+                    <Book className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-blue-600" />
                 </div>
-                <p className="mt-6 text-gray-400 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Scanning Curriculum Nodes...</p>
+                <p className="mt-6 text-gray-500 font-medium">Loading courses...</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-12">
-            {/* Massive Header */}
-            <div className="relative">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 py-4">
-                    <div className="space-y-4">
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 border border-indigo-100 rounded-full text-indigo-600 text-[10px] font-black uppercase tracking-widest">
-                            <Sparkles className="w-3.5 h-3.5" />
-                            Curriculum_Nexus
-                        </div>
-                        <h1 className="text-6xl md:text-8xl font-black text-gray-900 tracking-tighter uppercase italic leading-[0.9]">
-                            Course <br />
-                            <span className="text-indigo-600">Manifest.</span>
-                        </h1>
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-lg text-blue-600 text-sm font-semibold mb-3">
+                        <GraduationCap className="w-4 h-4" />
+                        My Courses
                     </div>
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
+                        Available Courses
+                    </h1>
+                    <p className="text-gray-600">Explore and enroll in courses for your learning path</p>
+                </div>
 
-                    <div className="w-full md:w-96 relative group">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within:text-indigo-600 transition-colors" />
-                        <input
-                            type="text"
-                            placeholder="SEARCH_REGISTRY..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white border border-gray-100 focus:border-indigo-500/50 rounded-[30px] py-6 pl-16 pr-8 text-sm font-black text-gray-900 transition-all shadow-sm focus:shadow-xl focus:shadow-indigo-500/5 placeholder:text-gray-200 uppercase tracking-widest outline-none"
-                        />
-                    </div>
+                <div className="w-full md:w-80 relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Search courses..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-white border border-gray-200 focus:border-blue-500 rounded-xl py-3 pl-12 pr-4 text-sm text-gray-900 transition-all outline-none focus:ring-2 focus:ring-blue-100"
+                    />
                 </div>
             </div>
 
             {/* Course Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredCourses.length > 0 ? (
                     filteredCourses.map((course, index) => (
                         <motion.div
                             key={course.id}
-                            initial={{ opacity: 0, y: 30 }}
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
                         >
                             <Link to={`/dashboard/courses/${course.id}`} className="group block">
-                                <div className="bg-white border border-gray-100 rounded-[50px] p-8 h-full transition-all duration-500 hover:shadow-3xl hover:border-indigo-600/20 hover:-translate-y-2 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
-
+                                <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden h-full transition-all duration-300 hover:shadow-lg hover:border-blue-300 hover:-translate-y-1">
                                     {course.thumbnail_url ? (
-                                        <div className="-mt-8 -mx-8 mb-8 h-64 overflow-hidden relative border-b border-gray-50">
+                                        <div className="h-48 overflow-hidden relative">
                                             <img
                                                 src={course.thumbnail_url}
                                                 alt={course.title}
-                                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110"
+                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                             />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-60" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                                         </div>
                                     ) : (
-                                        <div className="-mt-8 -mx-8 mb-8 h-64 bg-gray-50 flex items-center justify-center border-b border-gray-50">
-                                            <BookOpen size={60} className="text-gray-100" />
+                                        <div className="h-48 bg-gray-100 flex items-center justify-center">
+                                            <BookOpen size={48} className="text-gray-300" />
                                         </div>
                                     )}
 
-                                    <div className="relative z-10 space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <span className="px-3 py-1 bg-gray-900 text-white text-[9px] font-black uppercase tracking-widest rounded-lg">
-                                                {user?.learning_path?.toUpperCase()}_CORE
+                                    <div className="p-6 space-y-4">
+                                        <div className="flex items-center gap-2">
+                                            <span className="px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg">
+                                                {user?.learning_path?.toUpperCase()}
                                             </span>
-                                            <span className="flex items-center gap-1 text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+                                            <span className="flex items-center gap-1 text-xs text-gray-500 font-medium">
                                                 <Clock className="w-3.5 h-3.5" />
-                                                {course.duration_hours || '??'}_HRS
+                                                {course.duration_hours || 0} hours
                                             </span>
                                         </div>
 
-                                        <h3 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic group-hover:text-indigo-600 transition-colors leading-none">
+                                        <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
                                             {course.title}
                                         </h3>
-                                        <p className="text-gray-500 text-sm font-medium line-clamp-2 leading-relaxed italic uppercase tracking-tight">
+                                        <p className="text-gray-600 text-sm line-clamp-2 leading-relaxed">
                                             {course.description}
                                         </p>
 
-                                        <div className="pt-8 flex items-center justify-between border-t border-gray-50">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Active_Node</span>
-                                            </div>
-                                            <div className="w-12 h-12 bg-gray-50 rounded-[20px] flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500">
-                                                <ChevronRight size={20} />
+                                        <div className="pt-4 flex items-center justify-between border-t border-gray-100">
+                                            <span className="text-xs font-medium text-gray-500">View course</span>
+                                            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                                <ChevronRight size={16} />
                                             </div>
                                         </div>
                                     </div>
@@ -141,16 +134,20 @@ const Courses: React.FC = () => {
                         </motion.div>
                     ))
                 ) : (
-                    <div className="col-span-full py-32 text-center bg-gray-50/50 rounded-[60px] border-4 border-dashed border-gray-100">
-                        <Activity size={80} className="text-gray-100 mx-auto mb-8" />
-                        <h3 className="text-4xl font-black text-gray-900 uppercase italic tracking-tighter">No Nodes Located.</h3>
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mt-3">The curriculum manifest is currently empty for this sector.</p>
+                    <div className="col-span-full py-20 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                        <BookOpen size={64} className="text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">No Courses Found</h3>
+                        <p className="text-gray-600 mb-6">
+                            {searchQuery
+                                ? `No courses match your search "${searchQuery}"`
+                                : 'No courses are currently available for your learning path'}
+                        </p>
                         {searchQuery && (
                             <button
                                 onClick={() => setSearchQuery('')}
-                                className="mt-10 px-8 py-4 bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl"
+                                className="px-6 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
                             >
-                                RESET_SEARCH
+                                Clear Search
                             </button>
                         )}
                     </div>

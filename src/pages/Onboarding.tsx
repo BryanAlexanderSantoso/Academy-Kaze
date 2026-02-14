@@ -7,83 +7,92 @@ import {
     ArrowRight, CheckCircle2,
     Sparkles, ShieldCheck, Laptop, Database, Globe,
     BookOpen, FileText, ClipboardList,
-    ChevronRight, Rocket, Target
+    ChevronRight, Rocket, Target, TrendingUp
 } from 'lucide-react';
 
 const learningPaths = [
     {
         id: 'fe' as const,
-        title: 'Frontend Master',
-        description: 'Architect immersive user interfaces. Master React, Motion, and Global Design Systems.',
+        title: 'Frontend Developer',
+        description: 'Build beautiful user interfaces with React, TypeScript, and modern design systems.',
         icon: Laptop,
         color: 'indigo',
         accent: 'from-indigo-500 to-blue-600',
     },
     {
         id: 'be' as const,
-        title: 'Backend Core',
-        description: 'Engineer industrial-grade systems. Master Node.js, Distributed Databases, and Security.',
+        title: 'Backend Developer',
+        description: 'Create robust server-side applications with Node.js, databases, and APIs.',
         icon: Database,
         color: 'emerald',
         accent: 'from-emerald-500 to-teal-600',
     },
     {
         id: 'fs' as const,
-        title: 'Fullstack Elite',
-        description: 'Complete technical mastery. Orchestrate complex applications from pixel to database.',
+        title: 'Fullstack Developer',
+        description: 'Master both frontend and backend to build complete web applications.',
         icon: Globe,
+        color: 'violet',
+        accent: 'from-violet-500 to-purple-600',
+    },
+    {
+        id: 'seo' as const,
+        title: 'SEO Specialist',
+        description: 'Master search optimization, content strategy, and digital marketing analytics.',
+        icon: TrendingUp,
         color: 'amber',
         accent: 'from-amber-500 to-orange-600',
     },
 ];
 
+
 const tutorialSteps = [
     {
-        title: "The Kaze Nucleus",
-        subtitle: "Synchronizing Your Learning Experience",
-        description: "Welcome to Kaze For Developer. You are entering a mission-critical learning environment designed to transform you into an industry-grade software architect.",
+        title: "Welcome to Kaze",
+        subtitle: "Your Learning Journey Starts Here",
+        description: "Welcome to Kaze For Developer. You're joining a comprehensive learning platform designed to help you become a professional software developer.",
         icon: Sparkles,
         color: "indigo",
-        tag: "System_Initialize"
+        tag: "Getting Started"
     },
     {
-        title: "Curriculum Engine",
-        subtitle: "Knowledge Node Acquisition",
-        description: "Your dashboard serves as the central command. Navigate through high-fidelity courses divided into tactical chapters, each building towards technical mastery.",
+        title: "Course Curriculum",
+        subtitle: "Structured Learning Path",
+        description: "Your dashboard provides access to organized courses divided into chapters. Each module builds on the previous one to develop your technical skills.",
         icon: BookOpen,
         color: "blue",
-        tag: "Data_Harvesting"
+        tag: "Learn & Practice"
     },
     {
-        title: "Validation Terminal",
-        subtitle: "Mission Critical Assignments",
-        description: "Every module concludes with a performance validation. Submit your code to the Command Center for expert review and architectural feedback.",
+        title: "Assignments",
+        subtitle: "Hands-On Projects",
+        description: "Every module includes practical assignments. Submit your code for expert review and receive detailed feedback to improve your skills.",
         icon: FileText,
         color: "emerald",
-        tag: "Proof_Of_Concept"
+        tag: "Build Projects"
     },
     {
-        title: "Neural Assessments",
-        subtitle: "Synchronized Diagnostics",
-        description: "Test your theoretical synchronization via diagnostic questionnaires. Secure your proficiency score to unlock advanced curriculum nodes.",
+        title: "Assessments",
+        subtitle: "Track Your Progress",
+        description: "Test your knowledge with quizzes and questionnaires. Track your proficiency scores as you advance through the curriculum.",
         icon: ClipboardList,
         color: "amber",
-        tag: "Logic_Verification"
+        tag: "Measure Skills"
     },
     {
-        title: "Premium Uplink",
-        subtitle: "Unrestricted Data Access",
-        description: "Upgrade your authorization to Premium to unlock exclusive repositories, direct mentor uplinks, and verified certification logs.",
+        title: "Premium Access",
+        subtitle: "Unlock More Features",
+        description: "Upgrade to Premium to access exclusive courses, one-on-one mentorship, and official certifications.",
         icon: ShieldCheck,
         color: "purple",
-        tag: "Access_Escalation"
+        tag: "Upgrade Account"
     }
 ];
 
 const Onboarding: React.FC = () => {
     const [stage, setStage] = useState<'tutorial' | 'path'>('tutorial');
     const [tutorialStep, setTutorialStep] = useState(0);
-    const [selectedPath, setSelectedPath] = useState<'fe' | 'be' | 'fs' | null>(null);
+    const [selectedPath, setSelectedPath] = useState<'fe' | 'be' | 'fs' | 'seo' | null>(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { user, setUser } = useAuth();
@@ -165,7 +174,7 @@ const Onboarding: React.FC = () => {
                                         onClick={handleNextTutorial}
                                         className="group relative bg-gray-900 text-white px-12 py-6 rounded-[30px] font-black uppercase tracking-[0.2em] text-[10px] shadow-2xl shadow-gray-900/20 hover:bg-indigo-600 transition-all active:scale-95 flex items-center justify-center gap-4 w-full sm:w-auto"
                                     >
-                                        {tutorialStep === tutorialSteps.length - 1 ? 'AUTHORIZE_CHOICE' : 'NEXT_SEQUENCE'}
+                                        {tutorialStep === tutorialSteps.length - 1 ? 'Choose Path' : 'Next Step'}
                                         <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                     </button>
 
@@ -232,17 +241,17 @@ const Onboarding: React.FC = () => {
                                     className="inline-flex items-center gap-2 px-6 py-2 bg-indigo-50 border border-indigo-100 rounded-full text-indigo-600 text-[10px] font-black uppercase tracking-[0.3em] mb-10"
                                 >
                                     <Rocket className="w-4 h-4" />
-                                    Final_Authorization
+                                    Path Selection
                                 </motion.div>
                                 <h1 className="text-7xl md:text-9xl font-black text-gray-900 mb-8 tracking-tighter uppercase italic leading-none">
-                                    Select Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600">Trajectory.</span>
+                                    Select Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600">Learning Path.</span>
                                 </h1>
                                 <p className="text-gray-400 text-xl max-w-2xl mx-auto font-medium">
-                                    Choose the specialization that will define your professional legacy within Kaze For Developer.
+                                    Choose the specialization that matches your career goals and interests.
                                 </p>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-20 max-w-6xl mx-auto">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20 max-w-7xl mx-auto">
                                 {learningPaths.map((path, idx) => {
                                     const Icon = path.icon;
                                     const isSelected = selectedPath === path.id;
@@ -291,13 +300,13 @@ const Onboarding: React.FC = () => {
                                     className="group relative bg-gray-900 text-white px-16 py-8 rounded-full font-black uppercase tracking-[0.3em] text-xs shadow-3xl shadow-gray-900/20 hover:bg-indigo-600 transition-all active:scale-95 disabled:opacity-20 disabled:cursor-not-allowed overflow-hidden"
                                 >
                                     <span className="relative z-10 flex items-center justify-center gap-4">
-                                        {loading ? 'CALIBRATING_SYTEM...' : 'INITIALIZE_COMMAND_CENTER'}
+                                        {loading ? 'STARTING...' : 'START LEARNING'}
                                         {!loading && <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />}
                                     </span>
                                 </button>
                                 <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest flex items-center gap-3">
                                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                    Awaiting link establishment
+                                    Ready to begin
                                 </p>
                             </motion.div>
                         </motion.div>
@@ -307,7 +316,7 @@ const Onboarding: React.FC = () => {
 
             {/* Side Labels */}
             <div className="fixed top-1/2 left-10 -translate-y-1/2 hidden 2xl:block opacity-10">
-                <p className="text-[10px] font-black text-gray-900 uppercase tracking-[1em] rotate-180" style={{ writingMode: 'vertical-rl' }}>FORGE_PROTOCOL_V.4.2</p>
+                <p className="text-[10px] font-black text-gray-900 uppercase tracking-[1em] rotate-180" style={{ writingMode: 'vertical-rl' }}>KAZE DEVELOPER</p>
             </div>
             <div className="fixed top-1/2 right-10 -translate-y-1/2 hidden 2xl:block opacity-10">
                 <p className="text-[10px] font-black text-gray-900 uppercase tracking-[1em]" style={{ writingMode: 'vertical-rl' }}>KAZE_FOR_DEVELOPER</p>

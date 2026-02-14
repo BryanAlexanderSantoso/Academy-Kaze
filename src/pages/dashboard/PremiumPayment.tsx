@@ -165,12 +165,12 @@ const PremiumPayment: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 {/* Left: Payment Info */}
                 <div className="space-y-6">
-                    <div className="card bg-primary-600 text-white p-6 md:p-8 overflow-hidden relative rounded-[2rem]">
+                    <div className="bg-indigo-600 text-white p-6 md:p-8 overflow-hidden relative rounded-[2rem] shadow-xl">
                         <CreditCard className="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 rotate-12" />
                         <h3 className="text-lg md:text-xl font-bold mb-2">Hanya Sekali Bayar</h3>
-                        <p className="text-primary-100 text-sm mb-6">Dapatkan akses seumur hidup ke seluruh konten kurikulum Kaze For Developers.</p>
+                        <p className="text-indigo-100 text-sm mb-6">Dapatkan akses seumur hidup ke seluruh konten kurikulum Kaze For Developers.</p>
                         <div className="text-3xl md:text-4xl font-black mb-2">Rp 50.000</div>
-                        <p className="text-xs text-primary-200">Investasi terbaik untuk masa depan Anda.</p>
+                        <p className="text-xs text-indigo-200">Investasi terbaik untuk masa depan Anda.</p>
                     </div>
 
                     <div className="card border-2 border-yellow-100 bg-yellow-50/30 p-5 md:p-6 space-y-4 rounded-[2rem]">
@@ -207,7 +207,7 @@ const PremiumPayment: React.FC = () => {
                                 Terima kasih! Admin akan memverifikasi pembayaran Anda maksimal dalam 1x24 jam.
                                 Anda akan menerima notifikasi jika sudah aktif.
                             </p>
-                            <button onClick={() => setSubmitted(false)} className="text-primary-600 font-bold hover:underline">
+                            <button onClick={() => setSubmitted(false)} className="text-indigo-600 font-bold hover:underline">
                                 Kirim bukti lain?
                             </button>
                         </motion.div>
@@ -272,6 +272,24 @@ const PremiumPayment: React.FC = () => {
                             </div>
                         </div>
                     )}
+
+                    {/* Help Section */}
+                    <div className="card p-6 border-2 border-blue-100 bg-blue-50/30 rounded-[2rem]">
+                        <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <Info className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="flex-1">
+                                <h4 className="font-bold text-gray-900 mb-2">Butuh Bantuan?</h4>
+                                <p className="text-sm text-gray-600 mb-4">
+                                    Jika Anda mengalami kendala dalam proses pembayaran atau memiliki pertanyaan, silakan hubungi admin melalui live chat.
+                                </p>
+                                <p className="text-xs text-blue-700 font-medium">
+                                    💬 Klik tombol chat di pojok kanan bawah untuk berbicara dengan admin
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Transaction History */}
                     {existingPayments.length > 0 && (

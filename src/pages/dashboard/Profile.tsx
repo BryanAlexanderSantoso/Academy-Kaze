@@ -56,6 +56,12 @@ const Profile: React.FC = () => {
                     color: 'fullstack',
                     description: 'Frontend + Backend',
                 };
+            case 'seo':
+                return {
+                    name: 'SEO Specialist',
+                    color: 'amber',
+                    description: 'Technical SEO, Content Strategy, Analytics',
+                };
             default:
                 return { name: 'Not Selected', color: 'gray', description: '' };
         }
@@ -77,13 +83,23 @@ const Profile: React.FC = () => {
                 className="card"
             >
                 <div className="flex items-center gap-6 mb-6">
-                    <div className={`w-24 h-24 rounded-full bg-gradient-to-br from-${pathInfo.color}-500 to-${pathInfo.color}-700 flex items-center justify-center text-white text-4xl font-bold`}>
+                    <div className={`w-24 h-24 rounded-full flex items-center justify-center text-white text-4xl font-bold ${pathInfo.color === 'primary' ? 'bg-gradient-to-br from-blue-500 to-blue-700' :
+                        pathInfo.color === 'backend' ? 'bg-gradient-to-br from-emerald-500 to-emerald-700' :
+                            pathInfo.color === 'fullstack' ? 'bg-gradient-to-br from-violet-500 to-violet-700' :
+                                pathInfo.color === 'amber' ? 'bg-gradient-to-br from-amber-500 to-amber-700' :
+                                    'bg-gradient-to-br from-gray-500 to-gray-700'
+                        }`}>
                         {(user?.full_name?.[0] || 'U').toUpperCase()}
                     </div>
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900">{user?.full_name}</h2>
                         <p className="text-gray-600">{user?.email}</p>
-                        <div className={`mt-2 inline-block px-3 py-1 rounded-full text-sm font-medium bg-${pathInfo.color}-100 text-${pathInfo.color}-700`}>
+                        <div className={`mt-2 inline-block px-3 py-1 rounded-full text-sm font-medium ${pathInfo.color === 'primary' ? 'bg-blue-100 text-blue-700' :
+                            pathInfo.color === 'backend' ? 'bg-emerald-100 text-emerald-700' :
+                                pathInfo.color === 'fullstack' ? 'bg-violet-100 text-violet-700' :
+                                    pathInfo.color === 'amber' ? 'bg-amber-100 text-amber-700' :
+                                        'bg-gray-100 text-gray-700'
+                            }`}>
                             {pathInfo.name}
                         </div>
                     </div>
@@ -143,10 +159,11 @@ const Profile: React.FC = () => {
                 transition={{ delay: 0.1 }}
                 className="card"
             >
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Edit Profile</h2>
-                <form onSubmit={handleUpdateProfile} className="space-y-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-8">Edit Profile</h2>
+                <form onSubmit={handleUpdateProfile} className="space-y-8">
+                    {/* Full Name - Editable */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
                             Full Name
                         </label>
                         <div className="relative">
@@ -156,43 +173,51 @@ const Profile: React.FC = () => {
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
                                 className="input-field pl-11"
-                                placeholder="Your full name"
+                                placeholder="Enter your full name"
                                 required
                             />
                         </div>
                     </div>
 
+                    {/* Email - Read Only */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
                             Email Address
                         </label>
                         <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                             <input
                                 type="email"
                                 value={user?.email}
-                                className="input-field pl-11 bg-gray-50 cursor-not-allowed"
+                                className="input-field pl-11 bg-gray-50 text-gray-500 cursor-not-allowed border-gray-200"
                                 disabled
+                                readOnly
                             />
                         </div>
-                        <p className="mt-1 text-xs text-gray-500">Email cannot be changed</p>
+                        <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+                            <span className="inline-block w-1 h-1 bg-gray-400 rounded-full"></span>
+                            Email address cannot be modified
+                        </p>
                     </div>
 
+                    {/* Learning Path - Read Only */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
                             Learning Path
                         </label>
                         <div className="relative">
-                            <Code2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <Code2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
                             <input
                                 type="text"
                                 value={pathInfo.name}
-                                className="input-field pl-11 bg-gray-50 cursor-not-allowed"
+                                className="input-field pl-11 bg-gray-50 text-gray-500 cursor-not-allowed border-gray-200"
                                 disabled
+                                readOnly
                             />
                         </div>
-                        <p className="mt-1 text-xs text-gray-500">
-                            Contact admin to change your learning path
+                        <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+                            <span className="inline-block w-1 h-1 bg-gray-400 rounded-full"></span>
+                            Contact administrator to change your learning path
                         </p>
                     </div>
 

@@ -6,6 +6,17 @@ import { motion } from 'framer-motion';
 import { BookOpen, FileText, Trophy, Calendar, ArrowRight, Clock, Activity, Zap, Target, Rocket, ChevronRight, Layout } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
+// Helper function to get learning path name
+const getLearningPathName = (path: string | null | undefined): string => {
+    switch (path) {
+        case 'fe': return 'Frontend';
+        case 'be': return 'Backend';
+        case 'fs': return 'Fullstack';
+        case 'seo': return 'SEO Specialist';
+        default: return 'Not Set';
+    }
+};
+
 const DashboardOverview: React.FC = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -102,7 +113,7 @@ const DashboardOverview: React.FC = () => {
                             <span className="text-indigo-400">{user?.full_name.split(' ')[0]}!</span>
                         </h1>
                         <p className="text-gray-400 text-lg font-medium leading-relaxed max-w-sm italic">
-                            Your trajectory is set to <span className="text-white">{user?.learning_path === 'fe' ? 'Frontend' : user?.learning_path === 'be' ? 'Backend' : 'Fullstack'}</span> mastery. Continue the curriculum.
+                            Your learning path is set to <span className="text-white">{getLearningPathName(user?.learning_path)}</span>. Continue your progress.
                         </p>
                     </div>
 
@@ -290,7 +301,7 @@ const DashboardOverview: React.FC = () => {
                             <div className="flex flex-col gap-2 p-6 bg-gray-50 rounded-[30px] border border-gray-100">
                                 <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Active Specialization</span>
                                 <span className="text-xl font-black text-gray-900 uppercase italic tracking-tighter">
-                                    {user?.learning_path === 'fe' ? 'Frontend' : user?.learning_path === 'be' ? 'Backend' : 'Fullstack'}_DEV
+                                    {getLearningPathName(user?.learning_path)}
                                 </span>
                             </div>
                         </div>

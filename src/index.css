@@ -1,20 +1,19 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @theme {
-  --font-sans: Inter, system-ui, sans-serif;
+  --font-sans: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
-  /* Primary Colors (Frontend - Indigo) */
-  --color-primary-50: #eef2ff;
-  --color-primary-100: #e0e7ff;
-  --color-primary-200: #c7d2fe;
-  --color-primary-300: #a5b4fc;
-  --color-primary-400: #818cf8;
-  --color-primary-500: #6366f1;
-  --color-primary-600: #4f46e5;
-  --color-primary-700: #4338ca;
-  --color-primary-800: #3730a3;
-  --color-primary-900: #312e81;
+  /* Primary Colors (Blue) */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
 
   /* Backend Colors (Emerald) */
   --color-backend-50: #ecfdf5;
@@ -57,12 +56,17 @@ html {
 
 /* Component Classes */
 .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   background-color: var(--color-primary-600);
   color: white;
   border-radius: 0.5rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.2s;
+  border: none;
+  cursor: pointer;
 }
 
 .btn-primary:hover {
@@ -76,6 +80,9 @@ html {
 }
 
 .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   background-color: white;
   color: rgb(17 24 39);
@@ -112,8 +119,8 @@ html {
 
 .input-field:focus {
   outline: none;
-  border-color: transparent;
-  box-shadow: 0 0 0 2px var(--color-primary-500);
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .sidebar-link {

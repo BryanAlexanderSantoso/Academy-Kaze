@@ -53,21 +53,21 @@ const ForgotPassword: React.FC = () => {
                         className="inline-flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-indigo-600 transition-colors mb-8"
                     >
                         <ArrowLeft className="w-3.5 h-3.5" />
-                        Back_to_Access
+                        Back to Login
                     </Link>
 
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 border border-indigo-100 rounded-full text-indigo-600 text-[10px] font-black uppercase tracking-widest mb-8">
                         <Key className="w-3.5 h-3.5" />
-                        Recovery_Protocol
+                        Password Recovery
                     </div>
-                    <h3 className="text-4xl font-black text-gray-900 mb-2 tracking-tighter uppercase italic">Reset Cipher</h3>
-                    <p className="text-gray-400 font-bold text-sm uppercase tracking-tight">Enter your uplink email to receive a recovery link.</p>
+                    <h3 className="text-4xl font-black text-gray-900 mb-2 tracking-tighter uppercase italic">Reset Password</h3>
+                    <p className="text-gray-400 font-bold text-sm uppercase tracking-tight">Enter your email address to receive a recovery link.</p>
                 </div>
 
                 {!success ? (
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Credential email Uplink</label>
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Email Address</label>
                             <div className="relative group/input">
                                 <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300 group-focus-within/input:text-indigo-600 transition-colors" />
                                 <input
@@ -75,7 +75,7 @@ const ForgotPassword: React.FC = () => {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="w-full bg-gray-50 border-none focus:ring-0 focus:bg-white rounded-[30px] py-6 pl-16 pr-8 text-sm font-black text-gray-900 transition-all shadow-inner placeholder:text-gray-200"
-                                    placeholder="IDENTIFIER@COLLECTIVE.DEV"
+                                    placeholder="your.email@example.com"
                                     required
                                 />
                             </div>
@@ -116,20 +116,20 @@ const ForgotPassword: React.FC = () => {
                             <CheckCircle2 className="w-10 h-10" />
                         </div>
                         <div className="space-y-2">
-                            <h4 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">Transmission Sent</h4>
+                            <h4 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">Email Sent</h4>
                             <p className="text-gray-400 font-bold text-sm uppercase tracking-tight leading-relaxed">
-                                Recovery uplink has been sent to <br />
+                                Password reset link has been sent to <br />
                                 <span className="text-indigo-600 font-black">{email}</span>
                             </p>
                         </div>
                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest max-w-xs mx-auto">
-                            Check your inbox and follow the instructions to reset your security cipher.
+                            Check your inbox and follow the instructions to reset your password.
                         </p>
                         <Link
                             to="/login"
                             className="inline-flex items-center justify-center gap-3 w-full border-2 border-gray-100 hover:border-gray-900 hover:bg-gray-900 hover:text-white transition-all py-6 rounded-[30px] text-[10px] font-black uppercase tracking-[0.3em]"
                         >
-                            Return_to_Login
+                            Return to Login
                         </Link>
                     </motion.div>
                 )}

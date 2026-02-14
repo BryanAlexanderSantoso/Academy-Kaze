@@ -3,6 +3,7 @@ import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { signOut } from '../lib/auth';
 import { motion, AnimatePresence } from 'framer-motion';
+import LiveChat from '../components/LiveChat';
 import {
     LayoutDashboard,
     BookOpen,
@@ -22,12 +23,12 @@ const MemberDashboard: React.FC = () => {
     const location = useLocation();
 
     const sidebarItems = [
-        { id: 'overview', label: 'Command Hub', icon: LayoutDashboard, path: '/dashboard' },
-        { id: 'courses', label: 'Curriculum', icon: BookOpen, path: '/dashboard/courses' },
-        { id: 'assignments', label: 'Task Console', icon: FileText, path: '/dashboard/assignments' },
-        { id: 'questionnaires', label: 'Diagnostics', icon: ClipboardList, path: '/dashboard/questionnaires' },
-        { id: 'premium', label: user?.is_premium ? 'Premium Link' : 'Upgrade Link', icon: ShieldCheck, path: '/dashboard/premium' },
-        { id: 'profile', label: 'User Profile', icon: User, path: '/dashboard/profile' },
+        { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
+        { id: 'courses', label: 'Courses', icon: BookOpen, path: '/dashboard/courses' },
+        { id: 'assignments', label: 'Assignments', icon: FileText, path: '/dashboard/assignments' },
+        { id: 'questionnaires', label: 'Quizzes', icon: ClipboardList, path: '/dashboard/questionnaires' },
+        { id: 'premium', label: user?.is_premium ? 'Premium' : 'Upgrade', icon: ShieldCheck, path: '/dashboard/premium' },
+        { id: 'profile', label: 'Profile', icon: User, path: '/dashboard/profile' },
     ];
 
     const handleSignOut = async () => {
@@ -115,7 +116,7 @@ const MemberDashboard: React.FC = () => {
                     >
                         <LogOut className="w-7 h-7" />
                         <div className="absolute left-full ml-6 px-4 py-2 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl opacity-0 translate-x-[-10px] group-hover:opacity-100 group-hover:translate-x-0 transition-all pointer-events-none whitespace-nowrap z-50">
-                            TERMINATE_SESSION
+                            Sign Out
                         </div>
                     </button>
                     <div className="w-12 h-12 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center font-black text-indigo-600 text-sm overflow-hidden group hover:scale-110 transition-transform cursor-pointer">
@@ -187,7 +188,7 @@ const MemberDashboard: React.FC = () => {
                                 className="mt-auto flex items-center gap-4 p-5 bg-red-50 text-red-600 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em]"
                             >
                                 <LogOut className="w-5 h-5" />
-                                TERMINATE_SESSION
+                                Sign Out
                             </button>
                         </motion.aside>
                     </>
@@ -201,10 +202,10 @@ const MemberDashboard: React.FC = () => {
                     <div className="max-w-[1600px] mx-auto px-10 py-7 flex items-center justify-between">
                         <div className="flex items-center gap-6">
                             <div className="hidden lg:block">
-                                <h1 className="text-xl font-black tracking-tighter text-gray-900 uppercase italic">Command Central</h1>
+                                <h1 className="text-xl font-black tracking-tighter text-gray-900 uppercase italic">Member Dashboard</h1>
                                 <div className="flex items-center gap-2 mt-0.5">
                                     <span className="flex h-1.5 w-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Sector_{user?.learning_path?.toUpperCase() || 'NULL'}</p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Path: {user?.learning_path?.toUpperCase() || 'NONE'}</p>
                                 </div>
                             </div>
                         </div>
@@ -212,7 +213,7 @@ const MemberDashboard: React.FC = () => {
                         <div className="flex items-center gap-8">
                             <div className="flex flex-col items-end">
                                 <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">{user?.full_name}</p>
-                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none mt-1">Operative ID: {user?.id.slice(0, 8)}</p>
+                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none mt-1">User ID: {user?.id.slice(0, 8)}</p>
                             </div>
                             <div className="h-10 w-[1px] bg-gray-100" />
                             <div className="flex items-center gap-3">
@@ -220,7 +221,7 @@ const MemberDashboard: React.FC = () => {
                                     ? 'bg-amber-50 text-amber-600 border-amber-100'
                                     : 'bg-gray-50 text-gray-400 border-gray-100'
                                     }`}>
-                                    {user?.is_premium ? 'PREMIUM_UPLINK' : 'FREE_TIER'}
+                                    {user?.is_premium ? 'PREMIUM' : 'FREE'}
                                 </div>
                                 <button
                                     onClick={handleSignOut}
@@ -229,7 +230,7 @@ const MemberDashboard: React.FC = () => {
                                 >
                                     <LogOut className="w-5 h-5" />
                                     <div className="absolute top-full right-0 mt-3 px-4 py-2 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl opacity-0 translate-y-[-10px] group-hover:opacity-100 group-hover:translate-y-0 transition-all pointer-events-none whitespace-nowrap z-50">
-                                        TERMINATE_SESSION
+                                        Sign Out
                                     </div>
                                 </button>
                             </div>
@@ -248,6 +249,9 @@ const MemberDashboard: React.FC = () => {
                 <div className="absolute top-1/4 -right-1/4 w-[60%] h-[60%] bg-indigo-100/30 blur-[200px] rounded-full" />
                 <div className="absolute -bottom-1/4 -left-1/4 w-[60%] h-[60%] bg-blue-100/20 blur-[200px] rounded-full" />
             </div>
+
+            {/* Live Chat */}
+            <LiveChat />
         </div>
     );
 };
