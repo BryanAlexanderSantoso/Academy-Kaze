@@ -169,7 +169,7 @@ const PremiumPayment: React.FC = () => {
                         <CreditCard className="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 rotate-12" />
                         <h3 className="text-lg md:text-xl font-bold mb-2">Hanya Sekali Bayar</h3>
                         <p className="text-indigo-100 text-sm mb-6">Dapatkan akses seumur hidup ke seluruh konten kurikulum Kaze For Developers.</p>
-                        <div className="text-3xl md:text-4xl font-black mb-2">Rp 50.000</div>
+                        <div className="text-3xl md:text-4xl font-black mb-2">Rp 12.000</div>
                         <p className="text-xs text-indigo-200">Investasi terbaik untuk masa depan Anda.</p>
                     </div>
 
@@ -180,7 +180,7 @@ const PremiumPayment: React.FC = () => {
                         </div>
                         <ol className="text-sm text-gray-600 space-y-3 list-decimal ml-4">
                             <li>Scan QRIS <b>Bryan Dev</b> di bawah ini.</li>
-                            <li>Tentukan nominal <b>Rp 50.000</b>.</li>
+                            <li>Tentukan nominal <b>Rp 12.000</b>.</li>
                             <li>Selesaikan pembayaran sampai muncul tanda <b>BERHASIL</b>.</li>
                             <li>Screenshot bukti pembayaran tersebut.</li>
                             <li>Upload buktinya pada form di bawah.</li>

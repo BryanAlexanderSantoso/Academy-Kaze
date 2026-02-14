@@ -215,7 +215,7 @@ const CourseDetail: React.FC = () => {
                                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20">
                                             <div className="flex items-center justify-between mb-4">
                                                 <span className="text-gray-400">Harga Spesial</span>
-                                                <span className="text-2xl font-black text-yellow-500">Rp 50.000</span>
+                                                <span className="text-2xl font-black text-yellow-500">Rp 12.000</span>
                                             </div>
                                             <img
                                                 src="/qris_payment.jpg"

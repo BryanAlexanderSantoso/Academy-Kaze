@@ -8,6 +8,7 @@ export interface AuthUser {
     learning_path?: 'fe' | 'be' | 'fs' | 'seo' | null;
     is_premium?: boolean;
     premium_until?: string | null;
+    is_banned?: boolean;
 }
 
 // Admin login with numeric password

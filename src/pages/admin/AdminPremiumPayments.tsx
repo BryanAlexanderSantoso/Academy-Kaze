@@ -61,16 +61,23 @@ const AdminPremiumPayments: React.FC = () => {
             if (!payment) return;
 
             // 1. Update Payment Status
-            const { error: paymentError } = await supabase
+            const { data: updatedPayment, error: paymentError } = await supabase
                 .from('premium_payments')
                 .update({
                     status,
                     admin_feedback: feedback,
+                    // updated_at is handled by trigger usually, but we force it here for now
                     updated_at: new Date().toISOString()
                 })
-                .eq('id', paymentId);
+                .eq('id', paymentId)
+                .select(); // Request returned data to verify update
 
             if (paymentError) throw paymentError;
+
+            // Check if any row was actually updated
+            if (!updatedPayment || updatedPayment.length === 0) {
+                throw new Error('Update blocked: Policy matched 0 rows. ensure you are Admin.');
+            }
 
             // 2. If approved, explicitly update the User's Profile to premium
             if (status === 'approved') {
@@ -93,17 +100,18 @@ const AdminPremiumPayments: React.FC = () => {
             loadPayments();
             setSelectedPayment(null);
             setFeedback('');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating status:', error);
-            alert('Gagal memperbarui status.');
+            alert(`Gagal memperbarui status: ${error.message || 'Unknown error'}`);
         }
     };
 
     const filteredPayments = payments.filter(p => {
+        const user = (p as any).user;
         const matchesSearch =
-            (p as any).user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (p as any).user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            p.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
+            (user?.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (user?.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (p.full_name || '').toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
 
