@@ -36,6 +36,5 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
-          # GANTI 'namadomain.com' di bawah ini dengan nama domain asli kamu di DirectAdmin
-          server-dir: /domains/academy.kazeserenity.com/public_html/
+          server-dir: domains/academy.kazeserenity.com/public_html/
           dangerous-clean-slate: false
