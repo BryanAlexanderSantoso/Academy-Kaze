@@ -13,6 +13,7 @@ export interface Profile {
     role: 'admin' | 'member';
     learning_path: 'fe' | 'be' | 'fs' | null;
     is_premium: boolean;
+    premium_type: 'none' | 'premium' | 'premium_plus';
     premium_until: string | null;
     progress_percentage: number;
     created_at: string;
@@ -25,9 +26,27 @@ export interface PremiumPayment {
     payment_method: string;
     transaction_id?: string;
     amount: number;
+    original_amount?: number;
     proof_url: string;
     status: 'pending' | 'approved' | 'rejected';
     admin_feedback?: string;
+    premium_type: 'premium' | 'premium_plus';
+    promo_code?: string;
+    discount_percent?: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Promo {
+    id: string;
+    code: string;
+    discount_percent: number;
+    description?: string;
+    is_active: boolean;
+    max_usage?: number | null;
+    current_usage: number;
+    valid_from: string;
+    valid_until?: string | null;
     created_at: string;
     updated_at: string;
 }

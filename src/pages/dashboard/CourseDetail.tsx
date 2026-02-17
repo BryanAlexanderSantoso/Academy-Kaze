@@ -56,11 +56,30 @@ const CourseDetail: React.FC = () => {
 
     const isChapterLocked = (chapter: CourseChapter) => {
         if (user?.role === 'admin') return false;
-        if (user?.is_premium) return false;
 
-        // Bab 1 (index 0) is always free
+        // Premium+ users can access ALL courses and ALL chapters
+        if (user?.is_premium && user?.premium_type === 'premium_plus') return false;
+
+        // Regular Premium users can only access courses that match their learning path
+        if (user?.is_premium && user?.premium_type === 'premium') {
+            // If the course category matches the user's learning path, unlock all chapters
+            if (course && course.category === user.learning_path) return false;
+            // If course doesn't match their learning path, lock all except first chapter
+            const firstChapterIndex = Math.min(...chapters.map(c => c.order_index));
+            return chapter.order_index > firstChapterIndex;
+        }
+
+        // Free users: only first chapter is free
         const firstChapterIndex = Math.min(...chapters.map(c => c.order_index));
         return chapter.order_index > firstChapterIndex;
+    };
+
+    // Check if this course is outside the user's learning path (for Premium users)
+    const isCrossPathCourse = () => {
+        if (!user || !course) return false;
+        if (user.role === 'admin') return false;
+        if (user.premium_type === 'premium_plus') return false;
+        return course.category !== user.learning_path;
     };
 
     if (loading) {
@@ -117,9 +136,15 @@ const CourseDetail: React.FC = () => {
                                     {course.category === 'fe' ? 'Frontend' : course.category === 'be' ? 'Backend' : 'Fullstack'}
                                 </span>
                                 {user?.is_premium && (
-                                    <span className="bg-yellow-500 text-black text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                                    <span className={`text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 ${user.premium_type === 'premium_plus' ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-white' : 'bg-yellow-500 text-black'}`}>
                                         <ShieldCheck className="w-3 h-3" />
-                                        PREMIUM ACCESS
+                                        {user.premium_type === 'premium_plus' ? 'PREMIUM+ ACCESS' : 'PREMIUM ACCESS'}
+                                    </span>
+                                )}
+                                {isCrossPathCourse() && user?.is_premium && user.premium_type === 'premium' && (
+                                    <span className="bg-red-500/80 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                                        <Lock className="w-3 h-3" />
+                                        BEDA LEARNING PATH
                                     </span>
                                 )}
                             </div>
@@ -206,34 +231,76 @@ const CourseDetail: React.FC = () => {
                                         <div className="w-20 h-20 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow transition-transform hover:scale-110">
                                             <Lock className="w-10 h-10 text-black" />
                                         </div>
-                                        <h2 className="text-3xl font-black mb-4">MODE KIKIR ACTIVATED!</h2>
-                                        <p className="text-gray-400 mb-8 leading-relaxed">
-                                            Waduh, materi selanjutnya dikunci nih! Biaya server mahal bosqu.
-                                            Yuk bayar dikit aja buat lanjut belajar sepuasnya sampai mahir!
-                                        </p>
 
-                                        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20">
-                                            <div className="flex items-center justify-between mb-4">
-                                                <span className="text-gray-400">Harga Spesial</span>
-                                                <span className="text-2xl font-black text-yellow-500">Rp 12.000</span>
-                                            </div>
-                                            <img
-                                                src="/qris_payment.jpg"
-                                                alt="QRIS Payment"
-                                                className="w-full h-auto rounded-lg mb-4 shadow-2xl"
-                                            />
-                                            <p className="text-xs text-gray-500 bg-black/30 p-2 rounded">
-                                                Scan QRIS di atas dengan m-Banking, GOPAY, OVO, atau Dana Anda.
-                                            </p>
-                                        </div>
+                                        {isCrossPathCourse() && user?.is_premium ? (
+                                            <>
+                                                <h2 className="text-3xl font-black mb-4">BUTUH PREMIUM+ ✨</h2>
+                                                <p className="text-gray-400 mb-8 leading-relaxed">
+                                                    Materi ini ada di learning path <b className="text-amber-400">{course?.category === 'fe' ? 'Frontend' : course?.category === 'be' ? 'Backend' : 'Fullstack'}</b>,
+                                                    sedangkan kamu di learning path <b className="text-indigo-400">{user.learning_path === 'fe' ? 'Frontend' : user.learning_path === 'be' ? 'Backend' : 'Fullstack'}</b>.
+                                                    Upgrade ke <span className="text-amber-400 font-black">Premium+</span> untuk akses lintas learning path!
+                                                </p>
 
-                                        <button
-                                            onClick={() => navigate('/dashboard/premium')}
-                                            className="w-full bg-primary-600 hover:bg-primary-700 text-white font-black py-4 rounded-xl flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 active:scale-95 shadow-xl shadow-primary-600/30"
-                                        >
-                                            <Upload className="w-5 h-5" />
-                                            UPLOAD BUKTI PEMBAYARAN
-                                        </button>
+                                                <div className="bg-gradient-to-br from-amber-500/20 to-orange-500/20 backdrop-blur-md rounded-2xl p-6 mb-8 border border-amber-500/30">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <span className="text-gray-400">Upgrade ke Premium+</span>
+                                                        <span className="text-2xl font-black text-amber-400">Rp 25.000</span>
+                                                    </div>
+                                                    <p className="text-xs text-gray-500">Akses semua materi di semua learning path, selamanya!</p>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => navigate('/dashboard/premium')}
+                                                    className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black py-4 rounded-xl flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 active:scale-95 shadow-xl shadow-amber-500/30"
+                                                >
+                                                    <Upload className="w-5 h-5" />
+                                                    UPGRADE KE PREMIUM+
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <h2 className="text-3xl font-black mb-4">MODE KIKIR ACTIVATED!</h2>
+                                                <p className="text-gray-400 mb-8 leading-relaxed">
+                                                    Waduh, materi selanjutnya dikunci nih! Biaya server mahal bosqu.
+                                                    Yuk bayar dikit aja buat lanjut belajar sepuasnya sampai mahir!
+                                                </p>
+
+                                                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20">
+                                                    <div className="text-left space-y-3 mb-4">
+                                                        <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                                                            <div className="flex items-center gap-2">
+                                                                <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                                                                <span className="text-sm text-gray-300">Premium</span>
+                                                            </div>
+                                                            <span className="text-lg font-black text-indigo-400">Rp 12.000</span>
+                                                        </div>
+                                                        <div className="flex items-center justify-between p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-amber-400">✨</span>
+                                                                <span className="text-sm text-amber-300 font-bold">Premium+</span>
+                                                            </div>
+                                                            <span className="text-lg font-black text-amber-400">Rp 25.000</span>
+                                                        </div>
+                                                    </div>
+                                                    <img
+                                                        src="/qris_payment.jpg"
+                                                        alt="QRIS Payment"
+                                                        className="w-full h-auto rounded-lg mb-4 shadow-2xl"
+                                                    />
+                                                    <p className="text-xs text-gray-500 bg-black/30 p-2 rounded">
+                                                        Scan QRIS di atas dengan m-Banking, GOPAY, OVO, atau Dana Anda.
+                                                    </p>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => navigate('/dashboard/premium')}
+                                                    className="w-full bg-primary-600 hover:bg-primary-700 text-white font-black py-4 rounded-xl flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 active:scale-95 shadow-xl shadow-primary-600/30"
+                                                >
+                                                    <Upload className="w-5 h-5" />
+                                                    UPGRADE SEKARANG
+                                                </button>
+                                            </>
+                                        )}
 
                                         <p className="mt-6 text-sm text-gray-500">
                                             Sudah bayar? <span className="text-primary-400 font-bold hover:underline cursor-pointer" onClick={() => navigate('/dashboard/premium')}>Cek status pembayaran</span>

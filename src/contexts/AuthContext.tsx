@@ -84,6 +84,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 full_name: profile.full_name,
                 learning_path: profile.learning_path,
                 is_premium: profile.is_premium,
+                premium_type: profile.premium_type || 'none',
                 premium_until: profile.premium_until,
                 is_banned: profile.is_banned,
             });

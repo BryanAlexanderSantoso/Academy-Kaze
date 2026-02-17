@@ -39,6 +39,7 @@ import CreateAssignment from './pages/admin/CreateAssignment';
 import AdminQuestionnaires from './pages/admin/AdminQuestionnaires';
 import QuestionnaireResponses from './pages/admin/QuestionnaireResponses';
 import AdminPremiumPayments from './pages/admin/AdminPremiumPayments';
+import AdminPromos from './pages/admin/AdminPromos';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{
@@ -274,6 +275,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute requireAdmin>
             <AdminPremiumPayments />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/promos"
+        element={
+          <ProtectedRoute requireAdmin>
+            <AdminPromos />
           </ProtectedRoute>
         }
       />

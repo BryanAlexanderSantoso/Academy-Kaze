@@ -18,7 +18,9 @@ import {
     Maximize2,
     Activity,
     CreditCard,
-    Zap
+    Zap,
+    Crown,
+    Tag
 } from 'lucide-react';
 
 const AdminPremiumPayments: React.FC = () => {
@@ -84,10 +86,13 @@ const AdminPremiumPayments: React.FC = () => {
                 const expiryDate = new Date();
                 expiryDate.setDate(expiryDate.getDate() + 30); // Add 30 days
 
+                const premiumType = (payment as any).premium_type || 'premium';
+
                 const { error: profileError } = await supabase
                     .from('profiles')
                     .update({
                         is_premium: true,
+                        premium_type: premiumType,
                         premium_until: expiryDate.toISOString()
                     })
                     .eq('id', payment.user_id);
@@ -270,8 +275,18 @@ const AdminPremiumPayments: React.FC = () => {
                                             <td className="px-10 py-8">
                                                 <div className="flex flex-col gap-1.5">
                                                     <span className="text-xl font-black text-gray-900 tracking-tighter">Rp {Number(payment.amount).toLocaleString()}</span>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-[9px] font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg uppercase tracking-widest border border-indigo-100">{payment.payment_method}</span>
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <span className={`text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest border ${(payment as any).premium_type === 'premium_plus'
+                                                                ? 'text-amber-600 bg-amber-50 border-amber-100'
+                                                                : 'text-indigo-600 bg-indigo-50 border-indigo-100'
+                                                            }`}>
+                                                            {(payment as any).premium_type === 'premium_plus' ? '✨ PREMIUM+' : '🛡️ PREMIUM'}
+                                                        </span>
+                                                        {(payment as any).promo_code && (
+                                                            <span className="text-[9px] font-black text-purple-600 bg-purple-50 px-2 py-1 rounded-lg border border-purple-100 flex items-center gap-1">
+                                                                <Tag className="w-2.5 h-2.5" />{(payment as any).promo_code} (-{(payment as any).discount_percent}%)
+                                                            </span>
+                                                        )}
                                                         <span className="text-[9px] font-mono text-gray-400 tracking-tighter">REF_{payment.transaction_id || 'NULL'}</span>
                                                     </div>
                                                 </div>
@@ -417,17 +432,34 @@ const AdminPremiumPayments: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        <div className="p-8 bg-indigo-600 rounded-[35px] text-white relative overflow-hidden group shadow-2xl shadow-indigo-600/30">
+                                        <div className={`p-8 rounded-[35px] text-white relative overflow-hidden group shadow-2xl ${(selectedPayment as any).premium_type === 'premium_plus'
+                                                ? 'bg-gradient-to-br from-amber-500 to-orange-600 shadow-amber-500/30'
+                                                : 'bg-indigo-600 shadow-indigo-600/30'
+                                            }`}>
                                             <div className="relative z-10">
-                                                <p className="text-[9px] font-black text-indigo-200 uppercase tracking-widest mb-4">Validation Amount</p>
-                                                <p className="text-5xl font-black tracking-tighter mb-6">Rp {Number(selectedPayment.amount).toLocaleString()}</p>
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <p className="text-[9px] font-black uppercase tracking-widest opacity-60">Validation Amount</p>
+                                                    <span className="px-3 py-1 bg-white/20 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1">
+                                                        {(selectedPayment as any).premium_type === 'premium_plus' ? <><Crown className="w-3 h-3" /> PREMIUM+</> : <><Shield className="w-3 h-3" /> PREMIUM</>}
+                                                    </span>
+                                                </div>
+                                                <p className="text-5xl font-black tracking-tighter mb-2">Rp {Number(selectedPayment.amount).toLocaleString()}</p>
+                                                {(selectedPayment as any).original_amount && Number((selectedPayment as any).original_amount) > Number(selectedPayment.amount) && (
+                                                    <p className="text-sm opacity-60 line-through mb-4">Rp {Number((selectedPayment as any).original_amount).toLocaleString()}</p>
+                                                )}
+                                                {(selectedPayment as any).promo_code && (
+                                                    <div className="mb-4 p-3 bg-white/10 rounded-xl flex items-center gap-2">
+                                                        <Tag className="w-4 h-4" />
+                                                        <span className="text-[10px] font-black uppercase tracking-wider">Promo: {(selectedPayment as any).promo_code} (-{(selectedPayment as any).discount_percent}%)</span>
+                                                    </div>
+                                                )}
                                                 <div className="flex gap-6 pt-6 border-t border-white/10">
                                                     <div>
-                                                        <p className="text-[8px] font-black text-indigo-200 uppercase mb-1">Method</p>
+                                                        <p className="text-[8px] font-black uppercase mb-1 opacity-60">Method</p>
                                                         <p className="text-[10px] font-black uppercase tracking-widest">{selectedPayment.payment_method}</p>
                                                     </div>
                                                     <div>
-                                                        <p className="text-[8px] font-black text-indigo-200 uppercase mb-1">Reference</p>
+                                                        <p className="text-[8px] font-black uppercase mb-1 opacity-60">Reference</p>
                                                         <p className="text-[10px] font-black uppercase tracking-widest font-mono">{selectedPayment.transaction_id || 'NULL'}</p>
                                                     </div>
                                                 </div>

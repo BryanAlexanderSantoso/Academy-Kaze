@@ -18,12 +18,18 @@ const Courses: React.FC = () => {
 
     const loadCourses = async () => {
         try {
-            const { data } = await supabase
+            let query = supabase
                 .from('courses')
                 .select('*')
-                .eq('category', user?.learning_path)
                 .eq('is_published', true)
                 .order('schedule_date', { ascending: true });
+
+            // Premium+ users see ALL courses, others see only their learning path
+            if (user?.premium_type !== 'premium_plus' && user?.role !== 'admin') {
+                query = query.eq('category', user?.learning_path);
+            }
+
+            const { data } = await query;
 
             if (data) setCourses(data);
             setLoading(false);
@@ -106,9 +112,17 @@ const Courses: React.FC = () => {
 
                                     <div className="p-6 space-y-4">
                                         <div className="flex items-center gap-2">
-                                            <span className="px-2.5 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg">
-                                                {user?.learning_path?.toUpperCase()}
+                                            <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg ${course.category === user?.learning_path
+                                                ? 'bg-blue-100 text-blue-700'
+                                                : 'bg-amber-100 text-amber-700'
+                                                }`}>
+                                                {course.category === 'fe' ? 'FRONTEND' : course.category === 'be' ? 'BACKEND' : course.category === 'fs' ? 'FULLSTACK' : 'OTHER'}
                                             </span>
+                                            {course.category !== user?.learning_path && (
+                                                <span className="px-2 py-0.5 bg-amber-50 text-amber-600 text-[10px] font-bold rounded border border-amber-200">
+                                                    ✨ CROSS-PATH
+                                                </span>
+                                            )}
                                             <span className="flex items-center gap-1 text-xs text-gray-500 font-medium">
                                                 <Clock className="w-3.5 h-3.5" />
                                                 {course.duration_hours || 0} hours

@@ -21,7 +21,8 @@ import {
     Monitor,
     ChevronRight,
     Terminal,
-    MessageCircle
+    MessageCircle,
+    Tag
 } from 'lucide-react';
 
 const AdminDashboard: React.FC = () => {
@@ -122,6 +123,7 @@ const AdminDashboard: React.FC = () => {
         { title: 'Submissions', icon: CheckSquare, link: '/admin/assignments', color: 'emerald' },
         { title: 'New Task', icon: Zap, link: '/admin/assignments/create', color: 'amber' },
         { title: 'Verifications', icon: Crown, link: '/admin/premium', color: 'yellow' },
+        { title: 'Promos', icon: Tag, link: '/admin/promos', color: 'pink' },
         { title: 'Assessments', icon: ClipboardList, link: '/admin/questionnaires', color: 'purple' },
     ];
 

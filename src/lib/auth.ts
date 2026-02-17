@@ -7,6 +7,7 @@ export interface AuthUser {
     full_name: string;
     learning_path?: 'fe' | 'be' | 'fs' | 'seo' | null;
     is_premium?: boolean;
+    premium_type?: 'none' | 'premium' | 'premium_plus';
     premium_until?: string | null;
     is_banned?: boolean;
 }
