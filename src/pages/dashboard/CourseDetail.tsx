@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 import type { Course, CourseChapter } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Clock, BookOpen, CheckCircle, Lock, ShieldCheck, Upload, FileText, Link as LinkIcon, ChevronRight, Share2, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Clock, BookOpen, CheckCircle, Lock, ShieldCheck, Upload, FileText, Link as LinkIcon, ChevronRight, Share2, Check } from 'lucide-react';
 
 const CourseDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
