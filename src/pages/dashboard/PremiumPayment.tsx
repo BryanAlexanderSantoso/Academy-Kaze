@@ -20,7 +20,6 @@ import {
     Globe,
     Tag,
     Sparkles,
-    XCircle,
     AlertTriangle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -54,7 +53,6 @@ const PremiumPayment: React.FC = () => {
     // Cancel state
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
     const [cancelling, setCancelling] = useState(false);
-    const [cancelSuccess, setCancelSuccess] = useState(false);
 
     useEffect(() => {
         if (user) loadExistingPayments();
@@ -246,7 +244,6 @@ const PremiumPayment: React.FC = () => {
                 premium_until: undefined,
             });
 
-            setCancelSuccess(true);
             setShowCancelConfirm(false);
         } catch (error: any) {
             console.error('Error cancelling premium:', error);
