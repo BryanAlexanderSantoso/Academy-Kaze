@@ -89,9 +89,13 @@ const AdminSupport: React.FC = () => {
                 }
             }
 
+            const yesterday = new Date();
+            yesterday.setHours(yesterday.getHours() - 24);
+
             const { data: messagesData, error: msgError } = await supabase
                 .from('support_messages')
                 .select('user_id, message, created_at, is_read')
+                .gte('created_at', yesterday.toISOString())
                 .order('created_at', { ascending: false });
 
             if (msgError) {
@@ -172,10 +176,14 @@ const AdminSupport: React.FC = () => {
     const loadMessages = async (userId: string) => {
         setLoading(true);
         try {
+            const yesterday = new Date();
+            yesterday.setHours(yesterday.getHours() - 24);
+
             const { data, error } = await supabase
                 .from('support_messages')
                 .select('*')
                 .eq('user_id', userId)
+                .gte('created_at', yesterday.toISOString())
                 .order('created_at', { ascending: true });
 
             if (error) throw error;

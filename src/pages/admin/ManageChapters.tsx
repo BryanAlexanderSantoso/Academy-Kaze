@@ -20,11 +20,13 @@ import {
     Upload
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useAlert } from '../../contexts/AlertContext';
 
 const ManageChapters: React.FC = () => {
     const { id: courseId } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { setUser } = useAuth();
+    const { showAlert } = useAlert();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [course, setCourse] = useState<Course | null>(null);
@@ -110,7 +112,11 @@ const ManageChapters: React.FC = () => {
             });
         } catch (error: any) {
             console.error('Error uploading file:', error);
-            alert('Gagal mengupload file: ' + error.message);
+            showAlert({
+                title: 'Linkage Error',
+                message: 'Failed to upload payload module: ' + error.message,
+                type: 'error'
+            });
         } finally {
             setUploading(false);
             setUploadProgress(0);
@@ -151,28 +157,55 @@ const ManageChapters: React.FC = () => {
             await loadCourseAndChapters();
             setIsSidebarOpen(false);
             setEditingChapter(null);
+            showAlert({
+                title: 'Commit Success',
+                message: 'Module has been synchronized with the main sequence.',
+                type: 'success'
+            });
         } catch (error) {
             console.error('Error saving chapter:', error);
-            alert('Gagal menyimpan chapter.');
+            showAlert({
+                title: 'Sync Error',
+                message: 'Failed to save module to architecture.',
+                type: 'error'
+            });
         } finally {
             setSaving(false);
         }
     };
 
     const handleDeleteChapter = async (chapterId: string) => {
-        if (!confirm('Yakin ingin menghapus chapter ini?')) return;
+        showAlert({
+            title: 'Delete Unit',
+            message: 'Are you sure you want to terminate this knowledge unit?',
+            type: 'delete',
+            confirmText: 'Confirm Deletion',
+            cancelText: 'Abort',
+            showCancel: true,
+            onConfirm: async () => {
+                try {
+                    const { error } = await supabase
+                        .from('course_chapters')
+                        .delete()
+                        .eq('id', chapterId);
 
-        try {
-            const { error } = await supabase
-                .from('course_chapters')
-                .delete()
-                .eq('id', chapterId);
-
-            if (error) throw error;
-            setChapters(chapters.filter(c => c.id !== chapterId));
-        } catch (error) {
-            console.error('Error deleting chapter:', error);
-        }
+                    if (error) throw error;
+                    setChapters(chapters.filter(c => c.id !== chapterId));
+                    showAlert({
+                        title: 'Success',
+                        message: 'Unit has been purged from the sequence.',
+                        type: 'success'
+                    });
+                } catch (error: any) {
+                    console.error('Error deleting chapter:', error);
+                    showAlert({
+                        title: 'Purge Failed',
+                        message: 'System was unable to delete this unit: ' + error.message,
+                        type: 'error'
+                    });
+                }
+            }
+        });
     };
 
     const handleReorder = async (newOrder: CourseChapter[]) => {

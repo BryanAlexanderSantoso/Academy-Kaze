@@ -10,10 +10,12 @@ import {
     Calendar, Clock
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useAlert } from '../../contexts/AlertContext';
 
 const AdminCourses: React.FC = () => {
     const navigate = useNavigate();
     const { } = useAuth();
+    const { showAlert } = useAlert();
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -39,13 +41,31 @@ const AdminCourses: React.FC = () => {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Yakin ingin menghapus course ini?')) return;
-
-        const { error } = await supabase.from('courses').delete().eq('id', id);
-
-        if (!error) {
-            setCourses(courses.filter((c) => c.id !== id));
-        }
+        showAlert({
+            title: 'Terminate Course',
+            message: 'Are you sure you want to permanently delete this course index from the curriculum?',
+            type: 'delete',
+            confirmText: 'Confirm Deletion',
+            cancelText: 'Abort',
+            showCancel: true,
+            onConfirm: async () => {
+                const { error } = await supabase.from('courses').delete().eq('id', id);
+                if (!error) {
+                    setCourses(courses.filter((c) => c.id !== id));
+                    showAlert({
+                        title: 'Success',
+                        message: 'Course has been successfully removed.',
+                        type: 'success'
+                    });
+                } else {
+                    showAlert({
+                        title: 'Error',
+                        message: 'Failed to delete course: ' + error.message,
+                        type: 'error'
+                    });
+                }
+            }
+        });
     };
 
     const handleTogglePublish = async (course: Course) => {

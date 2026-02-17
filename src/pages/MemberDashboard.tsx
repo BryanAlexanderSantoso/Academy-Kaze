@@ -15,6 +15,7 @@ import {
     X,
     ShieldCheck
 } from 'lucide-react';
+import NotificationBell from '../components/NotificationBell';
 
 const MemberDashboard: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -52,6 +53,7 @@ const MemberDashboard: React.FC = () => {
                     <span className="font-black text-xs uppercase tracking-tighter italic">Kaze For Developer</span>
                 </div>
                 <div className="flex items-center gap-4">
+                    <NotificationBell />
                     <button
                         onClick={handleSignOut}
                         className="p-2.5 bg-red-50 text-red-600 rounded-xl active:scale-95"
@@ -210,12 +212,13 @@ const MemberDashboard: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-8">
+                        <div className="flex items-center gap-6">
+                            <NotificationBell />
                             <div className="flex flex-col items-end">
                                 <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">{user?.full_name}</p>
                                 <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none mt-1">User ID: {user?.id.slice(0, 8)}</p>
                             </div>
-                            <div className="h-10 w-[1px] bg-gray-100" />
+                            <div className="h-10 w-[1px] bg-gray-100 mx-2" />
                             <div className="flex items-center gap-3">
                                 <div className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border ${user?.is_premium
                                     ? 'bg-amber-50 text-amber-600 border-amber-100'

@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 import type { Course, CourseChapter } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Clock, BookOpen, CheckCircle, Lock, ShieldCheck, Upload, FileText, Link as LinkIcon, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Clock, BookOpen, CheckCircle, Lock, ShieldCheck, Upload, FileText, Link as LinkIcon, ChevronRight, Share2, Copy, Check } from 'lucide-react';
 
 const CourseDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -14,7 +14,10 @@ const CourseDetail: React.FC = () => {
     const [chapters, setChapters] = useState<CourseChapter[]>([]);
     const [selectedChapter, setSelectedChapter] = useState<CourseChapter | null>(null);
     const [loading, setLoading] = useState(true);
-    const [completed, setCompleted] = useState(false);
+    const [progress, setProgress] = useState<string[]>([]);
+    const [marking, setMarking] = useState(false);
+    const [eligibleForCertificate, setEligibleForCertificate] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         if (id) loadCourseData();
@@ -41,6 +44,19 @@ const CourseDetail: React.FC = () => {
                 if (chaptersData) {
                     setChapters(chaptersData);
                     setSelectedChapter(chaptersData[0] || null);
+
+                    // Load user progress
+                    if (user) {
+                        const { data: progressData } = await supabase
+                            .from('chapter_progress')
+                            .select('chapter_id')
+                            .eq('user_id', user.id)
+                            .eq('course_id', id);
+
+                        if (progressData) {
+                            setProgress(progressData.map(p => p.chapter_id));
+                        }
+                    }
                 }
             }
             setLoading(false);
@@ -50,8 +66,67 @@ const CourseDetail: React.FC = () => {
         }
     };
 
+    const checkCertificateEligibility = (currentProgress: string[], allChapters: CourseChapter[]) => {
+        if (!user?.is_premium || allChapters.length === 0) return;
+        const allCompleted = allChapters.every(c => currentProgress.includes(c.id));
+        setEligibleForCertificate(allCompleted);
+    };
+
+    useEffect(() => {
+        if (chapters.length > 0) {
+            checkCertificateEligibility(progress, chapters);
+        }
+    }, [progress, chapters]);
+
     const handleMarkComplete = async () => {
-        setCompleted(!completed);
+        if (!selectedChapter || !user || marking) return;
+
+        const isCompleted = progress.includes(selectedChapter.id);
+        setMarking(true);
+
+        try {
+            if (isCompleted) {
+                // Optionally allow unmarking, but usually better to keep it
+                const { error } = await supabase
+                    .from('chapter_progress')
+                    .delete()
+                    .eq('user_id', user.id)
+                    .eq('chapter_id', selectedChapter.id);
+
+                if (!error) {
+                    const newProgress = progress.filter(id => id !== selectedChapter.id);
+                    setProgress(newProgress);
+                }
+            } else {
+                // Must be sequential? Let's check if previous chapter is done
+                const currentIndex = chapters.findIndex(c => c.id === selectedChapter.id);
+                if (currentIndex > 0) {
+                    const prevChapter = chapters[currentIndex - 1];
+                    if (!progress.includes(prevChapter.id)) {
+                        alert('Waduh! Selesaikan bab sebelumnya dulu ya biar ilmunya nggak loncat-loncat.');
+                        setMarking(false);
+                        return;
+                    }
+                }
+
+                const { error } = await supabase
+                    .from('chapter_progress')
+                    .insert([{
+                        user_id: user.id,
+                        course_id: id,
+                        chapter_id: selectedChapter.id
+                    }]);
+
+                if (!error) {
+                    const newProgress = [...progress, selectedChapter.id];
+                    setProgress(newProgress);
+                }
+            }
+        } catch (error) {
+            console.error('Error updating progress:', error);
+        } finally {
+            setMarking(false);
+        }
     };
 
     const isChapterLocked = (chapter: CourseChapter) => {
@@ -80,6 +155,13 @@ const CourseDetail: React.FC = () => {
         if (user.role === 'admin') return false;
         if (user.premium_type === 'premium_plus') return false;
         return course.category !== user.learning_path;
+    };
+
+    const handleShare = () => {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     if (loading) {
@@ -121,13 +203,22 @@ const CourseDetail: React.FC = () => {
                 <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
 
                 <div className="absolute inset-0 p-8 flex flex-col justify-end">
-                    <button
-                        onClick={() => navigate('/dashboard/courses')}
-                        className="absolute top-6 left-6 flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                        Back
-                    </button>
+                    <div className="absolute top-6 left-6 flex items-center gap-3">
+                        <button
+                            onClick={() => navigate('/dashboard/courses')}
+                            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            Back
+                        </button>
+                        <button
+                            onClick={handleShare}
+                            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"
+                        >
+                            {copied ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4" />}
+                            {copied ? 'Link Copied!' : 'Share Course'}
+                        </button>
+                    </div>
 
                     <div className="flex items-end justify-between">
                         <div>
@@ -205,6 +296,9 @@ const CourseDetail: React.FC = () => {
                                                 </div>
                                             </div>
                                             {locked && <Lock className="w-4 h-4 text-gray-400" />}
+                                            {!locked && progress.includes(chapter.id) && (
+                                                <CheckCircle className="w-5 h-5 text-green-500 fill-green-50" />
+                                            )}
                                         </button>
                                     );
                                 })
@@ -322,15 +416,41 @@ const CourseDetail: React.FC = () => {
                                         </div>
                                         <button
                                             onClick={handleMarkComplete}
-                                            className={`flex items-center gap-2 px-6 py-2 rounded-full font-bold transition-all ${completed
+                                            disabled={marking}
+                                            className={`flex items-center gap-2 px-6 py-2 rounded-full font-bold transition-all ${progress.includes(selectedChapter.id)
                                                 ? 'bg-green-100 text-green-700 ring-2 ring-green-500/20'
                                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                }`}
+                                                } ${marking ? 'opacity-50 cursor-not-allowed' : ''}`}
                                         >
-                                            <CheckCircle className={`w-5 h-5 ${completed ? 'fill-current' : ''}`} />
-                                            {completed ? 'Completed' : 'Mark Lesson Complete'}
+                                            {marking ? (
+                                                <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                                            ) : (
+                                                <CheckCircle className={`w-5 h-5 ${progress.includes(selectedChapter.id) ? 'fill-current' : ''}`} />
+                                            )}
+                                            {progress.includes(selectedChapter.id) ? 'Selesai' : 'Tandai Selesai'}
                                         </button>
                                     </div>
+
+                                    {eligibleForCertificate && (
+                                        <div className="mb-8 p-6 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl text-white shadow-xl shadow-amber-500/20">
+                                            <div className="flex items-center justify-between gap-6">
+                                                <div>
+                                                    <h3 className="text-xl font-black mb-1 flex items-center gap-2">
+                                                        <span>🎓</span> GRADUATIONS UNLOCKED!
+                                                    </h3>
+                                                    <p className="text-white/80 text-sm font-medium">
+                                                        Selamat! Kamu telah menyelesaikan seluruh materi di kelas ini secara tuntas.
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    onClick={() => navigate(`/dashboard/certificate/${id}`)}
+                                                    className="bg-white text-orange-600 font-black px-6 py-3 rounded-xl hover:scale-105 active:scale-95 transition-all text-sm uppercase tracking-wider flex-shrink-0"
+                                                >
+                                                    Klaim Sertifikat
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <div className="prose max-w-none prose-headings:font-black prose-p:text-gray-600 prose-strong:text-gray-900 prose-code:bg-gray-100 prose-code:p-1 prose-code:rounded">
                                         {selectedChapter.content_body ? (

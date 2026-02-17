@@ -13,6 +13,8 @@ interface Message {
     created_at: string;
 }
 
+const SELF_DESTRUCT_HOURS = 24;
+
 const LiveChat: React.FC = () => {
     const { user } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
@@ -58,10 +60,14 @@ const LiveChat: React.FC = () => {
 
         setLoading(true);
         try {
+            const yesterday = new Date();
+            yesterday.setHours(yesterday.getHours() - SELF_DESTRUCT_HOURS);
+
             const { data, error } = await supabase
                 .from('support_messages')
                 .select('*')
                 .eq('user_id', user.id)
+                .gte('created_at', yesterday.toISOString())
                 .order('created_at', { ascending: true });
 
             if (error) throw error;
@@ -146,10 +152,21 @@ const LiveChat: React.FC = () => {
                                     <User className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold">Admin Support</h3>
-                                    <p className="text-xs text-blue-100">Kami siap membantu Anda</p>
+                                    <h3 className="font-semibold text-sm">Admin Support</h3>
+                                    <p className="text-[10px] text-blue-100 flex items-center gap-1">
+                                        <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+                                        Response time: ~15 mins
+                                    </p>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* System Notice Section */}
+                        <div className="bg-amber-50 border-b border-amber-100 px-4 py-2 flex items-center gap-2">
+                            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse flex-shrink-0" />
+                            <p className="text-[9px] font-bold text-amber-700 uppercase tracking-wider">
+                                System Notice: Pesan akan dihapus otomatis setelah 24 jam untuk keamanan.
+                            </p>
                         </div>
 
                         {/* Messages Area */}
