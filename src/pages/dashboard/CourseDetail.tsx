@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 import type { Course, CourseChapter } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Clock, BookOpen, CheckCircle, Lock, ShieldCheck, Upload, FileText, Link as LinkIcon, ChevronRight, Share2, Check, Activity, Layout } from 'lucide-react';
+import { ArrowLeft, Clock, BookOpen, CheckCircle, Lock, ShieldCheck, Upload, FileText, Link as LinkIcon, ChevronRight, Share2, Check, Activity, Star } from 'lucide-react';
 
 const CourseDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -271,7 +271,7 @@ const CourseDetail: React.FC = () => {
                     <div className="bg-white border border-gray-100 rounded-[50px] p-10 shadow-sm sticky top-10">
                         <div className="flex items-center justify-between mb-8">
                             <h3 className="text-[10px] font-black text-gray-900 flex items-center gap-3 uppercase tracking-[0.2em] italic">
-                                <Layout className="w-5 h-5 text-indigo-600" />
+                                <BookOpen className="w-5 h-5 text-indigo-600" />
                                 Matriks Kurikulum
                             </h3>
                             <div className="w-12 h-1.5 bg-gray-50 rounded-full overflow-hidden border border-gray-100">
@@ -489,7 +489,7 @@ const CourseDetail: React.FC = () => {
                                             {marking ? (
                                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                             ) : (
-                                                <CheckCircle className={`w-5 h-5 ${completed ? 'animate-bounce' : ''}`} />
+                                                <CheckCircle className={`w-5 h-5 ${progress.includes(selectedChapter.id) ? 'animate-bounce' : ''}`} />
                                             )}
                                             {progress.includes(selectedChapter.id) ? 'SELESAI' : 'TANDAI_SELESAI'}
                                         </button>

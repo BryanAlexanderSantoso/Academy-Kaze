@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { Assignment } from '../../lib/supabase';
 import { motion } from 'framer-motion';
-import { FileText, Link as LinkIcon, Send, CheckCircle, Clock, AlertCircle, Activity } from 'lucide-react';
+import { FileText, Link as LinkIcon, Send, CheckCircle, Clock, AlertCircle, Activity, Trophy } from 'lucide-react';
 
 const Assignments: React.FC = () => {
     const { user } = useAuth();

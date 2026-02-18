@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { Course } from '../../lib/supabase';
 import { motion } from 'framer-motion';
-import { BookOpen, Clock, Search, Book, GraduationCap, ChevronRight, Layout, Activity } from 'lucide-react';
+import { BookOpen, Clock, Search, GraduationCap, ChevronRight, Activity } from 'lucide-react';
 
 const Courses: React.FC = () => {
     const { user } = useAuth();

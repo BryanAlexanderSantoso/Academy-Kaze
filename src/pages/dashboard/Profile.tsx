@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Mail, Code2, Save, TrendingUp, Crown, ShieldCheck, XCircle, AlertTriangle, Clock, Activity, Layout } from 'lucide-react';
+import { User, Mail, Code2, Save, TrendingUp, Crown, ShieldCheck, XCircle, AlertTriangle, Clock, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const Profile: React.FC = () => {

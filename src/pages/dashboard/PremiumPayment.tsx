@@ -12,7 +12,6 @@ import {
     Info,
     Upload,
     X,
-    ImageIcon,
     Crown,
     Zap,
     Star,
@@ -22,7 +21,8 @@ import {
     Sparkles,
     AlertTriangle,
     Activity,
-    ChevronRight
+    ChevronRight,
+    ArrowRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -36,7 +36,6 @@ const PremiumPayment: React.FC = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [existingPayments, setExistingPayments] = useState<any[]>([]);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -61,13 +60,11 @@ const PremiumPayment: React.FC = () => {
     }, [user]);
 
     const loadExistingPayments = async () => {
-        const { data } = await supabase
+        await supabase
             .from('premium_payments')
             .select('*')
             .eq('user_id', user?.id)
             .order('created_at', { ascending: false });
-
-        if (data) setExistingPayments(data);
     };
 
     const getBasePrice = () => PRICES[selectedTier];
