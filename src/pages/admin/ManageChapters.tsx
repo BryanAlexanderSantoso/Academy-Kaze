@@ -72,7 +72,9 @@ const ManageChapters: React.FC = () => {
             file_url: '',
             file_name: '',
             order_index: chapters.length,
-            is_preview: false
+            is_preview: false,
+            author_name: '',
+            author_image_url: ''
         };
         setEditingChapter(newChapter);
         setIsSidebarOpen(true);
@@ -113,8 +115,8 @@ const ManageChapters: React.FC = () => {
         } catch (error: any) {
             console.error('Error uploading file:', error);
             showAlert({
-                title: 'Linkage Error',
-                message: 'Failed to upload payload module: ' + error.message,
+                title: 'Kesalahan Tautan',
+                message: 'Gagal mengunggah modul payload: ' + error.message,
                 type: 'error'
             });
         } finally {
@@ -128,7 +130,6 @@ const ManageChapters: React.FC = () => {
         setSaving(true);
 
         try {
-            // Clean up object for DB
             const payload = {
                 course_id: editingChapter.course_id,
                 title: editingChapter.title,
@@ -136,18 +137,18 @@ const ManageChapters: React.FC = () => {
                 content_body: editingChapter.content_body || null,
                 file_url: editingChapter.file_url || null,
                 file_name: editingChapter.file_name || null,
-                order_index: editingChapter.order_index
+                order_index: editingChapter.order_index,
+                author_name: editingChapter.author_name || null,
+                author_image_url: editingChapter.author_image_url || null
             };
 
             if (editingChapter.id) {
-                // Update
                 const { error } = await supabase
                     .from('course_chapters')
                     .update(payload)
                     .eq('id', editingChapter.id);
                 if (error) throw error;
             } else {
-                // Insert
                 const { error } = await supabase
                     .from('course_chapters')
                     .insert([payload]);
@@ -158,15 +159,15 @@ const ManageChapters: React.FC = () => {
             setIsSidebarOpen(false);
             setEditingChapter(null);
             showAlert({
-                title: 'Commit Success',
-                message: 'Module has been synchronized with the main sequence.',
+                title: 'Berhasil Disimpan',
+                message: 'Modul telah disinkronkan dengan urutan utama.',
                 type: 'success'
             });
         } catch (error) {
             console.error('Error saving chapter:', error);
             showAlert({
-                title: 'Sync Error',
-                message: 'Failed to save module to architecture.',
+                title: 'Kesalahan Sinkronisasi',
+                message: 'Gagal menyimpan modul ke arsitektur.',
                 type: 'error'
             });
         } finally {
@@ -176,11 +177,11 @@ const ManageChapters: React.FC = () => {
 
     const handleDeleteChapter = async (chapterId: string) => {
         showAlert({
-            title: 'Delete Unit',
-            message: 'Are you sure you want to terminate this knowledge unit?',
+            title: 'Hapus Unit',
+            message: 'Apakah Anda yakin ingin menghentikan unit pengetahuan ini?',
             type: 'delete',
-            confirmText: 'Confirm Deletion',
-            cancelText: 'Abort',
+            confirmText: 'Konfirmasi Hapus',
+            cancelText: 'Batal',
             showCancel: true,
             onConfirm: async () => {
                 try {
@@ -192,15 +193,15 @@ const ManageChapters: React.FC = () => {
                     if (error) throw error;
                     setChapters(chapters.filter(c => c.id !== chapterId));
                     showAlert({
-                        title: 'Success',
-                        message: 'Unit has been purged from the sequence.',
+                        title: 'Berhasil',
+                        message: 'Unit telah dihapus dari urutan.',
                         type: 'success'
                     });
                 } catch (error: any) {
                     console.error('Error deleting chapter:', error);
                     showAlert({
-                        title: 'Purge Failed',
-                        message: 'System was unable to delete this unit: ' + error.message,
+                        title: 'Gagal Menghapus',
+                        message: 'Sistem tidak dapat menghapus unit ini: ' + error.message,
                         type: 'error'
                     });
                 }
@@ -211,14 +212,15 @@ const ManageChapters: React.FC = () => {
     const handleReorder = async (newOrder: CourseChapter[]) => {
         setChapters(newOrder);
 
-        // Update order_index in DB
         const updates = newOrder.map((chapter, index) => ({
             id: chapter.id,
             order_index: index,
             course_id: chapter.course_id,
             title: chapter.title,
             material_type: chapter.material_type,
-            file_url: chapter.file_url
+            file_url: chapter.file_url,
+            author_name: chapter.author_name,
+            author_image_url: chapter.author_image_url
         }));
 
         const { error } = await supabase.from('course_chapters').upsert(updates);
@@ -238,7 +240,7 @@ const ManageChapters: React.FC = () => {
                     <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
                     <Layers className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-indigo-600" />
                 </div>
-                <p className="mt-4 text-gray-400 font-black uppercase tracking-widest text-[10px] animate-pulse">Synchronizing Nodes...</p>
+                <p className="mt-4 text-gray-400 font-black uppercase tracking-widest text-[10px] animate-pulse">Menyinkronkan Node...</p>
             </div>
         );
     }
@@ -260,18 +262,18 @@ const ManageChapters: React.FC = () => {
                             <div>
                                 <h1 className="text-2xl font-black text-gray-900 tracking-tighter flex items-center gap-3">
                                     <BookOpen className="w-6 h-6 text-indigo-600" />
-                                    Knowledge Architect
+                                    Arsitek Kurikulum
                                 </h1>
                                 <div className="flex items-center gap-2 mt-0.5">
                                     <span className="flex h-1.5 w-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{course?.title || 'System Index'}</p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{course?.title || 'Indeks Sistem'}</p>
                                 </div>
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="hidden md:flex flex-col text-right mr-4">
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Modules Count</p>
-                                <p className="text-sm font-black text-indigo-600">{chapters.length} Units</p>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Jumlah Modul</p>
+                                <p className="text-sm font-black text-indigo-600">{chapters.length} Unit</p>
                             </div>
                             <button
                                 onClick={handleSignOut}
@@ -287,9 +289,9 @@ const ManageChapters: React.FC = () => {
                     {/* Action Hub */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                         {[
-                            { label: 'Inject Text', icon: Type, type: 'text', color: 'indigo' },
-                            { label: 'Upload Module', icon: FileText, type: 'file', color: 'emerald' },
-                            { label: 'Link Resource', icon: LinkIcon, type: 'link', color: 'amber' }
+                            { label: 'Injeksi Teks', icon: Type, type: 'text', color: 'indigo' },
+                            { label: 'Unggah Modul', icon: FileText, type: 'file', color: 'emerald' },
+                            { label: 'Tautkan Sumber', icon: LinkIcon, type: 'link', color: 'amber' }
                         ].map((action) => (
                             <button
                                 key={action.type}
@@ -300,7 +302,7 @@ const ManageChapters: React.FC = () => {
                                     <action.icon className={`w-5 h-5 text-${action.color}-600`} />
                                 </div>
                                 <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">{action.label}</h3>
-                                <p className="text-[10px] font-medium text-gray-400 mt-1 uppercase">Initialize Node</p>
+                                <p className="text-[10px] font-medium text-gray-400 mt-1 uppercase">Inisialisasi Node</p>
                             </button>
                         ))}
                     </div>
@@ -310,10 +312,10 @@ const ManageChapters: React.FC = () => {
                         <div className="flex items-center justify-between mb-8">
                             <h2 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-3 uppercase italic">
                                 <Monitor className="w-5 h-5 text-indigo-600" />
-                                Sequence Pipeline
+                                Urutan Pipa (Sequence)
                             </h2>
                             <div className="px-4 py-2 bg-indigo-50 rounded-xl">
-                                <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Drag to reorder modules</span>
+                                <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Geser untuk mengatur ulang urutan</span>
                             </div>
                         </div>
 
@@ -322,8 +324,8 @@ const ManageChapters: React.FC = () => {
                                 <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
                                     <Layers className="w-8 h-8 text-gray-200" />
                                 </div>
-                                <h3 className="text-xl font-black text-gray-900 uppercase">Architecture Empty</h3>
-                                <p className="text-gray-400 font-medium text-sm mt-2">Initialize your first knowledge unit to begin.</p>
+                                <h3 className="text-xl font-black text-gray-900 uppercase">Arsitektur Kosong</h3>
+                                <p className="text-gray-400 font-medium text-sm mt-2">Inisialisasi unit pengetahuan pertama Anda untuk memulai.</p>
                             </div>
                         ) : (
                             <Reorder.Group axis="y" values={chapters} onReorder={handleReorder} className="space-y-4">
@@ -353,11 +355,11 @@ const ManageChapters: React.FC = () => {
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-3 mb-1">
                                                     <h3 className="font-black text-gray-900 tracking-tight uppercase group-hover:text-indigo-600 transition-colors truncate">
-                                                        {chapter.title || 'Untitled Node'}
+                                                        {chapter.title || 'Node Tanpa Judul'}
                                                     </h3>
                                                 </div>
                                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                                    {chapter.material_type} module • Index {chapter.order_index + 1}
+                                                    Modul {chapter.material_type} • Indeks {chapter.order_index + 1}
                                                 </p>
                                             </div>
 
@@ -384,7 +386,7 @@ const ManageChapters: React.FC = () => {
                 </main>
             </div>
 
-            {/* Premium Sidebar Editor */}
+            {/* Sidebar Editor */}
             <AnimatePresence>
                 {isSidebarOpen && (
                     <>
@@ -406,9 +408,9 @@ const ManageChapters: React.FC = () => {
                                 <div>
                                     <h2 className="text-xl font-black text-gray-900 tracking-tighter uppercase italic flex items-center gap-3">
                                         <Zap className="w-5 h-5 text-indigo-600" />
-                                        Unit Fabrication
+                                        Fabrikasi Unit
                                     </h2>
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Configuring module parameters</p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Mengonfigurasi parameter modul</p>
                                 </div>
                                 <button
                                     onClick={() => setIsSidebarOpen(false)}
@@ -420,24 +422,83 @@ const ManageChapters: React.FC = () => {
 
                             <div className="flex-1 overflow-y-auto p-10 space-y-8 custom-scrollbar">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Module Identity</label>
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Identitas Modul</label>
                                     <input
                                         type="text"
                                         value={editingChapter?.title || ''}
                                         onChange={(e) => setEditingChapter({ ...editingChapter!, title: e.target.value })}
                                         className="w-full bg-gray-50 border-none rounded-[24px] py-5 px-8 text-gray-900 font-black text-xl tracking-tight focus:ring-4 focus:ring-indigo-500/5 focus:bg-white transition-all shadow-inner placeholder:text-gray-300"
-                                        placeholder="Introduction to Core Systems"
+                                        placeholder="Pengenalan Sistem Inti"
                                     />
                                 </div>
 
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nama Penulis</label>
+                                        <input
+                                            type="text"
+                                            value={editingChapter?.author_name || ''}
+                                            onChange={(e) => setEditingChapter({ ...editingChapter!, author_name: e.target.value })}
+                                            className="w-full bg-gray-50 border-none rounded-[20px] py-4 px-6 text-gray-900 font-bold text-sm tracking-tight focus:ring-4 focus:ring-indigo-500/5 focus:bg-white transition-all shadow-inner placeholder:text-gray-300"
+                                            placeholder="John Doe"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">URL Foto Penulis</label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={editingChapter?.author_image_url || ''}
+                                                onChange={(e) => setEditingChapter({ ...editingChapter!, author_image_url: e.target.value })}
+                                                className="flex-1 bg-gray-50 border-none rounded-[20px] py-4 px-6 text-indigo-600 font-mono text-xs focus:ring-4 focus:ring-indigo-500/5 focus:bg-white transition-all shadow-inner"
+                                                placeholder="https://..."
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const input = document.createElement('input');
+                                                    input.type = 'file';
+                                                    input.accept = 'image/*';
+                                                    input.onchange = async (e: any) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (!file) return;
+                                                        setUploading(true);
+                                                        try {
+                                                            const fileExt = file.name.split('.').pop();
+                                                            const fileName = `author-${Math.random().toString(36).substring(2)}.${fileExt}`;
+                                                            const filePath = `authors/${fileName}`;
+                                                            const { error: uploadError } = await supabase.storage
+                                                                .from('course-materials')
+                                                                .upload(filePath, file);
+                                                            if (uploadError) throw uploadError;
+                                                            const { data: { publicUrl } } = supabase.storage
+                                                                .from('course-materials')
+                                                                .getPublicUrl(filePath);
+                                                            setEditingChapter({ ...editingChapter!, author_image_url: publicUrl });
+                                                        } catch (error: any) {
+                                                            showAlert({ title: 'Gagal Unggah', message: error.message, type: 'error' });
+                                                        } finally {
+                                                            setUploading(false);
+                                                        }
+                                                    };
+                                                    input.click();
+                                                }}
+                                                className="p-4 bg-gray-50 hover:bg-indigo-50 text-indigo-600 rounded-[20px] transition-all"
+                                            >
+                                                <Upload size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Module Payload ({editingChapter?.material_type})</label>
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Payload Modul ({editingChapter?.material_type})</label>
                                     {editingChapter?.material_type === 'text' ? (
                                         <textarea
                                             value={editingChapter?.content_body || ''}
                                             onChange={(e) => setEditingChapter({ ...editingChapter!, content_body: e.target.value })}
                                             className="w-full bg-gray-50 border-none rounded-[32px] py-8 px-10 text-gray-800 font-medium text-lg leading-relaxed focus:ring-8 focus:ring-indigo-500/5 focus:bg-white transition-all shadow-inner h-[400px] placeholder:text-gray-300"
-                                            placeholder="Translate knowledge into text payload..."
+                                            placeholder="Terjemahkan pengetahuan menjadi payload teks..."
                                         />
                                     ) : editingChapter?.material_type === 'file' ? (
                                         <div className="space-y-4">
@@ -456,8 +517,8 @@ const ManageChapters: React.FC = () => {
                                                             <FileText />
                                                         </div>
                                                         <div>
-                                                            <p className="text-xs font-black text-emerald-900 uppercase truncate max-w-[200px]">{editingChapter.file_name || 'Uploaded File'}</p>
-                                                            <p className="text-[9px] font-bold text-emerald-600/60 uppercase">System Linked</p>
+                                                            <p className="text-xs font-black text-emerald-900 uppercase truncate max-w-[200px]">{editingChapter.file_name || 'File Terunggah'}</p>
+                                                            <p className="text-[9px] font-bold text-emerald-600/60 uppercase">Sistem Terhubung</p>
                                                         </div>
                                                     </div>
                                                     <button
@@ -482,14 +543,14 @@ const ManageChapters: React.FC = () => {
                                                                     animate={{ width: `${uploadProgress}%` }}
                                                                 />
                                                             </div>
-                                                            <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest animate-pulse">Uploading {uploadProgress}%</p>
+                                                            <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest animate-pulse">Mengunggah {uploadProgress}%</p>
                                                         </div>
                                                     ) : (
                                                         <>
                                                             <div className="w-16 h-16 bg-gray-50 rounded-[20px] flex items-center justify-center text-gray-300 group-hover:bg-white group-hover:text-indigo-600 group-hover:scale-110 transition-all shadow-sm">
                                                                 <Upload />
                                                             </div>
-                                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Select Payload Module</p>
+                                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pilih Modul Payload</p>
                                                         </>
                                                     )}
                                                 </button>
@@ -502,7 +563,7 @@ const ManageChapters: React.FC = () => {
                                                 value={editingChapter?.file_url || ''}
                                                 onChange={(e) => setEditingChapter({ ...editingChapter!, file_url: e.target.value })}
                                                 className="w-full bg-gray-50 border-none rounded-[24px] py-5 px-8 text-indigo-600 font-mono text-sm focus:ring-4 focus:ring-indigo-500/5 focus:bg-white transition-all shadow-inner"
-                                                placeholder="https://resource.payload.com"
+                                                placeholder="https://sumber.payload.com"
                                             />
                                         </div>
                                     )}
@@ -514,7 +575,7 @@ const ManageChapters: React.FC = () => {
                                     onClick={() => setIsSidebarOpen(false)}
                                     className="flex-1 py-5 bg-gray-100 hover:bg-gray-200 text-gray-500 font-black uppercase tracking-[0.2em] rounded-[24px] transition-all"
                                 >
-                                    Abort
+                                    Batal
                                 </button>
                                 <button
                                     onClick={handleSaveChapter}
@@ -522,7 +583,7 @@ const ManageChapters: React.FC = () => {
                                     className="flex-[2] py-5 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-[0.2em] rounded-[24px] shadow-xl shadow-indigo-600/20 transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50"
                                 >
                                     {saving ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save className="w-5 h-5 drop-shadow-lg" />}
-                                    Commit Module
+                                    Simpan Modul
                                 </button>
                             </div>
                         </motion.div>
@@ -530,7 +591,7 @@ const ManageChapters: React.FC = () => {
                 )}
             </AnimatePresence>
 
-            {/* Aesthetic Background Accents */}
+            {/* Background Accents */}
             <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
                 <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-indigo-50/50 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2" />
                 <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-emerald-50/30 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />

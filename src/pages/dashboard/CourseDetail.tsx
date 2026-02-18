@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 import type { Course, CourseChapter } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Clock, BookOpen, CheckCircle, Lock, ShieldCheck, Upload, FileText, Link as LinkIcon, ChevronRight, Share2, Check } from 'lucide-react';
+import { ArrowLeft, Clock, BookOpen, CheckCircle, Lock, ShieldCheck, Upload, FileText, Link as LinkIcon, ChevronRight, Share2, Check, Activity, Layout } from 'lucide-react';
 
 const CourseDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -86,7 +86,6 @@ const CourseDetail: React.FC = () => {
 
         try {
             if (isCompleted) {
-                // Optionally allow unmarking, but usually better to keep it
                 const { error } = await supabase
                     .from('chapter_progress')
                     .delete()
@@ -98,12 +97,12 @@ const CourseDetail: React.FC = () => {
                     setProgress(newProgress);
                 }
             } else {
-                // Must be sequential? Let's check if previous chapter is done
+                // Must be sequential? Check if previous chapter is done
                 const currentIndex = chapters.findIndex(c => c.id === selectedChapter.id);
                 if (currentIndex > 0) {
                     const prevChapter = chapters[currentIndex - 1];
                     if (!progress.includes(prevChapter.id)) {
-                        alert('Waduh! Selesaikan bab sebelumnya dulu ya biar ilmunya nggak loncat-loncat.');
+                        alert('Eits! Selesaikan modul sebelumnya dulu ya supaya pemahamanmu sinkron.');
                         setMarking(false);
                         return;
                     }
@@ -132,28 +131,30 @@ const CourseDetail: React.FC = () => {
     const isChapterLocked = (chapter: CourseChapter) => {
         if (user?.role === 'admin') return false;
 
+        // If course is marked as free, unlock everything for everyone
+        if (course?.is_free) return false;
+
         // Premium+ users can access ALL courses and ALL chapters
         if (user?.is_premium && user?.premium_type === 'premium_plus') return false;
 
         // Regular Premium users can only access courses that match their learning path
         if (user?.is_premium && user?.premium_type === 'premium') {
-            // If the course category matches the user's learning path, unlock all chapters
             if (course && course.category === user.learning_path) return false;
-            // If course doesn't match their learning path, lock all except first chapter
             const firstChapterIndex = Math.min(...chapters.map(c => c.order_index));
             return chapter.order_index > firstChapterIndex;
         }
 
         // Free users: only first chapter is free
+        if (chapters.length === 0) return false;
         const firstChapterIndex = Math.min(...chapters.map(c => c.order_index));
         return chapter.order_index > firstChapterIndex;
     };
 
-    // Check if this course is outside the user's learning path (for Premium users)
     const isCrossPathCourse = () => {
         if (!user || !course) return false;
         if (user.role === 'admin') return false;
         if (user.premium_type === 'premium_plus') return false;
+        if (course.is_free) return false;
         return course.category !== user.learning_path;
     };
 
@@ -166,31 +167,39 @@ const CourseDetail: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-96">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            <div className="flex flex-col items-center justify-center h-[60vh]">
+                <div className="relative">
+                    <div className="w-16 h-16 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+                    <Activity className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-indigo-600" />
+                </div>
+                <p className="mt-6 text-gray-400 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Menyiapkan Environment Kursus...</p>
             </div>
         );
     }
 
     if (!course) {
         return (
-            <div className="card text-center py-12">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Course not found</h3>
-                <button onClick={() => navigate('/dashboard/courses')} className="btn-primary mt-4">
-                    Back to Courses
-                </button>
+            <div className="min-h-[60vh] flex flex-col items-center justify-center px-6">
+                <div className="bg-white p-12 rounded-[50px] shadow-2xl border border-gray-100 text-center max-w-md">
+                    <BookOpen className="w-20 h-20 text-gray-200 mx-auto mb-6" />
+                    <h3 className="text-2xl font-black text-gray-900 mb-2 uppercase italic tracking-tighter">DATA TIDAK DITEMUKAN</h3>
+                    <p className="text-gray-500 italic mb-8">Endpoint kursus yang Anda cari tidak tersedia di database pusat.</p>
+                    <button onClick={() => navigate('/dashboard/courses')} className="w-full bg-indigo-600 text-white font-black py-4 rounded-2xl uppercase tracking-[0.2em] text-[10px] hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/30">
+                        KEMBALI KE TERMINAL
+                    </button>
+                </div>
             </div>
         );
     }
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
+            className="space-y-10 pb-20"
         >
-            {/* Header with Background */}
-            <div className="relative h-64 rounded-3xl overflow-hidden shadow-2xl">
+            {/* Header Stage */}
+            <div className="relative h-[450px] rounded-[60px] overflow-hidden shadow-2xl">
                 {course.thumbnail_url ? (
                     <img
                         src={course.thumbnail_url}
@@ -198,56 +207,57 @@ const CourseDetail: React.FC = () => {
                         className="w-full h-full object-cover"
                     />
                 ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-primary-600 to-primary-900" />
+                    <div className="w-full h-full bg-gradient-to-br from-indigo-600 to-indigo-900" />
                 )}
-                <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+                <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
-                <div className="absolute inset-0 p-8 flex flex-col justify-end">
-                    <div className="absolute top-6 left-6 flex items-center gap-3">
+                <div className="absolute inset-0 p-12 flex flex-col justify-between">
+                    <div className="flex items-center gap-4">
                         <button
                             onClick={() => navigate('/dashboard/courses')}
-                            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"
+                            className="flex items-center gap-3 text-white/90 hover:text-white transition-all bg-white/10 backdrop-blur-xl px-6 py-3 rounded-2xl border border-white/20 text-[10px] font-black uppercase tracking-widest active:scale-95 group"
                         >
-                            <ArrowLeft className="w-4 h-4" />
-                            Back
+                            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                            KEMBALI
                         </button>
                         <button
                             onClick={handleShare}
-                            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20"
+                            className="flex items-center gap-3 text-white/90 hover:text-white transition-all bg-white/10 backdrop-blur-xl px-6 py-3 rounded-2xl border border-white/20 text-[10px] font-black uppercase tracking-widest active:scale-95 group"
                         >
-                            {copied ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4" />}
-                            {copied ? 'Link Copied!' : 'Share Course'}
+                            {copied ? <Check className="w-4 h-4 text-green-400 animate-pulse" /> : <Share2 className="w-4 h-4" />}
+                            {copied ? 'LINK_TERSALIN' : 'BAGIKAN_MODUL'}
                         </button>
                     </div>
 
-                    <div className="flex items-end justify-between">
-                        <div>
-                            <div className="flex items-center gap-3 mb-3">
-                                <span className="bg-primary-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                                    {course.category === 'fe' ? 'Frontend' : course.category === 'be' ? 'Backend' : 'Fullstack'}
+                    <div className="space-y-6">
+                        <div className="flex flex-wrap items-center gap-4">
+                            <span className="bg-indigo-600 text-white text-[9px] font-black px-4 py-1.5 rounded-xl uppercase tracking-widest italic shadow-xl shadow-indigo-600/20">
+                                SECTOR_{course.category === 'fe' ? 'FRONTEND' : course.category === 'be' ? 'BACKEND' : 'FULLSTACK'}
+                            </span>
+                            {user?.is_premium && (
+                                <span className={`text-[9px] font-black px-4 py-1.5 rounded-xl flex items-center gap-2 italic shadow-xl ${user.premium_type === 'premium_plus' ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-white shadow-amber-500/20' : 'bg-indigo-500 text-white shadow-indigo-500/20'}`}>
+                                    <ShieldCheck className="w-3.5 h-3.5" />
+                                    {user.premium_type === 'premium_plus' ? 'OTORITAS PREMIUM+' : 'OTORITAS PREMIUM'}
                                 </span>
-                                {user?.is_premium && (
-                                    <span className={`text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 ${user.premium_type === 'premium_plus' ? 'bg-gradient-to-r from-amber-400 to-orange-400 text-white' : 'bg-yellow-500 text-black'}`}>
-                                        <ShieldCheck className="w-3 h-3" />
-                                        {user.premium_type === 'premium_plus' ? 'PREMIUM+ ACCESS' : 'PREMIUM ACCESS'}
-                                    </span>
-                                )}
-                                {isCrossPathCourse() && user?.is_premium && user.premium_type === 'premium' && (
-                                    <span className="bg-red-500/80 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                                        <Lock className="w-3 h-3" />
-                                        BEDA LEARNING PATH
-                                    </span>
-                                )}
-                            </div>
-                            <h1 className="text-4xl font-black text-white mb-2 leading-tight">{course.title}</h1>
-                            <div className="flex items-center gap-6 text-white/80 text-sm">
-                                <div className="flex items-center gap-2">
+                            )}
+                            {isCrossPathCourse() && user?.is_premium && user.premium_type === 'premium' && (
+                                <span className="bg-red-500 text-white text-[9px] font-black px-4 py-1.5 rounded-xl flex items-center gap-2 italic shadow-xl shadow-red-500/20">
+                                    <Lock className="w-3.5 h-3.5" />
+                                    DEVIASI_JALUR_BELAJAR
+                                </span>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <h1 className="text-5xl lg:text-7xl font-black text-white leading-none uppercase italic tracking-tighter drop-shadow-2xl">{course.title}</h1>
+                            <div className="flex items-center gap-8 text-white/60 text-[10px] font-black uppercase tracking-[0.3em] italic">
+                                <div className="flex items-center gap-3">
                                     <Clock className="w-4 h-4" />
-                                    {course.duration_hours || 0} Hours
+                                    {course.duration_hours || 0} JAM_EMISI
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-3">
                                     <BookOpen className="w-4 h-4" />
-                                    {chapters.length} Chapters
+                                    {chapters.length} UNIT_MODUL
                                 </div>
                             </div>
                         </div>
@@ -255,62 +265,80 @@ const CourseDetail: React.FC = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Sidebar: Chapters Navigation */}
-                <div className="lg:col-span-1 space-y-4">
-                    <div className="card sticky top-6">
-                        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            <BookOpen className="w-5 h-5 text-primary-600" />
-                            Curriculum
-                        </h3>
-                        <div className="space-y-2">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                {/* Curriculum Sidebar */}
+                <div className="lg:col-span-1 space-y-6">
+                    <div className="bg-white border border-gray-100 rounded-[50px] p-10 shadow-sm sticky top-10">
+                        <div className="flex items-center justify-between mb-8">
+                            <h3 className="text-[10px] font-black text-gray-900 flex items-center gap-3 uppercase tracking-[0.2em] italic">
+                                <Layout className="w-5 h-5 text-indigo-600" />
+                                Matriks Kurikulum
+                            </h3>
+                            <div className="w-12 h-1.5 bg-gray-50 rounded-full overflow-hidden border border-gray-100">
+                                <motion.div
+                                    className="bg-indigo-600 h-full"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${(progress.length / chapters.length) * 100}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
                             {chapters.length > 0 ? (
-                                chapters.map((chapter) => {
+                                chapters.map((chapter, idx) => {
                                     const locked = isChapterLocked(chapter);
                                     const active = selectedChapter?.id === chapter.id;
+                                    const completed = progress.includes(chapter.id);
 
                                     return (
                                         <button
                                             key={chapter.id}
                                             disabled={locked && !active}
                                             onClick={() => setSelectedChapter(chapter)}
-                                            className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-center justify-between group ${active
-                                                ? 'border-primary-500 bg-primary-50 ring-2 ring-primary-500/20'
+                                            className={`w-full text-left p-6 rounded-[30px] border-2 transition-all flex items-center justify-between group relative overflow-hidden ${active
+                                                ? 'border-indigo-600 bg-indigo-50 shadow-xl shadow-indigo-600/5 ring-[10px] ring-indigo-600/5'
                                                 : locked
-                                                    ? 'border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed'
-                                                    : 'border-transparent hover:border-gray-200 hover:bg-gray-50'
+                                                    ? 'border-gray-50 bg-gray-50/50 opacity-40 cursor-not-allowed grayscale'
+                                                    : 'border-transparent hover:border-indigo-100 hover:bg-gray-50/50'
                                                 }`}
                                         >
-                                            <div className="flex items-center gap-3">
-                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${active ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'
-                                                    }`}>
-                                                    {chapter.order_index + 1}
+                                            <div className="flex items-center gap-4 relative z-10">
+                                                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-xs italic tracking-tighter transition-all ${active ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-white text-gray-300 border border-gray-100 group-hover:border-indigo-200 group-hover:text-indigo-600'}`}>
+                                                    {(idx + 1).toString().padStart(2, '0')}
                                                 </div>
-                                                <div>
-                                                    <p className={`font-semibold ${active ? 'text-primary-700' : 'text-gray-900'}`}>
+                                                <div className="space-y-1">
+                                                    <p className={`text-base font-black uppercase italic tracking-tighter leading-none ${active ? 'text-indigo-900' : 'text-gray-900'}`}>
                                                         {chapter.title}
                                                     </p>
-                                                    <p className="text-xs text-gray-500">
-                                                        {chapter.material_type.toUpperCase()}
+                                                    <p className={`text-[8px] font-black uppercase tracking-widest ${active ? 'text-indigo-400' : 'text-gray-400'}`}>
+                                                        {chapter.material_type}_UNIT
                                                     </p>
                                                 </div>
                                             </div>
-                                            {locked && <Lock className="w-4 h-4 text-gray-400" />}
-                                            {!locked && progress.includes(chapter.id) && (
-                                                <CheckCircle className="w-5 h-5 text-green-500 fill-green-50" />
-                                            )}
+                                            <div className="relative z-10">
+                                                {locked ? (
+                                                    <Lock className="w-4 h-4 text-gray-300" />
+                                                ) : completed ? (
+                                                    <CheckCircle className="w-6 h-6 text-emerald-500 fill-emerald-50" />
+                                                ) : (
+                                                    <ChevronRight className={`w-5 h-5 transition-all ${active ? 'text-indigo-400 translate-x-1' : 'text-gray-200 group-hover:text-indigo-300 group-hover:translate-x-1'}`} />
+                                                )}
+                                            </div>
                                         </button>
                                     );
                                 })
                             ) : (
-                                <p className="text-gray-500 italic p-4">No chapters added yet.</p>
+                                <div className="text-center py-10 space-y-4">
+                                    <Activity className="w-10 h-10 text-gray-100 mx-auto" />
+                                    <p className="text-gray-300 font-black uppercase tracking-widest text-[9px] italic">Sektor Modul Sedang Didekripsi...</p>
+                                </div>
                             )}
                         </div>
                     </div>
                 </div>
 
                 {/* Content Area */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 space-y-10">
                     <AnimatePresence mode="wait">
                         {selectedChapter ? (
                             isChapterLocked(selectedChapter) ? (
@@ -319,86 +347,95 @@ const CourseDetail: React.FC = () => {
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
-                                    className="card bg-gradient-to-b from-gray-900 to-black text-white p-12 text-center"
+                                    className="bg-gray-900 rounded-[60px] p-16 text-center relative overflow-hidden shadow-2xl group"
                                 >
-                                    <div className="max-w-md mx-auto">
-                                        <div className="w-20 h-20 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow transition-transform hover:scale-110">
-                                            <Lock className="w-10 h-10 text-black" />
+                                    <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none transform rotate-12 group-hover:rotate-0 transition-transform duration-1000">
+                                        <Lock size={240} className="text-white" />
+                                    </div>
+
+                                    <div className="max-w-md mx-auto relative z-10 space-y-10">
+                                        <div className="w-24 h-24 bg-gradient-to-br from-amber-400 to-orange-500 rounded-[35px] flex items-center justify-center mx-auto shadow-2xl shadow-amber-500/30 animate-pulse">
+                                            <Lock className="w-10 h-10 text-white" />
                                         </div>
 
                                         {isCrossPathCourse() && user?.is_premium ? (
-                                            <>
-                                                <h2 className="text-3xl font-black mb-4">BUTUH PREMIUM+ ✨</h2>
-                                                <p className="text-gray-400 mb-8 leading-relaxed">
-                                                    Materi ini ada di learning path <b className="text-amber-400">{course?.category === 'fe' ? 'Frontend' : course?.category === 'be' ? 'Backend' : 'Fullstack'}</b>,
-                                                    sedangkan kamu di learning path <b className="text-indigo-400">{user.learning_path === 'fe' ? 'Frontend' : user.learning_path === 'be' ? 'Backend' : 'Fullstack'}</b>.
-                                                    Upgrade ke <span className="text-amber-400 font-black">Premium+</span> untuk akses lintas learning path!
-                                                </p>
-
-                                                <div className="bg-gradient-to-br from-amber-500/20 to-orange-500/20 backdrop-blur-md rounded-2xl p-6 mb-8 border border-amber-500/30">
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <span className="text-gray-400">Upgrade ke Premium+</span>
-                                                        <span className="text-2xl font-black text-amber-400">Rp 25.000</span>
-                                                    </div>
-                                                    <p className="text-xs text-gray-500">Akses semua materi di semua learning path, selamanya!</p>
-                                                </div>
-
-                                                <button
-                                                    onClick={() => navigate('/dashboard/premium')}
-                                                    className="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black py-4 rounded-xl flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 active:scale-95 shadow-xl shadow-amber-500/30"
-                                                >
-                                                    <Upload className="w-5 h-5" />
-                                                    UPGRADE KE PREMIUM+
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <h2 className="text-3xl font-black mb-4">MODE KIKIR ACTIVATED!</h2>
-                                                <p className="text-gray-400 mb-8 leading-relaxed">
-                                                    Waduh, materi selanjutnya dikunci nih! Biaya server mahal bosqu.
-                                                    Yuk bayar dikit aja buat lanjut belajar sepuasnya sampai mahir!
-                                                </p>
-
-                                                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20">
-                                                    <div className="text-left space-y-3 mb-4">
-                                                        <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
-                                                            <div className="flex items-center gap-2">
-                                                                <ShieldCheck className="w-4 h-4 text-indigo-400" />
-                                                                <span className="text-sm text-gray-300">Premium</span>
-                                                            </div>
-                                                            <span className="text-lg font-black text-indigo-400">Rp 12.000</span>
-                                                        </div>
-                                                        <div className="flex items-center justify-between p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="text-amber-400">✨</span>
-                                                                <span className="text-sm text-amber-300 font-bold">Premium+</span>
-                                                            </div>
-                                                            <span className="text-lg font-black text-amber-400">Rp 25.000</span>
-                                                        </div>
-                                                    </div>
-                                                    <img
-                                                        src="/qris_payment.jpg"
-                                                        alt="QRIS Payment"
-                                                        className="w-full h-auto rounded-lg mb-4 shadow-2xl"
-                                                    />
-                                                    <p className="text-xs text-gray-500 bg-black/30 p-2 rounded">
-                                                        Scan QRIS di atas dengan m-Banking, GOPAY, OVO, atau Dana Anda.
+                                            <div className="space-y-8">
+                                                <div className="space-y-3">
+                                                    <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none">BUTUH_PREMIUM+ ✨</h2>
+                                                    <p className="text-gray-400 font-medium italic text-lg leading-relaxed">
+                                                        Sektor materi ini berada di luar otorisasi jalur <span className="text-indigo-400 uppercase tracking-widest">{user.learning_path === 'fe' ? 'Frontend' : user.learning_path === 'be' ? 'Backend' : 'Fullstack'}</span> Anda.
                                                     </p>
                                                 </div>
 
-                                                <button
-                                                    onClick={() => navigate('/dashboard/premium')}
-                                                    className="w-full bg-primary-600 hover:bg-primary-700 text-white font-black py-4 rounded-xl flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 active:scale-95 shadow-xl shadow-primary-600/30"
-                                                >
-                                                    <Upload className="w-5 h-5" />
-                                                    UPGRADE SEKARANG
-                                                </button>
-                                            </>
-                                        )}
+                                                <div className="bg-white/5 backdrop-blur-xl rounded-[40px] p-10 border border-white/10 space-y-6">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] italic">Upgrade Akses Multi-Sector</span>
+                                                        <span className="text-3xl font-black text-amber-400 italic tracking-tighter">Rp25.000</span>
+                                                    </div>
+                                                    <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest italic text-left">Membuka seluruh library Kaza for Developer tanpa batasan sector teknologi secara permanen.</p>
+                                                    <button
+                                                        onClick={() => navigate('/dashboard/premium')}
+                                                        className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black py-6 rounded-[30px] flex items-center justify-center gap-3 transition-all transform hover:-translate-y-2 active:scale-95 shadow-2xl shadow-amber-500/30 uppercase tracking-[0.3em] text-[10px]"
+                                                    >
+                                                        UPGRADE_KE_TOTAL_OVERRIDE
+                                                        <ChevronRight size={18} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-8">
+                                                <div className="space-y-3">
+                                                    <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none">AKSES_TERBATAS!</h2>
+                                                    <p className="text-gray-400 font-medium italic text-lg leading-relaxed">
+                                                        Gateway menuju unit modul selanjutnya memerlukan kredensial Premium untuk dekripsi data.
+                                                    </p>
+                                                </div>
 
-                                        <p className="mt-6 text-sm text-gray-500">
-                                            Sudah bayar? <span className="text-primary-400 font-bold hover:underline cursor-pointer" onClick={() => navigate('/dashboard/premium')}>Cek status pembayaran</span>
-                                        </p>
+                                                <div className="bg-white/5 backdrop-blur-xl rounded-[40px] p-10 border border-white/10 space-y-10">
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="p-5 bg-white/5 rounded-3xl border border-white/5 text-left group/tier">
+                                                            <div className="flex items-center justify-between mb-4">
+                                                                <ShieldCheck className="w-5 h-5 text-indigo-400" />
+                                                                <span className="text-lg font-black text-indigo-400 italic tracking-tighter">Rp12K</span>
+                                                            </div>
+                                                            <p className="text-[8px] font-black text-white/40 uppercase tracking-widest">Premium_Access</p>
+                                                        </div>
+                                                        <div className="p-5 bg-amber-500/10 rounded-3xl border border-amber-500/20 text-left group/tier">
+                                                            <div className="flex items-center justify-between mb-4">
+                                                                <Star className="w-5 h-5 text-amber-400" />
+                                                                <span className="text-lg font-black text-amber-400 italic tracking-tighter">Rp25K</span>
+                                                            </div>
+                                                            <p className="text-[8px] font-black text-white/40 uppercase tracking-widest">Premium+_Override</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="relative group/qris">
+                                                        <img
+                                                            src="/qris_payment.jpg"
+                                                            alt="QRIS Payment"
+                                                            className="w-full h-auto rounded-[30px] shadow-2xl border-4 border-white/10"
+                                                        />
+                                                        <div className="absolute inset-0 bg-indigo-500/10 blur-3xl rounded-full -z-10" />
+                                                    </div>
+
+                                                    <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest italic leading-relaxed">
+                                                        Scan QRIS Bryan Dev via m-Banking atau E-Wallet untuk aktivasi instan akses belajar Anda.
+                                                    </p>
+
+                                                    <button
+                                                        onClick={() => navigate('/dashboard/premium')}
+                                                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-6 rounded-[30px] flex items-center justify-center gap-3 transition-all transform hover:-translate-y-2 active:scale-95 shadow-2xl shadow-indigo-600/30 uppercase tracking-[0.3em] text-[10px]"
+                                                    >
+                                                        UPGRADE_OTORITAS_SEKARANG
+                                                        <ChevronRight size={18} />
+                                                    </button>
+                                                </div>
+
+                                                <button onClick={() => navigate('/dashboard/premium')} className="text-[9px] font-black text-gray-500 uppercase tracking-widest italic hover:text-indigo-400 transition-colors">
+                                                    STATUS: MENUNGGU PEMBAYARAN? <span className="underline underline-offset-4">CEK_TRACKING</span>
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             ) : (
@@ -407,120 +444,172 @@ const CourseDetail: React.FC = () => {
                                     initial={{ opacity: 0, x: 20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: -20 }}
-                                    className="card"
+                                    className="bg-white border border-gray-100 rounded-[60px] p-12 lg:p-16 shadow-sm relative overflow-hidden group/content"
                                 >
-                                    <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-6">
-                                        <div>
-                                            <h2 className="text-2xl font-black text-gray-900">{selectedChapter.title}</h2>
-                                            <p className="text-gray-500 text-sm mt-1">{selectedChapter.description}</p>
+                                    <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none transform rotate-12 group-hover/content:rotate-0 transition-transform duration-1000">
+                                        <Activity size={200} className="text-indigo-600" />
+                                    </div>
+
+                                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16 border-b border-gray-100 pb-12">
+                                        <div className="space-y-4">
+                                            <h2 className="text-3xl lg:text-4xl font-black text-gray-900 uppercase italic tracking-tighter leading-tight">{selectedChapter.title}</h2>
+                                            <div className="flex flex-wrap items-center gap-6">
+                                                {(selectedChapter.author_name || course.author_name) && (
+                                                    <div className="flex items-center gap-3">
+                                                        {(selectedChapter.author_image_url || course.author_image_url) ? (
+                                                            <div className="w-10 h-10 rounded-2xl overflow-hidden border-2 border-gray-100 shadow-sm">
+                                                                <img
+                                                                    src={selectedChapter.author_image_url || course.author_image_url}
+                                                                    alt={selectedChapter.author_name || course.author_name}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center text-[10px] font-black text-indigo-600 shadow-inner">
+                                                                {(selectedChapter.author_name || course.author_name || 'A').charAt(0)}
+                                                            </div>
+                                                        )}
+                                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic border-r pr-6 border-gray-100">
+                                                            BY_{selectedChapter.author_name || course.author_name}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                <p className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] italic mt-0.5">{selectedChapter.description}</p>
+                                            </div>
                                         </div>
+
                                         <button
                                             onClick={handleMarkComplete}
                                             disabled={marking}
-                                            className={`flex items-center gap-2 px-6 py-2 rounded-full font-bold transition-all ${progress.includes(selectedChapter.id)
-                                                ? 'bg-green-100 text-green-700 ring-2 ring-green-500/20'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                } ${marking ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            className={`flex items-center gap-3 px-8 py-5 rounded-[25px] text-[10px] font-black uppercase tracking-[0.2em] transition-all italic active:scale-95 shadow-xl ${progress.includes(selectedChapter.id)
+                                                ? 'bg-emerald-600 text-white shadow-emerald-500/30'
+                                                : 'bg-gray-900 text-white hover:bg-black shadow-gray-900/20'
+                                                } ${marking ? 'opacity-30 cursor-not-allowed' : ''}`}
                                         >
                                             {marking ? (
-                                                <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                             ) : (
-                                                <CheckCircle className={`w-5 h-5 ${progress.includes(selectedChapter.id) ? 'fill-current' : ''}`} />
+                                                <CheckCircle className={`w-5 h-5 ${completed ? 'animate-bounce' : ''}`} />
                                             )}
-                                            {progress.includes(selectedChapter.id) ? 'Selesai' : 'Tandai Selesai'}
+                                            {progress.includes(selectedChapter.id) ? 'SELESAI' : 'TANDAI_SELESAI'}
                                         </button>
                                     </div>
 
                                     {eligibleForCertificate && (
-                                        <div className="mb-8 p-6 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl text-white shadow-xl shadow-amber-500/20">
-                                            <div className="flex items-center justify-between gap-6">
-                                                <div>
-                                                    <h3 className="text-xl font-black mb-1 flex items-center gap-2">
-                                                        <span>🎓</span> GRADUATIONS UNLOCKED!
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 30 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="mb-12 p-10 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[50px] text-white shadow-2xl shadow-indigo-500/30 relative overflow-hidden group/cert"
+                                        >
+                                            <div className="absolute top-0 right-0 p-8 opacity-10 transform scale-150 rotate-12 group-hover/cert:rotate-0 transition-transform duration-1000">
+                                                <ShieldCheck size={180} />
+                                            </div>
+                                            <div className="flex flex-col md:flex-row items-center justify-between gap-10 relative z-10">
+                                                <div className="space-y-3 text-center md:text-left">
+                                                    <h3 className="text-3xl font-black italic tracking-tighter leading-none flex items-center justify-center md:justify-start gap-4 uppercase">
+                                                        <span className="text-4xl">🎓</span> KELULUSAN TERDETEKSI!
                                                     </h3>
-                                                    <p className="text-white/80 text-sm font-medium">
-                                                        Selamat! Kamu telah menyelesaikan seluruh materi di kelas ini secara tuntas.
+                                                    <p className="text-indigo-100 text-[10px] font-black uppercase tracking-[0.2em] italic">
+                                                        Otoritas kompetensi Anda telah divalidasi oleh sistem Kaza for Developer.
                                                     </p>
                                                 </div>
                                                 <button
                                                     onClick={() => navigate(`/dashboard/certificate/${id}`)}
-                                                    className="bg-white text-orange-600 font-black px-6 py-3 rounded-xl hover:scale-105 active:scale-95 transition-all text-sm uppercase tracking-wider flex-shrink-0"
+                                                    className="w-full md:w-auto bg-white text-indigo-600 font-black px-10 py-6 rounded-[25px] hover:scale-105 active:scale-95 transition-all text-[11px] uppercase tracking-[0.3em] shadow-2xl italic flex items-center justify-center gap-3"
                                                 >
-                                                    Klaim Sertifikat
+                                                    KLAIM_SERTIFIKAT_DIGITAL
+                                                    <ChevronRight size={18} />
                                                 </button>
                                             </div>
-                                        </div>
+                                        </motion.div>
                                     )}
 
-                                    <div className="prose max-w-none prose-headings:font-black prose-p:text-gray-600 prose-strong:text-gray-900 prose-code:bg-gray-100 prose-code:p-1 prose-code:rounded">
+                                    {/* Main Content Render */}
+                                    <div className="prose max-w-none prose-headings:font-black prose-headings:text-gray-900 prose-headings:italic prose-headings:tracking-tighter prose-p:text-gray-600 prose-p:font-medium prose-p:italic prose-p:text-lg prose-p:leading-relaxed prose-strong:text-gray-900 prose-code:bg-indigo-50 prose-code:text-indigo-600 prose-code:px-4 prose-code:py-1 prose-code:rounded-xl prose-code:font-black prose-pre:bg-gray-900 prose-pre:rounded-[40px] prose-pre:border prose-pre:border-white/10 prose-pre:p-10 custom-prose">
                                         {selectedChapter.content_body ? (
                                             <div dangerouslySetInnerHTML={{ __html: selectedChapter.content_body }} />
                                         ) : (
-                                            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-                                                <BookOpen className="w-16 h-16 mb-4 opacity-20" />
-                                                <p>Materi sedang dipersiapkan oleh instructor.</p>
+                                            <div className="flex flex-col items-center justify-center py-40 text-gray-200">
+                                                <Activity className="w-24 h-24 mb-6 opacity-10 animate-pulse" />
+                                                <p className="text-[10px] font-black uppercase tracking-[0.3em] italic">Transmisi data materi sedang dalam proses enkripsi...</p>
                                             </div>
                                         )}
                                     </div>
 
+                                    {/* Footer Attachments */}
                                     {selectedChapter.material_type === 'file' && selectedChapter.file_url && (
-                                        <div className="mt-12 p-8 bg-emerald-50 rounded-[35px] border-2 border-emerald-100 flex items-center justify-between group hover:shadow-xl hover:shadow-emerald-500/5 transition-all">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-16 h-16 bg-white rounded-[22px] flex items-center justify-center text-emerald-600 shadow-sm group-hover:scale-110 transition-transform">
-                                                    <FileText size={32} />
-                                                </div>
-                                                <div>
-                                                    <p className="font-black text-emerald-900 uppercase tracking-tighter text-lg">Download Payload</p>
-                                                    <p className="text-sm text-emerald-600/70 font-bold uppercase tracking-widest">{selectedChapter.file_name || 'Resource Module'}</p>
-                                                </div>
+                                        <div className="mt-20 p-10 bg-emerald-600 rounded-[50px] shadow-2xl shadow-emerald-600/20 relative overflow-hidden group/file">
+                                            <div className="absolute top-0 right-0 p-8 opacity-10 transform scale-150 rotate-12 group-hover/file:rotate-0 transition-transform duration-1000">
+                                                <FileText size={180} />
                                             </div>
-                                            <a
-                                                href={selectedChapter.file_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                download={selectedChapter.file_name || 'material'}
-                                                className="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest rounded-[20px] shadow-lg shadow-emerald-600/20 transition-all active:scale-95 flex items-center gap-2"
-                                            >
-                                                <Upload className="w-4 h-4 rotate-180" />
-                                                Decrypt & Open
-                                            </a>
+                                            <div className="flex flex-col md:flex-row items-center justify-between gap-10 relative z-10">
+                                                <div className="flex items-center gap-8">
+                                                    <div className="w-20 h-20 bg-white/20 backdrop-blur-xl rounded-[30px] flex items-center justify-center text-white shadow-xl transition-transform group-hover/file:scale-110">
+                                                        <FileText size={36} />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <p className="font-black text-white uppercase tracking-tighter text-3xl italic leading-none">PAYLOAD_ATTACHMENT</p>
+                                                        <p className="text-[10px] text-emerald-100 font-black uppercase tracking-[0.3em] italic">MODUL: {selectedChapter.file_name || 'UNDEFINED_SOURCE'}</p>
+                                                    </div>
+                                                </div>
+                                                <a
+                                                    href={selectedChapter.file_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    download={selectedChapter.file_name || 'material'}
+                                                    className="w-full md:w-auto px-10 py-6 bg-white text-emerald-600 hover:bg-emerald-50 font-black uppercase tracking-[0.3em] text-[10px] rounded-[25px] shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 italic"
+                                                >
+                                                    DEKRIPSI_&_UNDUH
+                                                    <Upload className="w-5 h-5 rotate-180" />
+                                                </a>
+                                            </div>
                                         </div>
                                     )}
 
                                     {selectedChapter.material_type === 'link' && selectedChapter.file_url && (
-                                        <div className="mt-12 p-8 bg-indigo-50 rounded-[35px] border-2 border-indigo-100 flex items-center justify-between group hover:shadow-xl hover:shadow-indigo-500/5 transition-all">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-16 h-16 bg-white rounded-[22px] flex items-center justify-center text-indigo-600 shadow-sm group-hover:scale-110 transition-transform">
-                                                    <LinkIcon size={32} />
-                                                </div>
-                                                <div>
-                                                    <p className="font-black text-indigo-900 uppercase tracking-tighter text-lg">External Resource</p>
-                                                    <p className="text-sm text-indigo-600/70 font-bold uppercase tracking-widest">Connect to neural network</p>
-                                                </div>
+                                        <div className="mt-20 p-10 bg-indigo-600 rounded-[50px] shadow-2xl shadow-indigo-600/20 relative overflow-hidden group/link">
+                                            <div className="absolute top-0 right-0 p-8 opacity-10 transform scale-150 rotate-12 group-hover/link:rotate-0 transition-transform duration-1000">
+                                                <LinkIcon size={180} />
                                             </div>
-                                            <a
-                                                href={(() => {
-                                                    const url = selectedChapter.file_url?.trim();
-                                                    if (!url) return '#';
-                                                    return url.startsWith('http://') || url.startsWith('https://')
-                                                        ? url
-                                                        : `https://${url}`;
-                                                })()}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest rounded-[20px] shadow-lg shadow-indigo-600/20 transition-all active:scale-95 flex items-center gap-2"
-                                            >
-                                                Launch Module
-                                                <ChevronRight className="w-4 h-4" />
-                                            </a>
+                                            <div className="flex flex-col md:flex-row items-center justify-between gap-10 relative z-10">
+                                                <div className="flex items-center gap-8">
+                                                    <div className="w-20 h-20 bg-white/20 backdrop-blur-xl rounded-[30px] flex items-center justify-center text-white shadow-xl transition-transform group-hover/link:scale-110">
+                                                        <LinkIcon size={36} />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <p className="font-black text-white uppercase tracking-tighter text-3xl italic leading-none">EXTERNAL_NODE</p>
+                                                        <p className="text-[10px] text-indigo-100 font-black uppercase tracking-[0.3em] italic">GATEWAY: JARINGAN_LUAR</p>
+                                                    </div>
+                                                </div>
+                                                <a
+                                                    href={(() => {
+                                                        const url = selectedChapter.file_url?.trim();
+                                                        if (!url) return '#';
+                                                        return url.startsWith('http://') || url.startsWith('https://')
+                                                            ? url
+                                                            : `https://${url}`;
+                                                    })()}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="w-full md:w-auto px-10 py-6 bg-white text-indigo-600 hover:bg-indigo-50 font-black uppercase tracking-[0.3em] text-[10px] rounded-[25px] shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3 italic"
+                                                >
+                                                    INITIALIZE_LINK
+                                                    <ChevronRight size={18} />
+                                                </a>
+                                            </div>
                                         </div>
                                     )}
                                 </motion.div>
                             )
                         ) : (
-                            <div className="card text-center py-40 bg-gray-50 border-dashed border-2 border-gray-200 mt-0">
-                                <BookOpen className="w-20 h-20 text-gray-200 mx-auto mb-4" />
-                                <h3 className="text-xl font-black text-gray-400">PILIH BAB UNTUK MEMULAI</h3>
+                            <div className="h-[600px] bg-gray-50/50 border-4 border-dashed border-gray-100 rounded-[60px] flex flex-col items-center justify-center gap-8 group">
+                                <div className="w-24 h-24 bg-white rounded-[40px] flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-700">
+                                    <BookOpen className="w-10 h-10 text-gray-200 group-hover:text-indigo-600 transition-colors" />
+                                </div>
+                                <div className="text-center space-y-3">
+                                    <h3 className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] italic leading-relaxed">SILAKAN PILIH UNIT MODUL <br />UNTUK MEMULAI INISIALISASI DATA</h3>
+                                    <p className="text-[8px] font-bold text-gray-200 uppercase tracking-widest italic">Awaiting selection from Matrix Kurikulum...</p>
+                                </div>
                             </div>
                         )}
                     </AnimatePresence>
@@ -531,4 +620,3 @@ const CourseDetail: React.FC = () => {
 };
 
 export default CourseDetail;
-

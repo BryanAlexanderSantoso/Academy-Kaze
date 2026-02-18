@@ -62,6 +62,9 @@ export interface Course {
     thumbnail_url?: string;
     duration_hours?: number;
     is_published: boolean;
+    author_name?: string;
+    author_image_url?: string;
+    is_free: boolean;
 }
 
 export interface Assignment {
@@ -89,6 +92,8 @@ export interface CourseChapter {
     file_url: string | null;
     file_name: string | null;
     is_preview: boolean;
+    author_name?: string | null;
+    author_image_url?: string | null;
     created_at: string;
     updated_at: string;
 }

@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { Assignment } from '../../lib/supabase';
 import { motion } from 'framer-motion';
-import { FileText, Link as LinkIcon, Send, CheckCircle, Clock } from 'lucide-react';
+import { FileText, Link as LinkIcon, Send, CheckCircle, Clock, AlertCircle, Activity } from 'lucide-react';
 
 const Assignments: React.FC = () => {
     const { user } = useAuth();
@@ -64,163 +64,191 @@ const Assignments: React.FC = () => {
 
         if (assignment.grade !== null) {
             return (
-                <div className="flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                    <span className="text-green-700 font-medium">Graded: {assignment.grade}/100</span>
+                <div className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-xl border border-green-100 shadow-sm animate-in fade-in zoom-in duration-300">
+                    <CheckCircle className="w-4 h-4" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Dinilai: {assignment.grade}/100</span>
                 </div>
             );
         }
         if (assignment.submitted_at) {
             return (
-                <div className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-yellow-600" />
-                    <span className="text-yellow-700 font-medium">Pending Review</span>
+                <div className="flex items-center gap-2 px-4 py-2 bg-yellow-50 text-yellow-700 rounded-xl border border-yellow-100 shadow-sm">
+                    <Clock className="w-4 h-4" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Menunggu Pemeriksaan</span>
                 </div>
             );
         }
         if (isOverdue) {
             return (
-                <div className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-red-600" />
-                    <span className="text-red-700 font-medium">Overdue</span>
+                <div className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-700 rounded-xl border border-red-100 shadow-sm">
+                    <AlertCircle className="w-4 h-4" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Terlambat</span>
                 </div>
             );
         }
         return (
-            <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-gray-400" />
-                <span className="text-gray-600 font-medium">Not Submitted</span>
+            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-400 rounded-xl border border-gray-100 italic">
+                <FileText className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Belum Dikirim</span>
             </div>
         );
     };
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-96">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading assignments...</p>
+            <div className="flex flex-col items-center justify-center h-[60vh]">
+                <div className="relative">
+                    <div className="w-16 h-16 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+                    <Activity className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-indigo-600" />
                 </div>
+                <p className="mt-6 text-gray-400 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Menghubungkan Terminal Tugas...</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold text-gray-900">Assignments</h1>
-                <p className="text-gray-600 mt-1">Submit your work and track your grades</p>
+        <div className="space-y-16">
+            <div className="flex flex-col items-start gap-4">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-indigo-50 rounded-full text-indigo-600 text-[10px] font-black uppercase tracking-widest border border-indigo-100 italic">
+                    <FileText className="w-4 h-4" />
+                    Manajemen Tugas
+                </div>
+                <h1 className="text-5xl lg:text-7xl font-black text-gray-900 tracking-tighter uppercase italic leading-[0.9]">
+                    Log <br />
+                    <span className="text-indigo-600">Penugasan</span>
+                </h1>
+                <p className="text-gray-400 text-lg font-medium italic">Kirimkan hasil karya Anda dan pantau evaluasi instruktur secara real-time.</p>
             </div>
 
             {assignments.length > 0 ? (
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-8">
                     {assignments.map((assignment, index) => (
                         <motion.div
                             key={assignment.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className="card"
+                            initial={{ opacity: 0, x: -30 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1, duration: 0.6 }}
+                            className="bg-white border border-gray-100 rounded-[50px] p-10 hover:shadow-2xl hover:border-indigo-500/30 transition-all duration-700 relative group"
                         >
-                            <div className="flex items-start justify-between mb-4">
-                                <div className="flex-1">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-1">
+                            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-10">
+                                <div className="flex-1 space-y-4">
+                                    <div className="flex items-center gap-4">
+                                        {getStatusBadge(assignment)}
+                                        <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest italic group-hover:text-indigo-300 transition-colors">ID_ASSIGNMENT_{assignment.id.slice(0, 8)}</span>
+                                    </div>
+                                    <h3 className="text-3xl font-black text-gray-900 uppercase italic tracking-tighter group-hover:text-indigo-600 transition-colors">
                                         {assignment.course?.title}
                                     </h3>
-                                    <p className="text-gray-600 text-sm">{assignment.course?.description}</p>
+                                    <p className="text-gray-500 text-sm font-medium italic leading-relaxed max-w-2xl">{assignment.course?.description}</p>
                                     {assignment.due_date && (
-                                        <p className={`text-sm mt-2 flex items-center gap-1 ${new Date(assignment.due_date) < new Date() && !assignment.submitted_at
-                                                ? 'text-red-600 font-medium'
-                                                : 'text-gray-500'
+                                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-widest ${new Date(assignment.due_date) < new Date() && !assignment.submitted_at
+                                            ? 'bg-red-50 text-red-600 border-red-100 shadow-sm shadow-red-500/10'
+                                            : 'bg-gray-50 text-gray-400 border-gray-100'
                                             }`}>
-                                            <Clock className="w-4 h-4" />
-                                            Due: {new Date(assignment.due_date).toLocaleDateString('en-US', {
+                                            <Clock className="w-3.5 h-3.5" />
+                                            Tenggat: {new Date(assignment.due_date).toLocaleDateString('id-ID', {
                                                 year: 'numeric',
                                                 month: 'long',
                                                 day: 'numeric',
                                                 hour: '2-digit',
                                                 minute: '2-digit'
                                             })}
-                                            {new Date(assignment.due_date) < new Date() && !assignment.submitted_at && ' - OVERDUE!'}
-                                        </p>
+                                            {new Date(assignment.due_date) < new Date() && !assignment.submitted_at && ' - TERLAMBAT!'}
+                                        </div>
                                     )}
                                 </div>
-                                {getStatusBadge(assignment)}
+
+                                <div className="flex flex-col gap-4 min-w-[300px]">
+                                    {assignment.grade === null && (
+                                        <div className="space-y-4">
+                                            <div className="relative group/input">
+                                                <LinkIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within/input:text-indigo-600 transition-colors" />
+                                                <input
+                                                    type="url"
+                                                    placeholder="Link GitHub, Google Drive, atau Figma..."
+                                                    value={submissionLinks[assignment.id] || ''}
+                                                    onChange={(e) =>
+                                                        setSubmissionLinks((prev) => ({
+                                                            ...prev,
+                                                            [assignment.id]: e.target.value,
+                                                        }))
+                                                    }
+                                                    className="w-full bg-gray-50 border-none rounded-[25px] py-5 pl-16 pr-8 text-[11px] font-black uppercase tracking-widest focus:ring-[12px] focus:ring-indigo-500/5 focus:bg-white transition-all shadow-inner italic"
+                                                />
+                                            </div>
+                                            <button
+                                                onClick={() => handleSubmit(assignment.id)}
+                                                disabled={
+                                                    !submissionLinks[assignment.id] || submitting === assignment.id
+                                                }
+                                                className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-100 disabled:text-gray-300 text-white font-black py-5 rounded-[25px] flex items-center justify-center gap-3 transition-all transform hover:-translate-y-1 active:scale-95 shadow-xl shadow-indigo-600/30 uppercase tracking-[0.3em] text-[10px]"
+                                            >
+                                                {submitting === assignment.id ? (
+                                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                                ) : (
+                                                    <Send className="w-4 h-4" />
+                                                )}
+                                                {submitting === assignment.id
+                                                    ? 'MENGIRIM...'
+                                                    : assignment.submission_link
+                                                        ? 'PERBARUI KIRIMAN'
+                                                        : 'KIRIM TUGAS'}
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {assignment.submission_link && (
+                                        <div className="p-6 bg-gray-50 rounded-[30px] border border-gray-100 shadow-inner group-hover:bg-white transition-colors duration-700">
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3 italic">Data Kiriman Anda:</p>
+                                            <a
+                                                href={assignment.submission_link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-indigo-600 hover:text-indigo-800 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 truncate"
+                                            >
+                                                <LinkIcon className="w-4 h-4 flex-shrink-0" />
+                                                {assignment.submission_link}
+                                            </a>
+                                            {assignment.submitted_at && (
+                                                <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest mt-3">
+                                                    Dikirim pada {new Date(assignment.submitted_at).toLocaleDateString('id-ID')}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             {assignment.grade !== null && assignment.feedback && (
-                                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                                    <h4 className="font-semibold text-blue-900 mb-2">Instructor Feedback</h4>
-                                    <p className="text-blue-800 text-sm">{assignment.feedback}</p>
-                                </div>
-                            )}
-
-                            {assignment.submission_link && (
-                                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                                    <p className="text-sm text-gray-600 mb-1">Your Submission:</p>
-                                    <a
-                                        href={assignment.submission_link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-primary-600 hover:text-primary-700 text-sm flex items-center gap-1"
-                                    >
-                                        <LinkIcon className="w-4 h-4" />
-                                        {assignment.submission_link}
-                                    </a>
-                                    {assignment.submitted_at && (
-                                        <p className="text-xs text-gray-500 mt-1">
-                                            Submitted on {new Date(assignment.submitted_at).toLocaleDateString()}
-                                        </p>
-                                    )}
-                                </div>
-                            )}
-
-                            {assignment.grade === null && (
-                                <div className="mt-4">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        {assignment.submission_link ? 'Update Submission Link' : 'Submission Link'}
-                                    </label>
-                                    <div className="flex gap-2">
-                                        <div className="relative flex-1">
-                                            <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                            <input
-                                                type="url"
-                                                placeholder="https://github.com/your-repo or Google Drive link"
-                                                value={submissionLinks[assignment.id] || ''}
-                                                onChange={(e) =>
-                                                    setSubmissionLinks((prev) => ({
-                                                        ...prev,
-                                                        [assignment.id]: e.target.value,
-                                                    }))
-                                                }
-                                                className="input-field pl-11"
-                                            />
-                                        </div>
-                                        <button
-                                            onClick={() => handleSubmit(assignment.id)}
-                                            disabled={
-                                                !submissionLinks[assignment.id] || submitting === assignment.id
-                                            }
-                                            className="btn-primary flex items-center gap-2"
-                                        >
-                                            <Send className="w-5 h-5" />
-                                            {submitting === assignment.id
-                                                ? 'Submitting...'
-                                                : assignment.submission_link
-                                                    ? 'Update'
-                                                    : 'Submit'}
-                                        </button>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mt-10 p-8 bg-indigo-600 rounded-[35px] text-white shadow-xl shadow-indigo-600/20 relative overflow-hidden group/feedback"
+                                >
+                                    <div className="absolute top-0 right-0 p-8 opacity-10 transform scale-150 rotate-12 group-hover/feedback:scale-175 group-hover/feedback:rotate-0 transition-transform duration-700">
+                                        <Trophy size={80} />
                                     </div>
-                                </div>
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-200 mb-3 flex items-center gap-2">
+                                        <Activity className="w-3.5 h-3.5" />
+                                        Evaluasi Instruktur
+                                    </h4>
+                                    <p className="text-lg font-medium italic leading-relaxed relative z-10">{assignment.feedback}</p>
+                                </motion.div>
                             )}
                         </motion.div>
                     ))}
                 </div>
             ) : (
-                <div className="card text-center py-12">
-                    <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No assignments yet</h3>
-                    <p className="text-gray-600">Assignments will appear here when created by your instructor</p>
+                <div className="bg-white border border-gray-100 rounded-[60px] p-40 text-center group">
+                    <motion.div
+                        initial={{ scale: 0.9, opacity: 0.5 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ repeat: Infinity, duration: 2, repeatType: "reverse" }}
+                    >
+                        <FileText size={80} className="text-gray-100 mx-auto mb-8 group-hover:text-indigo-100 transition-colors" />
+                    </motion.div>
+                    <h3 className="text-3xl font-black text-gray-900 uppercase italic tracking-tighter">Log Tugas Kosong</h3>
+                    <p className="text-gray-400 font-medium italic mt-4 max-w-sm mx-auto">Tugas akan muncul secara otomatis di sini saat instruktur telah merilisnya untuk Anda.</p>
                 </div>
             )}
         </div>

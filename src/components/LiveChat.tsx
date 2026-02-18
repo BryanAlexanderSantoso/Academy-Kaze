@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Loader2, User } from 'lucide-react';
+import { MessageCircle, X, Send, Loader2, User, Zap, ShieldAlert, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -82,28 +82,17 @@ const LiveChat: React.FC = () => {
     const sendMessage = async () => {
         if (!newMessage.trim() || !user) return;
 
-        console.log('[LiveChat] Sending message...', {
-            user_id: user.id,
-            message: newMessage.trim(),
-        });
-
         setSending(true);
         try {
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('support_messages')
                 .insert([{
                     user_id: user.id,
                     sender_role: 'member',
                     message: newMessage.trim(),
-                }])
-                .select();
+                }]);
 
-            if (error) {
-                console.error('[LiveChat] Insert error:', error);
-                throw error;
-            }
-
-            console.log('[LiveChat] Message sent successfully:', data);
+            if (error) throw error;
 
             setNewMessage('');
             loadMessages();
@@ -124,123 +113,170 @@ const LiveChat: React.FC = () => {
 
     return (
         <>
-            {/* Floating Button */}
+            {/* Premium Floating Button */}
             <motion.button
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                whileHover={{ scale: 1.1 }}
+                initial={{ scale: 0, rotate: -45 }}
+                animate={{ scale: 1, rotate: 0 }}
+                whileHover={{ scale: 1.1, rotate: 5 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-full shadow-2xl flex items-center justify-center hover:shadow-blue-500/50 transition-shadow"
+                className={`fixed bottom-8 right-8 z-[70] w-18 h-18 rounded-[24px] shadow-2xl flex items-center justify-center transition-all duration-500 overflow-hidden group ${isOpen ? 'bg-gray-900 border-gray-800' : 'bg-indigo-600 border-indigo-500 ring-8 ring-indigo-500/10'}`}
             >
-                {isOpen ? <X className="w-7 h-7" /> : <MessageCircle className="w-7 h-7" />}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                {isOpen ? (
+                    <X className="w-8 h-8 text-white relative z-10" />
+                ) : (
+                    <div className="relative">
+                        <MessageCircle className="w-8 h-8 text-white relative z-10" />
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-indigo-600 animate-pulse" />
+                    </div>
+                )}
             </motion.button>
 
-            {/* Chat Window */}
+            {/* Premium Chat Terminal */}
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        className="fixed bottom-24 right-6 z-50 w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden"
+                        initial={{ opacity: 0, y: 50, scale: 0.9, rotate: -2 }}
+                        animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
+                        exit={{ opacity: 0, y: 50, scale: 0.9, rotate: 2 }}
+                        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                        className="fixed bottom-32 right-8 z-[70] w-[400px] h-[600px] bg-white rounded-[45px] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.2)] border border-gray-100 flex flex-col overflow-hidden"
                     >
-                        {/* Header */}
-                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                                    <User className="w-5 h-5" />
+                        {/* Status Header */}
+                        <div className="bg-gray-900 px-8 py-7 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600 opacity-20 blur-3xl -mr-16 -mt-16 rounded-full" />
+
+                            <div className="relative z-10 flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+                                        <Zap className="w-6 h-6 text-white" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-sm font-black text-white uppercase tracking-tighter italic">Support_Nexus</h3>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                                            <p className="text-[9px] font-black text-emerald-400 uppercase tracking-widest italic">Online • Respons: ~15 Mnit</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-semibold text-sm">Admin Support</h3>
-                                    <p className="text-[10px] text-blue-100 flex items-center gap-1">
-                                        <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-                                        Response time: ~15 mins
-                                    </p>
+                                <div className="px-3 py-1 bg-white/5 rounded-lg border border-white/10">
+                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">ID: {user?.id.slice(0, 8)}</p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* System Notice Section */}
-                        <div className="bg-amber-50 border-b border-amber-100 px-4 py-2 flex items-center gap-2">
-                            <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse flex-shrink-0" />
-                            <p className="text-[9px] font-bold text-amber-700 uppercase tracking-wider">
-                                System Notice: Pesan akan dihapus otomatis setelah 24 jam untuk keamanan.
+                        {/* Security Protocol Banner */}
+                        <div className="bg-amber-500/5 px-6 py-3 flex items-center gap-3 border-b border-amber-500/10">
+                            <ShieldAlert size={14} className="text-amber-500 animate-pulse" />
+                            <p className="text-[9px] font-black text-amber-600/80 uppercase tracking-widest italic leading-none">
+                                Protokol_Keamanan: Pesan dihancurkan otomatis dalam 24 jam.
                             </p>
                         </div>
 
-                        {/* Messages Area */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+                        {/* Transmission Logs Area */}
+                        <div className="flex-1 overflow-y-auto p-8 space-y-6 bg-[#FAFAFF] custom-scrollbar">
                             {loading ? (
-                                <div className="flex items-center justify-center h-full">
-                                    <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+                                <div className="flex flex-col items-center justify-center h-full gap-4">
+                                    <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+                                    <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest animate-pulse">Sinkronisasi_Data...</p>
                                 </div>
                             ) : messages.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center h-full text-center px-6">
-                                    <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
-                                        <MessageCircle className="w-8 h-8 text-blue-600" />
+                                <div className="flex flex-col items-center justify-center h-full text-center px-10">
+                                    <div className="w-20 h-20 bg-white shadow-xl rounded-[30px] flex items-center justify-center mb-6 group">
+                                        <MessageCircle className="w-10 h-10 text-indigo-600 transition-transform group-hover:scale-110" />
                                     </div>
-                                    <p className="text-sm text-gray-600 font-medium mb-2">
-                                        Butuh bantuan?
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                        Kirim pesan dan admin akan segera membantu Anda
+                                    <h4 className="text-lg font-black text-gray-900 uppercase italic tracking-tighter mb-2">Butuh Bantuan Teknis?</h4>
+                                    <p className="text-[11px] text-gray-400 font-black uppercase tracking-widest leading-relaxed italic">
+                                        Kirim pesan transmisi dan biarkan admin memvalidasi kendala Anda.
                                     </p>
                                 </div>
                             ) : (
-                                messages.map((msg) => (
-                                    <motion.div
-                                        key={msg.id}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className={`flex ${msg.sender_role === 'member' ? 'justify-end' : 'justify-start'}`}
-                                    >
-                                        <div className={`max-w-[75%] rounded-2xl px-4 py-2 ${msg.sender_role === 'member'
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-white text-gray-900 border border-gray-200'
-                                            }`}>
-                                            <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
-                                            <p className={`text-xs mt-1 ${msg.sender_role === 'member' ? 'text-blue-100' : 'text-gray-500'
-                                                }`}>
-                                                {new Date(msg.created_at).toLocaleTimeString('id-ID', {
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                })}
-                                            </p>
-                                        </div>
-                                    </motion.div>
-                                ))
+                                <div className="space-y-6">
+                                    {messages.map((msg, i) => (
+                                        <motion.div
+                                            key={msg.id}
+                                            initial={{ opacity: 0, x: msg.sender_role === 'member' ? 20 : -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: i * 0.05 }}
+                                            className={`flex ${msg.sender_role === 'member' ? 'justify-end' : 'justify-start'}`}
+                                        >
+                                            <div className="max-w-[85%] space-y-2">
+                                                <div className={`rounded-[22px] px-6 py-4 shadow-xl shadow-indigo-600/5 ${msg.sender_role === 'member'
+                                                    ? 'bg-indigo-600 text-white rounded-tr-none'
+                                                    : 'bg-white text-gray-900 border border-gray-100 rounded-tl-none'
+                                                    }`}>
+                                                    <p className="text-sm font-medium leading-relaxed italic">{msg.message}</p>
+                                                </div>
+                                                <div className={`flex items-center gap-2 px-1 ${msg.sender_role === 'member' ? 'flex-row-reverse' : ''}`}>
+                                                    <div className={`w-1 h-1 rounded-full ${msg.sender_role === 'member' ? 'bg-indigo-300' : 'bg-gray-300'}`} />
+                                                    <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest italic">
+                                                        {new Date(msg.created_at).toLocaleTimeString('id-ID', {
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
+                                                        })}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                    <div ref={messagesEndRef} />
+                                </div>
                             )}
-                            <div ref={messagesEndRef} />
                         </div>
 
-                        {/* Input Area */}
-                        <div className="p-4 bg-white border-t border-gray-200">
-                            <div className="flex items-end gap-2">
+                        {/* Command Input Area */}
+                        <div className="p-8 bg-white border-t border-gray-100">
+                            <div className="flex items-end gap-3 p-2 bg-gray-50 rounded-[30px] border border-gray-100 focus-within:border-indigo-600/30 focus-within:bg-white transition-all shadow-inner">
                                 <textarea
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
                                     onKeyPress={handleKeyPress}
-                                    placeholder="Ketik pesan Anda..."
+                                    placeholder="Input pesan transmisi..."
                                     rows={1}
-                                    className="flex-1 resize-none border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                                    className="flex-1 resize-none bg-transparent border-none px-4 py-3 text-sm font-medium focus:ring-0 placeholder:text-gray-300 placeholder:italic placeholder:font-black placeholder:text-[10px] placeholder:uppercase placeholder:tracking-widest"
                                 />
-                                <button
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                     onClick={sendMessage}
                                     disabled={!newMessage.trim() || sending}
-                                    className="p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="p-3.5 bg-indigo-600 text-white rounded-2xl hover:bg-gray-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-indigo-600/20"
                                 >
                                     {sending ? (
                                         <Loader2 className="w-5 h-5 animate-spin" />
                                     ) : (
                                         <Send className="w-5 h-5" />
                                     )}
-                                </button>
+                                </motion.button>
+                            </div>
+                            <div className="mt-4 flex items-center justify-between px-2">
+                                <div className="flex items-center gap-2 text-indigo-400 italic">
+                                    <Sparkles size={10} />
+                                    <span className="text-[8px] font-black uppercase tracking-widest">Premium_Encrypted_Link</span>
+                                </div>
+                                <p className="text-[8px] font-black text-gray-300 uppercase tracking-widest italic">Shift+Enter untuk baris baru</p>
                             </div>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 5px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #EEF2FF;
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #E0E7FF;
+                }
+            `}</style>
         </>
     );
 };
