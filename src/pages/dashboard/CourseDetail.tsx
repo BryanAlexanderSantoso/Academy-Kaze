@@ -5,6 +5,7 @@ import type { Course, CourseChapter } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Clock, BookOpen, CheckCircle, Lock, ShieldCheck, Upload, FileText, Link as LinkIcon, ChevronRight, Share2, Check, Activity, Star } from 'lucide-react';
+import MarkdownContent from '../../components/MarkdownContent';
 
 const CourseDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -525,9 +526,9 @@ const CourseDetail: React.FC = () => {
                                     )}
 
                                     {/* Main Content Render */}
-                                    <div className="prose max-w-none prose-headings:font-black prose-headings:text-gray-900 prose-headings:italic prose-headings:tracking-tighter prose-p:text-gray-600 prose-p:font-medium prose-p:italic prose-p:text-lg prose-p:leading-relaxed prose-strong:text-gray-900 prose-code:bg-indigo-50 prose-code:text-indigo-600 prose-code:px-4 prose-code:py-1 prose-code:rounded-xl prose-code:font-black prose-pre:bg-gray-900 prose-pre:rounded-[40px] prose-pre:border prose-pre:border-white/10 prose-pre:p-10 custom-prose">
+                                    <div className="relative z-10">
                                         {selectedChapter.content_body ? (
-                                            <div dangerouslySetInnerHTML={{ __html: selectedChapter.content_body }} />
+                                            <MarkdownContent content={selectedChapter.content_body} />
                                         ) : (
                                             <div className="flex flex-col items-center justify-center py-40 text-gray-200">
                                                 <Activity className="w-24 h-24 mb-6 opacity-10 animate-pulse" />

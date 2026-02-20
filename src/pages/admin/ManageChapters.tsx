@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAlert } from '../../contexts/AlertContext';
+import MarkdownContent from '../../components/MarkdownContent';
 
 const ManageChapters: React.FC = () => {
     const { id: courseId } = useParams<{ id: string }>();
@@ -39,6 +40,7 @@ const ManageChapters: React.FC = () => {
     // Editor State
     const [editingChapter, setEditingChapter] = useState<Partial<CourseChapter> | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isPreview, setIsPreview] = useState(false);
 
     useEffect(() => {
         if (courseId) {
@@ -78,11 +80,13 @@ const ManageChapters: React.FC = () => {
         };
         setEditingChapter(newChapter);
         setIsSidebarOpen(true);
+        setIsPreview(false);
     };
 
     const handleEditChapter = (chapter: CourseChapter) => {
         setEditingChapter({ ...chapter });
         setIsSidebarOpen(true);
+        setIsPreview(false);
     };
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -492,81 +496,106 @@ const ManageChapters: React.FC = () => {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Payload Modul ({editingChapter?.material_type})</label>
-                                    {editingChapter?.material_type === 'text' ? (
-                                        <textarea
-                                            value={editingChapter?.content_body || ''}
-                                            onChange={(e) => setEditingChapter({ ...editingChapter!, content_body: e.target.value })}
-                                            className="w-full bg-gray-50 border-none rounded-[32px] py-8 px-10 text-gray-800 font-medium text-lg leading-relaxed focus:ring-8 focus:ring-indigo-500/5 focus:bg-white transition-all shadow-inner h-[400px] placeholder:text-gray-300"
-                                            placeholder="Terjemahkan pengetahuan menjadi payload teks..."
-                                        />
-                                    ) : editingChapter?.material_type === 'file' ? (
-                                        <div className="space-y-4">
-                                            <input
-                                                type="file"
-                                                ref={fileInputRef}
-                                                onChange={handleFileUpload}
-                                                className="hidden"
-                                                accept=".pdf,.doc,.docx,.mp4,.zip,.jpg,.png"
-                                            />
-
-                                            {editingChapter.file_url ? (
-                                                <div className="p-6 bg-emerald-50 border border-emerald-100 rounded-[30px] flex items-center justify-between">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-emerald-600 shadow-sm">
-                                                            <FileText />
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-xs font-black text-emerald-900 uppercase truncate max-w-[200px]">{editingChapter.file_name || 'File Terunggah'}</p>
-                                                            <p className="text-[9px] font-bold text-emerald-600/60 uppercase">Sistem Terhubung</p>
-                                                        </div>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => setEditingChapter({ ...editingChapter, file_url: '', file_name: '' })}
-                                                        className="p-2 bg-white text-emerald-400 hover:text-red-500 rounded-xl transition-all shadow-sm"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </div>
-                                            ) : (
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Payload Modul ({editingChapter?.material_type})</label>
+                                        {editingChapter?.material_type === 'text' && (
+                                            <div className="flex bg-gray-100 p-1 rounded-xl">
                                                 <button
-                                                    onClick={() => fileInputRef.current?.click()}
-                                                    disabled={uploading}
-                                                    className="w-full h-48 border-4 border-dashed border-gray-100 rounded-[40px] hover:border-indigo-200 hover:bg-indigo-50/30 transition-all flex flex-col items-center justify-center gap-4 group"
+                                                    onClick={() => setIsPreview(false)}
+                                                    className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${!isPreview ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400'}`}
                                                 >
-                                                    {uploading ? (
-                                                        <div className="flex flex-col items-center gap-4 w-full px-12">
-                                                            <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden shadow-inner">
-                                                                <motion.div
-                                                                    className="h-full bg-indigo-600"
-                                                                    initial={{ width: 0 }}
-                                                                    animate={{ width: `${uploadProgress}%` }}
-                                                                />
-                                                            </div>
-                                                            <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest animate-pulse">Mengunggah {uploadProgress}%</p>
-                                                        </div>
-                                                    ) : (
-                                                        <>
-                                                            <div className="w-16 h-16 bg-gray-50 rounded-[20px] flex items-center justify-center text-gray-300 group-hover:bg-white group-hover:text-indigo-600 group-hover:scale-110 transition-all shadow-sm">
-                                                                <Upload />
-                                                            </div>
-                                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pilih Modul Payload</p>
-                                                        </>
-                                                    )}
+                                                    Editor
                                                 </button>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <div className="relative">
-                                            <input
-                                                type="text"
-                                                value={editingChapter?.file_url || ''}
-                                                onChange={(e) => setEditingChapter({ ...editingChapter!, file_url: e.target.value })}
-                                                className="w-full bg-gray-50 border-none rounded-[24px] py-5 px-8 text-indigo-600 font-mono text-sm focus:ring-4 focus:ring-indigo-500/5 focus:bg-white transition-all shadow-inner"
-                                                placeholder="https://sumber.payload.com"
+                                                <button
+                                                    onClick={() => setIsPreview(true)}
+                                                    className={`px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${isPreview ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400'}`}
+                                                >
+                                                    Preview
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {editingChapter?.material_type === 'text' ? (
+                                        isPreview ? (
+                                            <div className="w-full bg-white border border-gray-100 rounded-[32px] py-8 px-10 min-h-[400px] overflow-auto shadow-inner ring-1 ring-gray-100/50">
+                                                <MarkdownContent content={editingChapter?.content_body || ''} />
+                                            </div>
+                                        ) : (
+                                            <textarea
+                                                value={editingChapter?.content_body || ''}
+                                                onChange={(e) => setEditingChapter({ ...editingChapter!, content_body: e.target.value })}
+                                                className="w-full bg-gray-50 border-none rounded-[32px] py-8 px-10 text-gray-800 font-medium text-lg leading-relaxed focus:ring-8 focus:ring-indigo-500/5 focus:bg-white transition-all shadow-inner h-[400px] placeholder:text-gray-300 font-mono"
+                                                placeholder="Gunakan Markdown: # Judul, > Catatan, ```js untuk Code..."
                                             />
-                                        </div>
-                                    )}
+                                        )
+                                    ) :
+                                        editingChapter?.material_type === 'file' ? (
+                                            <div className="space-y-4">
+                                                <input
+                                                    type="file"
+                                                    ref={fileInputRef}
+                                                    onChange={handleFileUpload}
+                                                    className="hidden"
+                                                    accept=".pdf,.doc,.docx,.mp4,.zip,.jpg,.png"
+                                                />
+
+                                                {editingChapter.file_url ? (
+                                                    <div className="p-6 bg-emerald-50 border border-emerald-100 rounded-[30px] flex items-center justify-between">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-emerald-600 shadow-sm">
+                                                                <FileText />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-xs font-black text-emerald-900 uppercase truncate max-w-[200px]">{editingChapter.file_name || 'File Terunggah'}</p>
+                                                                <p className="text-[9px] font-bold text-emerald-600/60 uppercase">Sistem Terhubung</p>
+                                                            </div>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => setEditingChapter({ ...editingChapter, file_url: '', file_name: '' })}
+                                                            className="p-2 bg-white text-emerald-400 hover:text-red-500 rounded-xl transition-all shadow-sm"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => fileInputRef.current?.click()}
+                                                        disabled={uploading}
+                                                        className="w-full h-48 border-4 border-dashed border-gray-100 rounded-[40px] hover:border-indigo-200 hover:bg-indigo-50/30 transition-all flex flex-col items-center justify-center gap-4 group"
+                                                    >
+                                                        {uploading ? (
+                                                            <div className="flex flex-col items-center gap-4 w-full px-12">
+                                                                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                                                                    <motion.div
+                                                                        className="h-full bg-indigo-600"
+                                                                        initial={{ width: 0 }}
+                                                                        animate={{ width: `${uploadProgress}%` }}
+                                                                    />
+                                                                </div>
+                                                                <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest animate-pulse">Mengunggah {uploadProgress}%</p>
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                <div className="w-16 h-16 bg-gray-50 rounded-[20px] flex items-center justify-center text-gray-300 group-hover:bg-white group-hover:text-indigo-600 group-hover:scale-110 transition-all shadow-sm">
+                                                                    <Upload />
+                                                                </div>
+                                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pilih Modul Payload</p>
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="relative">
+                                                <input
+                                                    type="text"
+                                                    value={editingChapter?.file_url || ''}
+                                                    onChange={(e) => setEditingChapter({ ...editingChapter!, file_url: e.target.value })}
+                                                    className="w-full bg-gray-50 border-none rounded-[24px] py-5 px-8 text-indigo-600 font-mono text-sm focus:ring-4 focus:ring-indigo-500/5 focus:bg-white transition-all shadow-inner"
+                                                    placeholder="https://sumber.payload.com"
+                                                />
+                                            </div>
+                                        )}
                                 </div>
                             </div>
 
