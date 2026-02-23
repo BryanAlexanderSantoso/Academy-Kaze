@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import type { Course, Assignment } from '../../lib/supabase';
 import { motion } from 'framer-motion';
-import { BookOpen, FileText, Trophy, Calendar, ArrowRight, Clock, Activity, Zap, Target, Rocket, ChevronRight, Layout, Crown, Sparkles, ShieldCheck } from 'lucide-react';
+import { BookOpen, FileText, Trophy, Calendar, ArrowRight, Clock, Activity, Zap, Target, ChevronRight, Layout, Crown, Sparkles, ShieldCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Helper function to get learning path name in Indonesian
