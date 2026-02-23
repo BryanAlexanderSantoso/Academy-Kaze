@@ -6,15 +6,15 @@ import TitleUpdater from './components/TitleUpdater';
 
 // Loading Component
 const PageLoading = () => (
-  <div className="min-h-screen bg-white flex flex-col items-center justify-center">
-    <div className="relative">
-      <div className="w-16 h-16 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></div>
-      </div>
-    </div>
-    <p className="mt-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] animate-pulse">Initializing Interface...</p>
+ <div className="min-h-screen bg-white flex flex-col items-center justify-center">
+  <div className="relative">
+   <div className="w-16 h-16 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+    <div className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></div>
+   </div>
   </div>
+  <p className="mt-6 text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] animate-pulse">Initializing Interface...</p>
+ </div>
 );
 
 // Landing
@@ -57,259 +57,259 @@ const AdminPromos = lazy(() => import('./pages/admin/AdminPromos'));
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{
-  children: React.ReactNode;
-  requireAdmin?: boolean;
-  requireMember?: boolean;
+ children: React.ReactNode;
+ requireAdmin?: boolean;
+ requireMember?: boolean;
 }> = ({ children, requireAdmin, requireMember }) => {
-  const { user, loading } = useAuth();
+ const { user, loading } = useAuth();
 
-  if (loading) {
-    return <PageLoading />;
-  }
+ if (loading) {
+  return <PageLoading />;
+ }
 
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
+ if (!user) {
+  return <Navigate to="/login" />;
+ }
 
-  if (requireAdmin && user.role !== 'admin') {
-    return <Navigate to="/dashboard" />;
-  }
+ if (requireAdmin && user.role !== 'admin') {
+  return <Navigate to="/dashboard" />;
+ }
 
-  if (requireMember && user.role !== 'member') {
-    return <Navigate to="/admin/dashboard" />;
-  }
+ if (requireMember && user.role !== 'member') {
+  return <Navigate to="/admin/dashboard" />;
+ }
 
-  // Check if member needs to complete onboarding
-  if (user.role === 'member' && !user.learning_path && window.location.pathname !== '/onboarding') {
-    return <Navigate to="/onboarding" />;
-  }
+ // Check if member needs to complete onboarding
+ if (user.role === 'member' && !user.learning_path && window.location.pathname !== '/onboarding') {
+  return <Navigate to="/onboarding" />;
+ }
 
-  return <>{children}</>;
+ return <>{children}</>;
 };
 
 // Public Route (redirect if already logged in)
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, loading } = useAuth();
+ const { user, loading } = useAuth();
 
-  if (loading) {
-    return <PageLoading />;
+ if (loading) {
+  return <PageLoading />;
+ }
+
+ if (user) {
+  if (user.role === 'admin') {
+   return <Navigate to="/admin/dashboard" />;
   }
-
-  if (user) {
-    if (user.role === 'admin') {
-      return <Navigate to="/admin/dashboard" />;
-    }
-    if (!user.learning_path) {
-      return <Navigate to="/onboarding" />;
-    }
-    return <Navigate to="/dashboard" />;
+  if (!user.learning_path) {
+   return <Navigate to="/onboarding" />;
   }
+  return <Navigate to="/dashboard" />;
+ }
 
-  return <>{children}</>;
+ return <>{children}</>;
 };
 
 function AppRoutes() {
-  return (
-    <Suspense fallback={<PageLoading />}>
-      <Routes>
-        {/* Landing Page */}
-        <Route path="/" element={<LandingPage />} />
+ return (
+  <Suspense fallback={<PageLoading />}>
+   <Routes>
+    {/* Landing Page */}
+    <Route path="/" element={<LandingPage />} />
 
-        {/* Public Routes */}
-        <Route
-          path="/login"
-          element={
-            <PublicRoute>
-              <Login />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <PublicRoute>
-              <Signup />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <PublicRoute>
-              <AdminLogin />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/forgot-password"
-          element={
-            <PublicRoute>
-              <ForgotPassword />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/reset-password"
-          element={
-            <ResetPassword />
-          }
-        />
+    {/* Public Routes */}
+    <Route
+     path="/login"
+     element={
+      <PublicRoute>
+       <Login />
+      </PublicRoute>
+     }
+    />
+    <Route
+     path="/signup"
+     element={
+      <PublicRoute>
+       <Signup />
+      </PublicRoute>
+     }
+    />
+    <Route
+     path="/admin"
+     element={
+      <PublicRoute>
+       <AdminLogin />
+      </PublicRoute>
+     }
+    />
+    <Route
+     path="/forgot-password"
+     element={
+      <PublicRoute>
+       <ForgotPassword />
+      </PublicRoute>
+     }
+    />
+    <Route
+     path="/reset-password"
+     element={
+      <ResetPassword />
+     }
+    />
 
 
-        {/* Onboarding (Protected - Member only) */}
-        <Route
-          path="/onboarding"
-          element={
-            <ProtectedRoute requireMember>
-              <Onboarding />
-            </ProtectedRoute>
-          }
-        />
+    {/* Onboarding (Protected - Member only) */}
+    <Route
+     path="/onboarding"
+     element={
+      <ProtectedRoute requireMember>
+       <Onboarding />
+      </ProtectedRoute>
+     }
+    />
 
-        {/* Member Dashboard Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute requireMember>
-              <MemberDashboard />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<DashboardOverview />} />
-          <Route path="courses" element={<Courses />} />
-          <Route path="courses/:id" element={<CourseDetail />} />
-          <Route path="assignments" element={<Assignments />} />
-          <Route path="questionnaires" element={<Questionnaires />} />
-          <Route path="questionnaires/:id/take" element={<TakeQuestionnaire />} />
-          <Route path="premium" element={<PremiumPayment />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="certificate/:courseId" element={<Certificate />} />
-        </Route>
+    {/* Member Dashboard Routes */}
+    <Route
+     path="/dashboard"
+     element={
+      <ProtectedRoute requireMember>
+       <MemberDashboard />
+      </ProtectedRoute>
+     }
+    >
+     <Route index element={<DashboardOverview />} />
+     <Route path="courses" element={<Courses />} />
+     <Route path="courses/:id" element={<CourseDetail />} />
+     <Route path="assignments" element={<Assignments />} />
+     <Route path="questionnaires" element={<Questionnaires />} />
+     <Route path="questionnaires/:id/take" element={<TakeQuestionnaire />} />
+     <Route path="premium" element={<PremiumPayment />} />
+     <Route path="profile" element={<Profile />} />
+     <Route path="certificate/:courseId" element={<Certificate />} />
+    </Route>
 
-        {/* Admin Routes */}
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute requireAdmin>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/users"
-          element={
-            <ProtectedRoute requireAdmin>
-              <AdminUsers />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/support"
-          element={
-            <ProtectedRoute requireAdmin>
-              <AdminSupport />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/courses"
-          element={
-            <ProtectedRoute requireAdmin>
-              <AdminCourses />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/courses/new"
-          element={
-            <ProtectedRoute requireAdmin>
-              <CreateCourse />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/courses/:id/edit"
-          element={
-            <ProtectedRoute requireAdmin>
-              <EditCourse />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/courses/:id/chapters"
-          element={
-            <ProtectedRoute requireAdmin>
-              <ManageChapters />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/assignments"
-          element={
-            <ProtectedRoute requireAdmin>
-              <AdminAssignments />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/assignments/create"
-          element={
-            <ProtectedRoute requireAdmin>
-              <CreateAssignment />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/questionnaires"
-          element={
-            <ProtectedRoute requireAdmin>
-              <AdminQuestionnaires />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/questionnaires/:id/responses"
-          element={
-            <ProtectedRoute requireAdmin>
-              <QuestionnaireResponses />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/premium"
-          element={
-            <ProtectedRoute requireAdmin>
-              <AdminPremiumPayments />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/promos"
-          element={
-            <ProtectedRoute requireAdmin>
-              <AdminPromos />
-            </ProtectedRoute>
-          }
-        />
+    {/* Admin Routes */}
+    <Route
+     path="/admin/dashboard"
+     element={
+      <ProtectedRoute requireAdmin>
+       <AdminDashboard />
+      </ProtectedRoute>
+     }
+    />
+    <Route
+     path="/admin/users"
+     element={
+      <ProtectedRoute requireAdmin>
+       <AdminUsers />
+      </ProtectedRoute>
+     }
+    />
+    <Route
+     path="/admin/support"
+     element={
+      <ProtectedRoute requireAdmin>
+       <AdminSupport />
+      </ProtectedRoute>
+     }
+    />
+    <Route
+     path="/admin/courses"
+     element={
+      <ProtectedRoute requireAdmin>
+       <AdminCourses />
+      </ProtectedRoute>
+     }
+    />
+    <Route
+     path="/admin/courses/new"
+     element={
+      <ProtectedRoute requireAdmin>
+       <CreateCourse />
+      </ProtectedRoute>
+     }
+    />
+    <Route
+     path="/admin/courses/:id/edit"
+     element={
+      <ProtectedRoute requireAdmin>
+       <EditCourse />
+      </ProtectedRoute>
+     }
+    />
+    <Route
+     path="/admin/courses/:id/chapters"
+     element={
+      <ProtectedRoute requireAdmin>
+       <ManageChapters />
+      </ProtectedRoute>
+     }
+    />
+    <Route
+     path="/admin/assignments"
+     element={
+      <ProtectedRoute requireAdmin>
+       <AdminAssignments />
+      </ProtectedRoute>
+     }
+    />
+    <Route
+     path="/admin/assignments/create"
+     element={
+      <ProtectedRoute requireAdmin>
+       <CreateAssignment />
+      </ProtectedRoute>
+     }
+    />
+    <Route
+     path="/admin/questionnaires"
+     element={
+      <ProtectedRoute requireAdmin>
+       <AdminQuestionnaires />
+      </ProtectedRoute>
+     }
+    />
+    <Route
+     path="/admin/questionnaires/:id/responses"
+     element={
+      <ProtectedRoute requireAdmin>
+       <QuestionnaireResponses />
+      </ProtectedRoute>
+     }
+    />
+    <Route
+     path="/admin/premium"
+     element={
+      <ProtectedRoute requireAdmin>
+       <AdminPremiumPayments />
+      </ProtectedRoute>
+     }
+    />
+    <Route
+     path="/admin/promos"
+     element={
+      <ProtectedRoute requireAdmin>
+       <AdminPromos />
+      </ProtectedRoute>
+     }
+    />
 
-        {/* Catch all - redirect unknown routes */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </Suspense>
-  );
+    {/* Catch all - redirect unknown routes */}
+    <Route path="*" element={<Navigate to="/" />} />
+   </Routes>
+  </Suspense>
+ );
 }
 
 function App() {
-  return (
-    <BrowserRouter>
-      <TitleUpdater />
-      <AuthProvider>
-        <AlertProvider>
-          <AppRoutes />
-        </AlertProvider>
-      </AuthProvider>
-    </BrowserRouter>
-  );
+ return (
+  <BrowserRouter>
+   <TitleUpdater />
+   <AuthProvider>
+    <AlertProvider>
+     <AppRoutes />
+    </AlertProvider>
+   </AuthProvider>
+  </BrowserRouter>
+ );
 }
 
 export default App;

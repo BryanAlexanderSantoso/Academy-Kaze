@@ -50,9 +50,9 @@ const DashboardOverview: React.FC = () => {
             const { data: assignmentsData } = await supabase
                 .from('assignments')
                 .select(`
-          *,
-          course:courses(title, category)
-        `)
+     *,
+     course:courses(title, category)
+    `)
                 .eq('student_id', user?.id)
                 .order('created_at', { ascending: false });
 
@@ -86,7 +86,7 @@ const DashboardOverview: React.FC = () => {
                     <div className="w-16 h-16 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
                     <Activity className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-indigo-600" />
                 </div>
-                <p className="mt-6 text-gray-400 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse italic">Menghubungkan Terminal Utama...</p>
+                <p className="mt-6 text-gray-400 font-bold uppercase tracking-[0.3em] text-[10px] animate-pulse">Menghubungkan Terminal Utama...</p>
             </div>
         );
     }
@@ -105,34 +105,34 @@ const DashboardOverview: React.FC = () => {
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
 
                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <div className="space-y-10">
-                        <div className="inline-flex items-center gap-3 px-6 py-2 bg-white/5 backdrop-blur-2xl rounded-full border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-300 italic">
-                            <Rocket className="w-4 h-4 animate-bounce" />
-                            SESI_TERHUBUNG_KE_NODE_PUSAT
-                        </div>
-
-                        <div className="space-y-4">
-                            <h1 className="text-6xl lg:text-8xl font-black tracking-tighter uppercase italic leading-[0.85]">
-                                Halo, <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{user?.full_name.split(' ')[0]}!</span>
+                    <div className="space-y-12">
+                        <div className="space-y-6">
+                            <h1 className="text-5xl lg:text-7xl font-bold tracking-tighter uppercase leading-none">
+                                Selamat Datang, <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{user?.full_name.split(' ')[0]}</span>
                             </h1>
-                            <p className="text-gray-400 text-xl font-medium leading-relaxed max-w-sm italic">
-                                Sektor <span className="text-white font-bold">{getLearningPathName(user?.learning_path)}</span> siap untuk dieksekusi hari ini.
+                            <p className="text-gray-400 text-lg font-medium leading-relaxed max-w-sm">
+                                Sektor <span className="text-white font-bold text-indigo-400">{getLearningPathName(user?.learning_path)}</span> siap untuk dikembangkan hari ini.
                             </p>
                         </div>
 
-                        <div className="flex gap-4">
+                        <div className="flex flex-wrap gap-4 pt-4">
                             <button
                                 onClick={() => navigate('/dashboard/courses')}
-                                className="px-10 py-5 bg-white text-gray-900 font-black text-[11px] rounded-2xl uppercase tracking-[0.2em] italic hover:bg-indigo-50 transition-all flex items-center gap-3 shadow-2xl"
+                                className="px-8 py-5 bg-white text-gray-900 font-bold text-[11px] rounded-2xl uppercase tracking-[0.2em] hover:bg-white/90 hover:scale-105 transition-all flex items-center gap-3 shadow-[0_20px_40px_rgba(255,255,255,0.1)] active:scale-95"
                             >
-                                LANJUTKAN_MODUL
-                                <ChevronRight size={18} />
+                                Mulai Belajar
+                                <ChevronRight size={18} className="text-indigo-600" />
                             </button>
                             {user?.is_premium && (
-                                <div className="px-6 py-5 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 flex items-center gap-3">
-                                    <Crown className="w-5 h-5 text-amber-400" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-200">OTORITAS_PREMIUM_AKTIF</span>
+                                <div className="px-5 py-4 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 flex items-center gap-4 group/badge">
+                                    <div className="w-10 h-10 bg-amber-400/20 rounded-xl flex items-center justify-center border border-amber-400/30">
+                                        <Crown className="w-5 h-5 text-amber-400 group-hover:rotate-12 transition-transform" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-amber-200">Akses Premium</span>
+                                        <span className="text-[8px] font-semibold text-amber-500 opacity-60">Verified Authority</span>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -165,8 +165,8 @@ const DashboardOverview: React.FC = () => {
                                 />
                             </svg>
                             <div className="absolute flex flex-col items-center">
-                                <span className="text-5xl font-black tracking-tighter italic">12%</span>
-                                <span className="text-[9px] font-black text-indigo-300 uppercase tracking-widest leading-none mt-2">Sinkronisasi</span>
+                                <span className="text-5xl font-bold tracking-tighter">12%</span>
+                                <span className="text-[9px] font-bold text-indigo-300 uppercase tracking-widest leading-none mt-2">Sinkronisasi</span>
                             </div>
                         </div>
                     </div>
@@ -176,9 +176,9 @@ const DashboardOverview: React.FC = () => {
             {/* Tactical Statistics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                 {[
-                    { label: 'MODUL_DIBUKA', value: stats.completedCourses, icon: BookOpen, color: 'indigo', sub: 'Materi Tersedia', unit: 'Unit' },
-                    { label: 'ANTREAN_LOG_TUGAS', value: stats.pendingAssignments, icon: Activity, color: 'purple', sub: 'Menunggu Verifikasi', unit: 'Item' },
-                    { label: 'SKOR_PERFORMA', value: stats.averageGrade, icon: Target, color: 'amber', sub: 'Rata-rata Akurasi', unit: '%' }
+                    { label: 'Modul Dibuka', value: stats.completedCourses, icon: BookOpen, color: 'indigo', sub: 'Materi Tersedia', unit: 'Unit' },
+                    { label: 'Antrean Tugas', value: stats.pendingAssignments, icon: Activity, color: 'purple', sub: 'Menunggu Verifikasi', unit: 'Item' },
+                    { label: 'Skor Performa', value: stats.averageGrade, icon: Target, color: 'amber', sub: 'Rata-rata Akurasi', unit: '%' }
                 ].map((stat, i) => (
                     <motion.div
                         key={i}
@@ -191,18 +191,18 @@ const DashboardOverview: React.FC = () => {
                             <stat.icon size={100} />
                         </div>
                         <div className="space-y-12 relative z-10">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 italic flex items-center gap-3">
-                                <div className={`w-2 h-2 rounded-full bg-indigo-500 animate-pulse`} />
+                            <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 flex items-center gap-3">
+                                <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
                                 {stat.label}
                             </h3>
                             <div className="space-y-4">
                                 <div className="flex items-baseline gap-4">
-                                    <span className="text-6xl font-black tracking-tighter text-gray-900 italic leading-none">{stat.value}</span>
-                                    <span className="text-lg font-black text-gray-300 uppercase italic tracking-widest">{stat.unit}</span>
+                                    <span className="text-6xl font-bold tracking-tighter text-gray-900 leading-none">{stat.value}</span>
+                                    <span className="text-lg font-bold text-gray-300 uppercase tracking-widest">{stat.unit}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="px-3 py-1 bg-gray-50 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest">STABLE_CONNECTION</div>
-                                    <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest italic">{stat.sub}</p>
+                                    <div className="px-3 py-1 bg-gray-50 rounded-lg text-[9px] font-bold text-gray-400 uppercase tracking-widest">AKTIF</div>
+                                    <p className="text-[10px] font-semibold text-gray-300 uppercase tracking-widest">{stat.sub}</p>
                                 </div>
                             </div>
                         </div>
@@ -219,15 +219,15 @@ const DashboardOverview: React.FC = () => {
                                 <Layout className="w-7 h-7 text-white" />
                             </div>
                             <div className="space-y-1">
-                                <h2 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic leading-none">Library Mobul</h2>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest italic flex items-center gap-2">
+                                <h2 className="text-3xl font-bold text-gray-900 tracking-tighter uppercase leading-none">Library Modul</h2>
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                                     <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-                                    TRANSMISI_KURIKULUM_HARI_INI
+                                    Kurikulum Pembelajaran Anda
                                 </p>
                             </div>
                         </div>
-                        <Link to="/dashboard/courses" className="px-8 py-4 bg-gray-50 hover:bg-gray-100 text-[10px] font-black text-gray-400 hover:text-gray-900 rounded-[22px] transition-all uppercase tracking-[0.2em] flex items-center gap-4 italic border border-gray-100 shadow-inner">
-                            TERMINAL_LENGKAP <ChevronRight className="w-4 h-4" />
+                        <Link to="/dashboard/courses" className="px-6 py-3.5 bg-gray-50 hover:bg-gray-100 text-[10px] font-bold text-gray-400 hover:text-gray-900 rounded-xl transition-all uppercase tracking-[0.2em] flex items-center gap-3 border border-gray-100 shadow-inner">
+                            LIHAT SEMUA <ChevronRight className="w-4 h-4" />
                         </Link>
                     </div>
 
@@ -257,38 +257,38 @@ const DashboardOverview: React.FC = () => {
                                         </div>
                                         <div className="flex-1 min-w-0 py-2 space-y-6">
                                             <div className="flex flex-wrap items-center gap-4">
-                                                <span className="px-4 py-1.5 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest rounded-xl border border-indigo-100 italic">
+                                                <span className="px-4 py-1.5 bg-indigo-50 text-indigo-600 text-[10px] font-bold uppercase tracking-widest rounded-xl border border-indigo-100">
                                                     SEKTOR_{course.category?.toUpperCase()}
                                                 </span>
-                                                <span className="flex items-center gap-2.5 text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] italic">
+                                                <span className="flex items-center gap-2.5 text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">
                                                     <Clock className="w-4 h-4 text-indigo-400" />
                                                     DURASI: {course.duration_hours || 'N/A'} JAM
                                                 </span>
                                             </div>
                                             <div className="space-y-2">
-                                                <h3 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic group-hover:text-indigo-600 transition-colors leading-none">
+                                                <h3 className="text-3xl font-bold text-gray-900 tracking-tighter uppercase group-hover:text-indigo-600 transition-colors leading-none">
                                                     {course.title}
                                                 </h3>
-                                                <p className="text-base text-gray-500 font-medium line-clamp-2 leading-relaxed italic pr-12">
+                                                <p className="text-base text-gray-500 font-medium line-clamp-2 leading-relaxed pr-12">
                                                     {course.description}
                                                 </p>
                                             </div>
-                                            <div className="flex items-center justify-between pt-8 border-t border-gray-50">
+                                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pt-8 border-t border-gray-50 gap-6">
                                                 <div className="flex items-center gap-3">
                                                     <div className="flex -space-x-3">
                                                         {[1, 2, 3].map(i => (
-                                                            <div key={i} className={`w-10 h-10 rounded-2xl border-4 border-white bg-indigo-50 flex items-center justify-center text-[10px] font-black text-indigo-400 shadow-sm transition-transform group-hover:translate-x-${i}`}>
+                                                            <div key={i} className={`w-9 h-9 rounded-xl border-4 border-white bg-indigo-50 flex items-center justify-center text-[10px] font-bold text-indigo-400 shadow-sm transition-transform group-hover:translate-x-${i}`}>
                                                                 {i}
                                                             </div>
                                                         ))}
                                                     </div>
-                                                    <span className="text-[10px] text-gray-300 font-black uppercase tracking-widest ml-4 italic">UNIT_MODUL_TERVALIDASI</span>
+                                                    <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest ml-4">MODUL TERVERIFIKASI</span>
                                                 </div>
                                                 <button
                                                     onClick={() => navigate(`/dashboard/courses/${course.id}`)}
-                                                    className="px-10 py-4 bg-gray-900 text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-[22px] hover:bg-black transition-all shadow-2xl shadow-gray-900/10 active:scale-95 flex items-center gap-4 italic"
+                                                    className="px-8 py-4 bg-gray-900 text-white text-[11px] font-bold uppercase tracking-[0.2em] rounded-xl hover:bg-black transition-all shadow-xl shadow-gray-900/10 active:scale-95 flex items-center gap-3"
                                                 >
-                                                    INITIALIZE_MISSION <ArrowRight className="w-5 h-5 text-indigo-400" />
+                                                    LIHAT MATERI <ArrowRight className="w-4 h-4 text-indigo-400" />
                                                 </button>
                                             </div>
                                         </div>
@@ -299,8 +299,8 @@ const DashboardOverview: React.FC = () => {
                     ) : (
                         <div className="bg-white border-4 border-dashed border-gray-50 rounded-[60px] p-24 text-center group">
                             <BookOpen size={80} className="text-gray-100 mx-auto mb-10 transition-transform group-hover:scale-110 duration-700" />
-                            <h3 className="text-3xl font-black text-gray-900 uppercase italic tracking-tighter">REPOSI_KOSONG</h3>
-                            <p className="text-[11px] font-black text-gray-300 uppercase tracking-[0.4em] mt-4 italic">NODE KURIKULUM UNTUK SEKTOR INI SEDANG DALAM PROSES DEKRIPSI.</p>
+                            <h3 className="text-3xl font-bold text-gray-900 uppercase tracking-tighter">REPOSI_KOSONG</h3>
+                            <p className="text-[11px] font-bold text-gray-300 uppercase tracking-[0.4em] mt-4">NODE KURIKULUM UNTUK SEKTOR INI SEDANG DALAM PROSES DEKRIPSI.</p>
                         </div>
                     )}
                 </div>
@@ -311,34 +311,34 @@ const DashboardOverview: React.FC = () => {
                         <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-600 opacity-0 group-hover/status:opacity-5 blur-[80px] transition-all duration-1000 -translate-y-1/2 translate-x-1/2" />
 
                         <div className="space-y-12 relative z-10">
-                            <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em] italic flex items-center gap-4 border-b border-gray-50 pb-8">
+                            <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.3em] flex items-center gap-4 border-b border-gray-50 pb-8">
                                 <Trophy className="w-5 h-5 text-amber-500" />
-                                MATRIKS_OTORITAS
+                                Matriks Otoritas
                             </h3>
 
                             <div className="space-y-8">
                                 <div className="space-y-4">
-                                    <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] italic">Level Otoritas Belajar</span>
+                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">Status Keanggotaan</span>
                                     <div className={`p-8 rounded-[35px] border-2 transition-all overflow-hidden relative group/tier ${user?.is_premium ? 'bg-indigo-600 border-indigo-500 shadow-2xl shadow-indigo-600/20' : 'bg-gray-50 border-gray-100 shadow-inner'}`}>
                                         <div className="relative z-10 flex flex-col gap-6">
                                             <div className="flex items-center justify-between">
                                                 <div className={`flex items-center gap-4 ${user?.is_premium ? 'text-white' : 'text-gray-400'}`}>
-                                                    {user?.is_premium ? <Crown className="w-6 h-6 animate-pulse" /> : <ShieldCheck className="w-6 h-6" />}
-                                                    <span className="text-xl font-black uppercase italic tracking-tighter leading-none">{user?.is_premium ? 'PREMIUM_MEMBER' : 'FREE_ACCESS'}</span>
+                                                    {user?.is_premium ? <Crown className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />}
+                                                    <span className="text-xl font-bold uppercase tracking-tighter leading-none">{user?.is_premium ? 'Member Premium' : 'Akses Gratis'}</span>
                                                 </div>
                                             </div>
 
                                             {user?.is_premium && (
                                                 <div className="flex items-center gap-3 px-5 py-2.5 bg-white/10 rounded-2xl border border-white/10">
                                                     <Clock className="w-4 h-4 text-indigo-300" />
-                                                    <span className="text-[9px] font-black text-indigo-100 uppercase tracking-[0.2em] italic">
+                                                    <span className="text-[9px] font-bold text-indigo-100 uppercase tracking-[0.2em]">
                                                         {user.premium_until ? (
                                                             (() => {
                                                                 const expiry = new Date(user.premium_until);
                                                                 const diff = Math.ceil((expiry.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                                                                return diff > 0 ? `${diff} HARI OTORITAS TERSEDIA` : 'KADALUWARSA';
+                                                                return diff > 0 ? `${diff} Hari Tersisa` : 'Kadaluwarsa';
                                                             })()
-                                                        ) : 'AKSES_LIFETIME_AKTIF'}
+                                                        ) : 'Akses Selamanya'}
                                                     </span>
                                                 </div>
                                             )}
@@ -347,12 +347,12 @@ const DashboardOverview: React.FC = () => {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] italic">Unit Kerja Aktif</span>
+                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">Unit Kerja Aktif</span>
                                     <div className="p-8 bg-gray-50/50 rounded-[35px] border-2 border-gray-100 shadow-inner group/path hover:border-indigo-100 transition-all">
-                                        <span className="text-2xl font-black text-gray-900 uppercase italic tracking-tighter leading-none group-hover/path:text-indigo-600 transition-colors">
+                                        <span className="text-2xl font-bold text-gray-900 uppercase tracking-tighter leading-none group-hover/path:text-indigo-600 transition-colors">
                                             {getLearningPathName(user?.learning_path)}
                                         </span>
-                                        <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest mt-4 italic opacity-0 group-hover/path:opacity-100 transition-all">TARGET_PATH_V1.2</p>
+                                        <p className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest mt-4 opacity-0 group-hover/path:opacity-100 transition-all">TARGET_PATH_V1.2</p>
                                     </div>
                                 </div>
                             </div>
@@ -361,10 +361,10 @@ const DashboardOverview: React.FC = () => {
                         {!user?.is_premium && (
                             <button
                                 onClick={() => navigate('/dashboard/premium')}
-                                className="w-full mt-12 bg-gray-900 hover:bg-black text-white px-10 py-6 rounded-[30px] text-[11px] font-black uppercase tracking-[0.3em] transition-all shadow-2xl shadow-gray-900/20 active:scale-95 flex items-center justify-center gap-4 italic"
+                                className="w-full mt-12 bg-gray-900 hover:bg-black text-white px-10 py-6 rounded-[30px] text-[11px] font-bold uppercase tracking-[0.3em] transition-all shadow-2xl shadow-gray-900/20 active:scale-95 flex items-center justify-center gap-4"
                             >
                                 <Zap className="w-5 h-5 text-indigo-400" />
-                                REQUEST_UPGRADE_AKSES
+                                Upgrade Sekarang
                             </button>
                         )}
                     </section>
@@ -373,11 +373,11 @@ const DashboardOverview: React.FC = () => {
                         <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-600 opacity-20 blur-[100px] group-hover/logs:opacity-30 transition-opacity duration-1000" />
 
                         <div className="flex items-center justify-between mb-12 border-b border-white/5 pb-8 relative z-10">
-                            <h3 className="text-[11px] font-black text-gray-500 uppercase tracking-[0.3em] italic flex items-center gap-4">
+                            <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-[0.3em] flex items-center gap-4">
                                 <Calendar className="w-5 h-5" />
-                                Log_Protokol_Terakhir
+                                Riwayat Aktivitas
                             </h3>
-                            <div className="px-3 py-1 bg-indigo-500/10 text-indigo-400 text-[8px] font-black uppercase tracking-[0.3em] rounded-lg">OPERATIONAL</div>
+                            <div className="px-3 py-1 bg-indigo-500/10 text-indigo-400 text-[8px] font-bold uppercase tracking-[0.3em] rounded-lg">OPERATIONAL</div>
                         </div>
 
                         {assignments.length > 0 ? (
@@ -394,10 +394,10 @@ const DashboardOverview: React.FC = () => {
                                             <FileText className="w-7 h-7" />
                                         </div>
                                         <div className="flex-1 min-w-0 space-y-2">
-                                            <p className="text-sm font-black text-white truncate uppercase italic tracking-tight group-hover/entry:text-indigo-400 transition-colors">{assignment.course?.title}</p>
+                                            <p className="text-sm font-bold text-white truncate uppercase tracking-tight group-hover/entry:text-indigo-400 transition-colors">{assignment.course?.title}</p>
                                             <div className="flex items-center gap-3">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                <p className="text-[9px] text-gray-500 font-black uppercase tracking-[0.2em] italic">LOG_ENTRY: TRANSMIT_PAYLOAD</p>
+                                                <p className="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em]">Status: Menunggu Penilaian</p>
                                             </div>
                                         </div>
                                     </motion.div>
@@ -406,7 +406,7 @@ const DashboardOverview: React.FC = () => {
                         ) : (
                             <div className="py-20 text-center opacity-20 space-y-6">
                                 <Activity size={50} className="mx-auto animate-pulse" />
-                                <p className="text-[10px] font-black uppercase tracking-[0.4em] italic">BELUM_ADA_AKTIVITAS_TERDETEKSI</p>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.4em]">BELUM_ADA_AKTIVITAS_TERDETEKSI</p>
                             </div>
                         )}
                     </section>

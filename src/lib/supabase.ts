@@ -11,7 +11,7 @@ export interface Profile {
     email: string;
     full_name: string;
     role: 'admin' | 'member';
-    learning_path: 'fe' | 'be' | 'fs' | null;
+    learning_path: 'fe' | 'be' | 'fs' | 'seo' | null;
     is_premium: boolean;
     premium_type: 'none' | 'premium' | 'premium_plus';
     premium_until: string | null;
@@ -55,7 +55,7 @@ export interface Course {
     id: string;
     title: string;
     description: string;
-    category: 'fe' | 'be' | 'fs';
+    category: 'fe' | 'be' | 'fs' | 'seo';
     content_body: string;
     schedule_date: string;
     created_at: string;
@@ -132,7 +132,7 @@ export interface Questionnaire {
     title: string;
     description?: string;
     questions_json: Question[];
-    target_learning_paths: ('fe' | 'be' | 'fs')[];
+    target_learning_paths: ('fe' | 'be' | 'fs' | 'seo')[];
     target_student_ids?: string[] | null;
     due_date?: string;
     is_published: boolean;
