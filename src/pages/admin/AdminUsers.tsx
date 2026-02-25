@@ -1,23 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
+import type { Profile } from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import { Users, Search, Ban, CheckCircle, Shield, Calendar, Mail, GraduationCap, Crown, FilterX, AlertCircle, ArrowLeft } from 'lucide-react';
 
-interface UserProfile {
-  id: string;
-  full_name: string;
-  email: string;
-  learning_path: string | null;
-  is_premium: boolean;
-  is_banned: boolean;
-  created_at: string;
-  role: string;
-}
+// Use Profile from supabase.ts
 
 const AdminUsers: React.FC = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [users, setUsers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRole, setFilterRole] = useState<'all' | 'member' | 'admin'>('all');
@@ -29,13 +21,8 @@ const AdminUsers: React.FC = () => {
 
   const loadUsers = async () => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      if (data) setUsers(data);
+      const data = await api.profiles.getAll();
+      setUsers(data as any);
     } catch (error) {
       console.error('Error loading users:', error);
     } finally {
@@ -49,13 +36,7 @@ const AdminUsers: React.FC = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_banned: true })
-        .eq('id', userId);
-
-      if (error) throw error;
-
+      await api.profiles.toggleBan(userId, true);
       setUsers(users.map(user =>
         user.id === userId ? { ...user, is_banned: true } : user
       ));
@@ -66,13 +47,7 @@ const AdminUsers: React.FC = () => {
 
   const handleUnbanUser = async (userId: string) => {
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_banned: false })
-        .eq('id', userId);
-
-      if (error) throw error;
-
+      await api.profiles.toggleBan(userId, false);
       setUsers(users.map(user =>
         user.id === userId ? { ...user, is_banned: false } : user
       ));

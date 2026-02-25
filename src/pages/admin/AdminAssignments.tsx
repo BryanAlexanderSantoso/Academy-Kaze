@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import type { Assignment } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -26,17 +26,14 @@ const AdminAssignments: React.FC = () => {
   }, []);
 
   const loadAssignments = async () => {
-    const { data } = await supabase
-      .from('assignments')
-      .select(`
-    *,
-    student:profiles!assignments_student_id_fkey(id, full_name, email, learning_path),
-    course:courses(id, title, category)
-   `)
-      .order('created_at', { ascending: false });
-
-    if (data) setAssignments(data as Assignment[]);
-    setLoading(false);
+    try {
+      const data = await api.assignments.getAll();
+      setAssignments(data);
+    } catch (error) {
+      console.error('Error loading assignments:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGrade = async (assignmentId: string) => {
@@ -46,18 +43,17 @@ const AdminAssignments: React.FC = () => {
       return;
     }
 
-    const { error } = await supabase
-      .from('assignments')
-      .update({
+    try {
+      await api.assignments.update(assignmentId, {
         grade,
         feedback: gradeForm.feedback || null,
-      })
-      .eq('id', assignmentId);
+      });
 
-    if (!error) {
       setGradingId(null);
       setGradeForm({ grade: '', feedback: '' });
       loadAssignments();
+    } catch (error: any) {
+      alert('Gagal memberikan nilai: ' + error.message);
     }
   };
 

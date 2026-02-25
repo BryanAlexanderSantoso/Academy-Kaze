@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import type { Assignment } from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import { FileText, Link as LinkIcon, Send, CheckCircle, Clock, AlertCircle, Activity, Trophy } from 'lucide-react';
@@ -18,15 +18,8 @@ const Assignments: React.FC = () => {
 
   const loadAssignments = async () => {
     try {
-      const { data } = await supabase
-        .from('assignments')
-        .select(`
-     *,
-     course:courses(title, category, description)
-    `)
-        .eq('student_id', user?.id)
-        .order('created_at', { ascending: false });
-
+      if (!user) return;
+      const data = await api.assignments.getByStudent(user.id);
       if (data) setAssignments(data);
       setLoading(false);
     } catch (error) {
@@ -41,18 +34,9 @@ const Assignments: React.FC = () => {
 
     setSubmitting(assignmentId);
     try {
-      const { error } = await supabase
-        .from('assignments')
-        .update({
-          submission_link: link,
-          submitted_at: new Date().toISOString(),
-        })
-        .eq('id', assignmentId);
-
-      if (!error) {
-        await loadAssignments();
-        setSubmissionLinks((prev) => ({ ...prev, [assignmentId]: '' }));
-      }
+      await api.assignments.submit(assignmentId, link);
+      await loadAssignments();
+      setSubmissionLinks((prev) => ({ ...prev, [assignmentId]: '' }));
     } catch (error) {
       console.error('Error submitting assignment:', error);
     }

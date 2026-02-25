@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { signOut } from '../lib/auth';
+import { api } from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import LiveChat from '../components/LiveChat';
 import {
@@ -37,9 +37,13 @@ const MemberDashboard: React.FC = () => {
   ];
 
   const handleSignOut = async () => {
-    await signOut();
-    setUser(null);
-    navigate('/login');
+    try {
+      await api.auth.signOut();
+      setUser(null);
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (

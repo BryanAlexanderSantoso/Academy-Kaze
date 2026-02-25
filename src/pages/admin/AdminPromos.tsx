@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import type { Promo } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -48,13 +48,8 @@ const AdminPromos: React.FC = () => {
   const loadPromos = async () => {
     setIsRefreshing(true);
     try {
-      const { data, error } = await supabase
-        .from('promos')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      if (data) setPromos(data);
+      const data = await api.promos.getAll();
+      setPromos(data);
     } catch (error) {
       console.error('Error loading promos:', error);
     } finally {
@@ -123,24 +118,19 @@ const AdminPromos: React.FC = () => {
       };
 
       if (editingPromo) {
-        const { error } = await supabase
-          .from('promos')
-          .update(payload)
-          .eq('id', editingPromo.id);
-        if (error) throw error;
+        await api.promos.update(editingPromo.id, payload);
         setFormSuccess('Promo berhasil diperbarui!');
       } else {
-        const { error } = await supabase
-          .from('promos')
-          .insert([payload]);
-        if (error) {
+        try {
+          await api.promos.create(payload);
+          setFormSuccess('Promo berhasil dibuat!');
+        } catch (error: any) {
           if (error.message.includes('duplicate') || error.message.includes('unique')) {
             setFormError('Kode promo sudah digunakan. Pilih kode lain.');
             return;
           }
           throw error;
         }
-        setFormSuccess('Promo berhasil dibuat!');
       }
 
       loadPromos();
@@ -156,11 +146,7 @@ const AdminPromos: React.FC = () => {
 
   const handleToggleActive = async (promo: Promo) => {
     try {
-      const { error } = await supabase
-        .from('promos')
-        .update({ is_active: !promo.is_active, updated_at: new Date().toISOString() })
-        .eq('id', promo.id);
-      if (error) throw error;
+      await api.promos.update(promo.id, { is_active: !promo.is_active, updated_at: new Date().toISOString() });
       loadPromos();
     } catch (error) {
       console.error('Error toggling promo:', error);
@@ -169,11 +155,7 @@ const AdminPromos: React.FC = () => {
 
   const handleDelete = async (promoId: string) => {
     try {
-      const { error } = await supabase
-        .from('promos')
-        .delete()
-        .eq('id', promoId);
-      if (error) throw error;
+      await api.promos.delete(promoId);
       setDeleteConfirm(null);
       loadPromos();
     } catch (error) {

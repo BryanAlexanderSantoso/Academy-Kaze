@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import type { Course } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -27,15 +27,11 @@ const AdminCourses: React.FC = () => {
 
   const loadCourses = async () => {
     try {
-      const { data } = await supabase
-        .from('courses')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (data) setCourses(data);
-      setLoading(false);
+      const data = await api.courses.getAll({ includeUnpublished: true });
+      setCourses(data);
     } catch (error) {
       console.error('Error loading courses:', error);
+    } finally {
       setLoading(false);
     }
   };
@@ -49,15 +45,15 @@ const AdminCourses: React.FC = () => {
       cancelText: 'Abort',
       showCancel: true,
       onConfirm: async () => {
-        const { error } = await supabase.from('courses').delete().eq('id', id);
-        if (!error) {
+        try {
+          await api.courses.delete(id);
           setCourses(courses.filter((c) => c.id !== id));
           showAlert({
             title: 'Success',
             message: 'Course has been successfully removed.',
             type: 'success'
           });
-        } else {
+        } catch (error: any) {
           showAlert({
             title: 'Error',
             message: 'Failed to delete course: ' + error.message,
@@ -69,13 +65,11 @@ const AdminCourses: React.FC = () => {
   };
 
   const handleTogglePublish = async (course: Course) => {
-    const { error } = await supabase
-      .from('courses')
-      .update({ is_published: !course.is_published })
-      .eq('id', course.id);
-
-    if (!error) {
+    try {
+      await api.courses.update(course.id, { is_published: !course.is_published });
       loadCourses();
+    } catch (error) {
+      console.error('Error toggling publish:', error);
     }
   };
 

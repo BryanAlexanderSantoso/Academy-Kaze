@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import type { Course, Assignment } from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import { BookOpen, FileText, Trophy, Calendar, ArrowRight, Clock, Activity, Zap, Target, ChevronRight, Layout, Crown, Sparkles, ShieldCheck } from 'lucide-react';
@@ -37,40 +37,27 @@ const DashboardOverview: React.FC = () => {
 
     const loadDashboardData = async () => {
         try {
-            // Fetch courses for user's learning path
-            const { data: coursesData } = await supabase
-                .from('courses')
-                .select('*')
-                .eq('category', user?.learning_path)
-                .eq('is_published', true)
-                .order('schedule_date', { ascending: true })
-                .limit(3);
+            if (!user) return;
 
-            // Fetch user assignments
-            const { data: assignmentsData } = await supabase
-                .from('assignments')
-                .select(`
-     *,
-     course:courses(title, category)
-    `)
-                .eq('student_id', user?.id)
-                .order('created_at', { ascending: false });
+            // Use API Service Layer instead of direct Supabase calls
+            const [coursesData, assignmentsData] = await Promise.all([
+                api.courses.getRecent(user.learning_path),
+                api.assignments.getByStudent(user.id)
+            ]);
 
-            if (coursesData) setCourses(coursesData);
-            if (assignmentsData) {
-                setAssignments(assignmentsData);
+            setCourses(coursesData);
+            setAssignments(assignmentsData);
 
-                const graded = assignmentsData.filter(a => a.grade !== null);
-                const avgGrade = graded.length > 0
-                    ? graded.reduce((acc, a) => acc + (a.grade || 0), 0) / graded.length
-                    : 0;
+            const graded = assignmentsData.filter(a => a.grade !== null);
+            const avgGrade = graded.length > 0
+                ? graded.reduce((acc, a) => acc + (a.grade || 0), 0) / graded.length
+                : 0;
 
-                setStats({
-                    completedCourses: coursesData?.length || 0,
-                    pendingAssignments: assignmentsData.filter(a => a.grade === null).length,
-                    averageGrade: Math.round(avgGrade),
-                });
-            }
+            setStats({
+                completedCourses: coursesData.length || 0,
+                pendingAssignments: assignmentsData.filter(a => a.grade === null).length,
+                averageGrade: Math.round(avgGrade),
+            });
 
             setLoading(false);
         } catch (error) {

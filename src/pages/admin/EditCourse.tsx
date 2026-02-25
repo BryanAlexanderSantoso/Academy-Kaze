@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import { motion } from 'framer-motion';
 import {
   Save,
@@ -29,7 +29,7 @@ const EditCourse: React.FC = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'fe' as 'fe' | 'be' | 'fs',
+    category: 'fe' as 'fe' | 'be' | 'fs' | 'seo',
     content_body: '',
     schedule_date: '',
     duration_hours: '',
@@ -45,51 +45,59 @@ const EditCourse: React.FC = () => {
   }, [id]);
 
   const loadCourse = async () => {
-    const { data } = await supabase.from('courses').select('*').eq('id', id).single();
+    if (!id) return;
+    try {
+      const data = await api.courses.getById(id);
 
-    if (data) {
-      setFormData({
-        title: data.title,
-        description: data.description || '',
-        category: data.category,
-        content_body: data.content_body || '',
-        schedule_date: data.schedule_date ? data.schedule_date.slice(0, 16) : '',
-        duration_hours: data.duration_hours?.toString() || '',
-        thumbnail_url: data.thumbnail_url || '',
-        is_published: data.is_published,
-        author_name: data.author_name || '',
-        author_image_url: data.author_image_url || '',
-        is_free: data.is_free || false,
-      });
+      if (data) {
+        setFormData({
+          title: data.title,
+          description: data.description || '',
+          category: data.category,
+          content_body: data.content_body || '',
+          schedule_date: data.schedule_date ? data.schedule_date.slice(0, 16) : '',
+          duration_hours: data.duration_hours?.toString() || '',
+          thumbnail_url: data.thumbnail_url || '',
+          is_published: data.is_published,
+          author_name: data.author_name || '',
+          author_image_url: data.author_image_url || '',
+          is_free: data.is_free || false,
+        });
+      }
+    } catch (error) {
+      console.error('Error loading course:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
 
-    const { error } = await supabase
-      .from('courses')
-      .update({
+    if (!id) return;
+    try {
+      await api.courses.update(id, {
         ...formData,
-        duration_hours: formData.duration_hours ? parseInt(formData.duration_hours) : null,
-      })
-      .eq('id', id);
-
-    if (!error) {
+        duration_hours: formData.duration_hours ? parseInt(formData.duration_hours) : undefined as any,
+      });
       navigate('/admin/courses');
-    } else {
+    } catch (error: any) {
       alert('Gagal memperbarui kursus: ' + error.message);
     }
 
     setSaving(false);
   };
 
-  const handleSignOut = () => {
-    localStorage.removeItem('adminUser');
-    setUser(null);
-    navigate('/admin');
+  const handleSignOut = async () => {
+    try {
+      await api.auth.signOut();
+      localStorage.removeItem('adminUser');
+      setUser(null);
+      navigate('/admin');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   if (loading) {
@@ -280,16 +288,7 @@ const EditCourse: React.FC = () => {
                           const file = e.target.files?.[0];
                           if (!file) return;
                           try {
-                            const fileExt = file.name.split('.').pop();
-                            const fileName = `author-${Math.random().toString(36).substring(2)}.${fileExt}`;
-                            const filePath = `authors/${fileName}`;
-                            const { error: uploadError } = await supabase.storage
-                              .from('course-materials')
-                              .upload(filePath, file);
-                            if (uploadError) throw uploadError;
-                            const { data: { publicUrl } } = supabase.storage
-                              .from('course-materials')
-                              .getPublicUrl(filePath);
+                            const publicUrl = await api.storage.uploadMaterial(id || 'authors', file);
                             setFormData({ ...formData, author_image_url: publicUrl });
                           } catch (error: any) {
                             alert(error.message);

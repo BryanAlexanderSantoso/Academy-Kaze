@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -60,11 +60,12 @@ const PremiumPayment: React.FC = () => {
   }, [user]);
 
   const loadExistingPayments = async () => {
-    await supabase
-      .from('premium_payments')
-      .select('*')
-      .eq('user_id', user?.id)
-      .order('created_at', { ascending: false });
+    if (!user) return;
+    try {
+      await api.payments.getByUser(user.id);
+    } catch (error) {
+      console.error('Error loading payments:', error);
+    }
   };
 
   const getBasePrice = () => PRICES[selectedTier];
@@ -84,14 +85,9 @@ const PremiumPayment: React.FC = () => {
     setAppliedPromo(null);
 
     try {
-      const { data, error } = await supabase
-        .from('promos')
-        .select('*')
-        .eq('code', promoCode.toUpperCase().trim())
-        .eq('is_active', true)
-        .single();
+      const data = await api.promos.getByCode(promoCode);
 
-      if (error || !data) {
+      if (!data) {
         setPromoError('Kode promo tidak valid atau sudah tidak aktif.');
         setPromoLoading(false);
         return;
@@ -156,31 +152,18 @@ const PremiumPayment: React.FC = () => {
 
     setLoading(true);
     try {
-      const fileExt = selectedFile.name.split('.').pop();
-      const fileName = `${user?.id}-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      if (!user) throw new Error('User not found');
 
-      // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('payment-proofs')
-        .upload(filePath, selectedFile);
-
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        throw new Error('Gagal mengupload bukti pembayaran. Pastikan bucket "payment-proofs" tersedia.');
-      }
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('payment-proofs')
-        .getPublicUrl(filePath);
+      // Upload to Storage via Service Layer
+      const publicUrl = await api.storage.uploadPaymentProof(user.id, selectedFile);
 
       const finalAmount = getFinalPrice();
       const baseAmount = getBasePrice();
 
-      // Create Payment Record
-      const { error: insertError } = await supabase.from('premium_payments').insert([{
-        user_id: user?.id,
-        full_name: user?.full_name,
+      // Create Payment Record via Service Layer
+      await api.payments.submitProof({
+        user_id: user.id,
+        full_name: user.full_name,
         payment_method: 'manual_transfer',
         transaction_id: `MANUAL-${Date.now()}`,
         amount: finalAmount,
@@ -190,23 +173,11 @@ const PremiumPayment: React.FC = () => {
         premium_type: selectedTier,
         promo_code: appliedPromo?.code || null,
         discount_percent: appliedPromo?.discount_percent || 0,
-      }]);
+      });
 
-      if (insertError) throw insertError;
-
-      // Increment promo usage if applied
+      // Increment promo usage if applied via Service Layer
       if (appliedPromo) {
-        const { data: promoData } = await supabase
-          .from('promos')
-          .select('current_usage')
-          .eq('code', appliedPromo.code)
-          .single();
-        if (promoData) {
-          await supabase
-            .from('promos')
-            .update({ current_usage: (promoData.current_usage || 0) + 1 })
-            .eq('code', appliedPromo.code);
-        }
+        await api.promos.incrementUsage(appliedPromo.code);
       }
 
       setSubmitted(true);
@@ -222,18 +193,11 @@ const PremiumPayment: React.FC = () => {
   };
 
   const handleCancelPremium = async () => {
+    if (!user) return;
     setCancelling(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          is_premium: false,
-          premium_type: 'none',
-          premium_until: null,
-        })
-        .eq('id', user?.id);
-
-      if (error) throw error;
+      // Update profile status via Service Layer
+      await api.profiles.cancelPremium(user.id);
 
       // Update local state
       setUser({

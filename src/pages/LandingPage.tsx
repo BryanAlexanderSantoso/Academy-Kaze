@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { api } from '../services/api';
 import type { Course, CourseChapter } from '../lib/supabase';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -43,46 +43,21 @@ const LandingPage: React.FC = () => {
     const fetchInitialData = async () => {
       try {
         // Fetch Stats
-        const { count: studentCount } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true })
-          .eq('role', 'member');
-
-        const { count: moduleCount } = await supabase
-          .from('course_chapters')
-          .select('*', { count: 'exact', head: true });
-
-        const { count: premiumCount } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true })
-          .eq('is_premium', true);
-
-        const { data: grades } = await supabase
-          .from('assignments')
-          .select('grade')
-          .not('grade', 'is', null);
-
-        let avg = 0;
-        if (grades && grades.length > 0) {
-          const sum = grades.reduce((acc, curr) => acc + (curr.grade || 0), 0);
-          avg = Math.round(sum / grades.length);
-        }
+        const studentCount = await api.profiles.getActiveStudentCount();
+        const moduleCount = await api.chapters.getTotalCount();
+        const premiumCount = await api.profiles.getPremiumCount();
+        const avg = await api.assignments.getAverageGrade();
 
         setRealStats({
-          students: studentCount || 0,
-          modules: moduleCount || 0,
-          premiumUsers: premiumCount || 0,
-          avgScore: avg || 0
+          students: studentCount,
+          modules: moduleCount,
+          premiumUsers: premiumCount,
+          avgScore: avg
         });
 
         // Fetch published courses for showcase
-        const { data: courseData } = await supabase
-          .from('courses')
-          .select('*')
-          .eq('is_published', true)
-          .order('created_at', { ascending: false });
-
-        if (courseData) setCourses(courseData);
+        const courseData = await api.courses.getAll();
+        setCourses(courseData);
 
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -96,14 +71,14 @@ const LandingPage: React.FC = () => {
 
   const fetchChapters = async (courseId: string) => {
     setLoadingChapters(true);
-    const { data } = await supabase
-      .from('course_chapters')
-      .select('*')
-      .eq('course_id', courseId)
-      .order('order_index');
-
-    if (data) setSelectedChapters(data);
-    setLoadingChapters(false);
+    try {
+      const data = await api.chapters.getByCourse(courseId);
+      setSelectedChapters(data);
+    } catch (error) {
+      console.error("Error fetching chapters:", error);
+    } finally {
+      setLoadingChapters(false);
+    }
   };
 
   const handleCourseClick = (course: Course) => {

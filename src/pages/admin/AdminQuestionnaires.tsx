@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import type { Question, QuestionType, QuestionOption } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -39,15 +39,11 @@ const AdminQuestionnaires: React.FC = () => {
 
   const loadData = async () => {
     try {
-      const { data } = await supabase
-        .from('questionnaires')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (data) setQuestionnaires(data);
-      setLoading(false);
+      const data = await api.questionnaires.getAll();
+      setQuestionnaires(data);
     } catch (error) {
       console.error('Error loading data:', error);
+    } finally {
       setLoading(false);
     }
   };
@@ -139,22 +135,20 @@ const AdminQuestionnaires: React.FC = () => {
     }
 
     try {
-      const { error } = await supabase.from('questionnaires').insert({
+      await api.questionnaires.create({
         title,
         description,
-        questions_json: questions,
-        target_learning_paths: targetLearningPaths,
+        questions_json: questions as any,
+        target_learning_paths: targetLearningPaths as any,
         target_student_ids: targetStudentIds.length > 0 ? targetStudentIds : null,
-        due_date: dueDate || null,
+        due_date: dueDate || undefined,
         allow_late_submission: allowLateSubmission,
         show_correct_answers: showCorrectAnswers,
         max_attempts: maxAttempts,
-        time_limit_minutes: timeLimitMinutes || null,
+        time_limit_minutes: timeLimitMinutes || undefined,
         is_published: publish,
         created_by: user?.id
       });
-
-      if (error) throw error;
 
       alert(`Quiz ${publish ? 'diterbitkan' : 'disimpan sebagai draft'} berhasil!`);
       resetForm();
@@ -183,8 +177,7 @@ const AdminQuestionnaires: React.FC = () => {
     if (!confirm('Hapus quiz ini? Anda tidak bisa mengembalikannya.')) return;
 
     try {
-      const { error } = await supabase.from('questionnaires').delete().eq('id', id);
-      if (error) throw error;
+      await api.questionnaires.delete(id);
       loadData();
     } catch (error) {
       console.error('Error deleting questionnaire:', error);
@@ -193,12 +186,7 @@ const AdminQuestionnaires: React.FC = () => {
 
   const togglePublish = async (id: string, currentStatus: boolean) => {
     try {
-      const { error } = await supabase
-        .from('questionnaires')
-        .update({ is_published: !currentStatus })
-        .eq('id', id);
-
-      if (error) throw error;
+      await api.questionnaires.update(id, { is_published: !currentStatus });
       loadData();
     } catch (error) {
       console.error('Error toggling publish status:', error);

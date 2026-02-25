@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import type { Questionnaire, QuestionnaireResponse, Profile } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -26,41 +26,28 @@ const QuestionnaireResponses: React.FC = () => {
 
   const loadData = async () => {
     try {
-      // Load questionnaire
-      const { data: qData } = await supabase
-        .from('questionnaires')
-        .select('*')
-        .eq('id', id)
-        .single();
+      if (!id) return;
+      const [qData, rData] = await Promise.all([
+        api.questionnaires.getById(id),
+        api.questionnaires.getResponses(id)
+      ]);
 
       if (qData) setQuestionnaire(qData);
-
-      // Load responses with student info
-      const { data: rData } = await supabase
-        .from('questionnaire_responses')
-        .select(`
-          *,
-          student:profiles!questionnaire_responses_student_id_fkey(*)
-        `)
-        .eq('questionnaire_id', id);
-
       if (rData) setResponses(rData);
 
       // Load all targeted students
       if (qData) {
-        let query = supabase
-          .from('profiles')
-          .select('*')
-          .eq('role', 'member');
-
+        let studentsData: Profile[] = [];
         if (qData.target_student_ids && qData.target_student_ids.length > 0) {
-          query = query.in('id', qData.target_student_ids);
-        } else if (qData.target_learning_paths) {
-          query = query.in('learning_path', qData.target_learning_paths);
+          const allProfiles = await api.profiles.getAll();
+          studentsData = allProfiles.filter(p => qData.target_student_ids?.includes(p.id));
+        } else if (qData.target_learning_paths && qData.target_learning_paths.length > 0) {
+          const allProfiles = await api.profiles.getAll();
+          studentsData = allProfiles.filter(p => p.learning_path && (qData.target_learning_paths as string[]).includes(p.learning_path));
+        } else {
+          studentsData = (await api.profiles.getAll()).filter(p => p.role === 'member');
         }
-
-        const { data: sData } = await query;
-        if (sData) setStudents(sData);
+        setStudents(studentsData);
       }
 
       setLoading(false);
@@ -72,17 +59,12 @@ const QuestionnaireResponses: React.FC = () => {
 
   const gradeResponse = async (responseId: string, score: number, feedback: string) => {
     try {
-      const { error } = await supabase
-        .from('questionnaire_responses')
-        .update({
-          score,
-          feedback,
-          is_graded: true,
-          graded_at: new Date().toISOString()
-        })
-        .eq('id', responseId);
-
-      if (error) throw error;
+      await api.questionnaires.updateResponse(responseId, {
+        score,
+        feedback,
+        is_graded: true,
+        graded_at: new Date().toISOString()
+      });
       loadData();
     } catch (error) {
       console.error('Error grading response:', error);
@@ -105,14 +87,14 @@ const QuestionnaireResponses: React.FC = () => {
       // Auto-grade multiple choice and checkbox
       if (question.type === 'multiple_choice' && question.options) {
         const correctOption = question.options.find(opt => opt.isCorrect);
-        if (correctOption && answer === correctOption.id) {
+        if (correctOption && (answer as string) === correctOption.id) {
           totalScore += points;
         }
       } else if (question.type === 'checkbox' && question.options) {
         const correctIds = question.options.filter(opt => opt.isCorrect).map(opt => opt.id);
         const selectedIds = Array.isArray(answer) ? answer : [];
-        const isCorrect = correctIds.length === selectedIds.length &&
-          correctIds.every(id => selectedIds.includes(id));
+        const isCorrect = correctIds.length === (selectedIds as string[]).length &&
+          correctIds.every(id => (selectedIds as string[]).includes(id));
         if (isCorrect) {
           totalScore += points;
         }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminLogin } from '../lib/auth';
+import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, ArrowRight, ChevronRight, AlertCircle, Fingerprint, Activity } from 'lucide-react';
@@ -17,21 +17,16 @@ const AdminLogin: React.FC = () => {
     setError('');
     setLoading(true);
 
-    const result = await adminLogin(password);
-
-    if (!result.success) {
-      setError(result.error || 'Invalid clearance level password');
-      setLoading(false);
-      return;
-    }
-
-    if (result.user) {
-      localStorage.setItem('adminUser', JSON.stringify(result.user));
-      setUser(result.user);
+    try {
+      const adminUser = await api.auth.adminLogin(password);
+      localStorage.setItem('adminUser', JSON.stringify(adminUser));
+      setUser(adminUser as any);
       navigate('/admin/dashboard');
+    } catch (error: any) {
+      setError(error.message || 'Invalid clearance level password');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

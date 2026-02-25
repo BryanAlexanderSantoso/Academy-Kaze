@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { supabase } from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../services/api';
+import { supabase } from '../../lib/supabase';
+import type { Message } from '../../services/api/support';
 import {
   MessageCircle,
   Send,
@@ -11,14 +13,7 @@ import {
   Search,
 } from 'lucide-react';
 
-interface Message {
-  id: string;
-  user_id: string;
-  sender_role: 'member' | 'admin';
-  message: string;
-  is_read: boolean;
-  created_at: string;
-}
+// Use Message from support.ts
 
 interface UserChat {
   user_id: string;
@@ -72,48 +67,15 @@ const AdminSupport: React.FC = () => {
 
   const loadUserChats = async () => {
     try {
-      console.log('[AdminSupport] Loading user chats...');
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        console.log('[AdminSupport] Current Auth ID:', user.id);
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
-        console.log('[AdminSupport] Current Profile Role:', profile?.role);
-
-        if (profile?.role !== 'admin') {
-          console.warn('[AdminSupport] WARNING: This user is NOT an ADMIN!');
-        }
-      }
-
-      const yesterday = new Date();
-      yesterday.setHours(yesterday.getHours() - 24);
-
-      const { data: messagesData, error: msgError } = await supabase
-        .from('support_messages')
-        .select('user_id, message, created_at, is_read')
-        .gte('created_at', yesterday.toISOString())
-        .order('created_at', { ascending: false });
-
-      if (msgError) {
-        console.error('[AdminSupport] Error fetching messages:', msgError);
-        throw msgError;
-      }
-
-      console.log('[AdminSupport] Messages data:', messagesData);
-      console.log('[AdminSupport] Total messages:', messagesData?.length || 0);
+      const messagesData = await api.support.getAllRecentMessages();
 
       if (!messagesData || messagesData.length === 0) {
-        console.log('[AdminSupport] No messages found in database');
         setUserChats([]);
         return;
       }
 
       const userMap = new Map<string, any>();
-      messagesData?.forEach(msg => {
+      messagesData.forEach(msg => {
         if (!userMap.has(msg.user_id) || new Date(msg.created_at) > new Date(userMap.get(msg.user_id).last_message_time)) {
           userMap.set(msg.user_id, {
             user_id: msg.user_id,
@@ -124,35 +86,18 @@ const AdminSupport: React.FC = () => {
       });
 
       const userIds = Array.from(userMap.keys());
-      console.log('[AdminSupport] Unique user IDs:', userIds);
-
       if (userIds.length === 0) {
         setUserChats([]);
         return;
       }
 
-      const { data: profilesData, error: profileError } = await supabase
-        .from('profiles')
-        .select('id, full_name, email')
-        .in('id', userIds);
-
-      if (profileError) {
-        console.error('[AdminSupport] Error fetching profiles:', profileError);
-        throw profileError;
-      }
-
-      console.log('[AdminSupport] Profiles data:', profilesData);
+      const profilesData = await api.profiles.getAll(); // Or a custom method if we want to filter by IDs
+      const relevantProfiles = profilesData.filter(p => userIds.includes(p.id));
 
       const chats: UserChat[] = [];
-      for (const profile of profilesData || []) {
+      for (const profile of relevantProfiles) {
         const chatInfo = userMap.get(profile.id);
-
-        const { count: unreadCount } = await supabase
-          .from('support_messages')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', profile.id)
-          .eq('sender_role', 'member')
-          .eq('is_read', false);
+        const unreadCount = await api.support.getUnreadCount(profile.id, 'member');
 
         chats.push({
           user_id: profile.id,
@@ -160,42 +105,24 @@ const AdminSupport: React.FC = () => {
           email: profile.email || '',
           last_message: chatInfo.last_message,
           last_message_time: chatInfo.last_message_time,
-          unread_count: unreadCount || 0,
+          unread_count: unreadCount,
         });
       }
 
       chats.sort((a, b) => new Date(b.last_message_time).getTime() - new Date(a.last_message_time).getTime());
-      console.log('[AdminSupport] Final chats:', chats);
       setUserChats(chats);
     } catch (error) {
       console.error('[AdminSupport] Error loading user chats:', error);
-      alert('Error loading chats. Check console for details.');
     }
   };
 
   const loadMessages = async (userId: string) => {
     setLoading(true);
     try {
-      const yesterday = new Date();
-      yesterday.setHours(yesterday.getHours() - 24);
+      const data = await api.support.getMessages(userId);
+      setMessages(data);
 
-      const { data, error } = await supabase
-        .from('support_messages')
-        .select('*')
-        .eq('user_id', userId)
-        .gte('created_at', yesterday.toISOString())
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-      setMessages(data || []);
-
-      await supabase
-        .from('support_messages')
-        .update({ is_read: true })
-        .eq('user_id', userId)
-        .eq('sender_role', 'member')
-        .eq('is_read', false);
-
+      await api.support.markAsRead(userId, 'member');
       loadUserChats();
     } catch (error) {
       console.error('Error loading messages:', error);
@@ -209,16 +136,7 @@ const AdminSupport: React.FC = () => {
 
     setSending(true);
     try {
-      const { error } = await supabase
-        .from('support_messages')
-        .insert([{
-          user_id: selectedUserId,
-          sender_role: 'admin',
-          message: newMessage.trim(),
-        }]);
-
-      if (error) throw error;
-
+      await api.support.sendMessage(selectedUserId, newMessage, 'admin');
       setNewMessage('');
       loadMessages(selectedUserId);
     } catch (error: any) {

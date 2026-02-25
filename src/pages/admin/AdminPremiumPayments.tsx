@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import type { PremiumPayment } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -39,16 +39,8 @@ const AdminPremiumPayments: React.FC = () => {
   const loadPayments = async () => {
     setIsRefreshing(true);
     try {
-      const { data, error } = await supabase
-        .from('premium_payments')
-        .select(`
-          *,
-          user:profiles(full_name, email)
-        `)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      if (data) setPayments(data as any);
+      const data = await api.payments.getAll();
+      setPayments(data as any);
     } catch (error) {
       console.error('Error loading payments:', error);
     } finally {
@@ -63,43 +55,12 @@ const AdminPremiumPayments: React.FC = () => {
       if (!payment) return;
 
       // 1. Update Payment Status
-      const { data: updatedPayment, error: paymentError } = await supabase
-        .from('premium_payments')
-        .update({
-          status,
-          admin_feedback: feedback,
-          // updated_at is handled by trigger usually, but we force it here for now
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', paymentId)
-        .select(); // Request returned data to verify update
-
-      if (paymentError) throw paymentError;
-
-      // Check if any row was actually updated
-      if (!updatedPayment || updatedPayment.length === 0) {
-        throw new Error('Update blocked: Policy matched 0 rows. ensure you are Admin.');
-      }
+      await api.payments.updateStatus(paymentId, status, feedback);
 
       // 2. If approved, explicitly update the User's Profile to premium
       if (status === 'approved') {
-        const expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + 30); // Add 30 days
-
         const premiumType = (payment as any).premium_type || 'premium';
-
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({
-            is_premium: true,
-            premium_type: premiumType,
-            premium_until: expiryDate.toISOString()
-          })
-          .eq('id', payment.user_id);
-
-        if (profileError) {
-          console.error('Failed to update user premium status:', profileError);
-        }
+        await api.profiles.promoteToPremium(payment.user_id, premiumType);
       }
 
       loadPayments();

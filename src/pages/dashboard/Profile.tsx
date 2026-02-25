@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Mail, Code2, Save, TrendingUp, Crown, ShieldCheck, XCircle, AlertTriangle, Clock, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -21,15 +21,8 @@ const Profile: React.FC = () => {
     setMessage('');
 
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ full_name: fullName })
-        .eq('id', user?.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-
+      if (!user) return;
+      const data = await api.profiles.update(user.id, { full_name: fullName });
       if (data) {
         setUser({ ...user!, full_name: data.full_name });
         setMessage('Profil berhasil diperbarui!');
@@ -44,16 +37,8 @@ const Profile: React.FC = () => {
   const handleCancelPremium = async () => {
     setCancelling(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          is_premium: false,
-          premium_type: 'none',
-          premium_until: null,
-        })
-        .eq('id', user?.id);
-
-      if (error) throw error;
+      if (!user) return;
+      await api.profiles.cancelPremium(user.id);
 
       // Update local state
       setUser({

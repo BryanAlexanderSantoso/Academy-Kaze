@@ -135,6 +135,8 @@ The app will open at `http://localhost:5173`
 ```
 kaze-developer/
 ├── src/
+│   ├── services/api/      # Unified API Service Layer (NEW)
+│   │   └── ApiDocs.md     # Detailed API Documentation
 │   ├── components/         # Reusable UI components
 │   ├── contexts/          # React context providers
 │   │   └── AuthContext.tsx
@@ -198,6 +200,12 @@ kaze-developer/
 - Assignment submission and grade viewing
 - Progress tracking visualization
 - Responsive mobile-friendly design
+
+### API Service Layer
+- **Centralized Abstraction**: All database interactions are managed via `api` object
+- **Modules**: Auth, Profiles, Courses, Assignments, Payments, Questionnaires, and more
+- **Type Safety**: Fully typed using TypeScript and Supabase schema types
+- **Documentation**: Detailed guide available in [`src/services/api/ApiDocs.md`](src/services/api/ApiDocs.md)
 
 ## 📝 Next Steps & Extensions
 

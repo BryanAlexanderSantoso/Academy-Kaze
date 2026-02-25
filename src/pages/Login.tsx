@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signIn } from '../lib/auth';
+import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -22,41 +22,34 @@ const Login: React.FC = () => {
     setError('');
     setLoading(true);
 
-    const { data, error: signInError } = await signIn(email, password);
+    try {
+      const { user: authUser } = await api.auth.signIn(email, password);
 
-    if (signInError) {
-      setError(signInError);
-      setLoading(false);
-      return;
-    }
+      if (authUser) {
+        const profile = await api.profiles.getById(authUser.id);
 
-    if (data?.user) {
-      const { supabase } = await import('../lib/supabase');
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
+        if (profile) {
+          setUser({
+            id: profile.id,
+            email: profile.email,
+            role: profile.role,
+            full_name: profile.full_name,
+            learning_path: profile.learning_path,
+            is_premium: profile.is_premium,
+          });
 
-      if (profile) {
-        setUser({
-          id: profile.id,
-          email: profile.email,
-          role: profile.role,
-          full_name: profile.full_name,
-          learning_path: profile.learning_path,
-          is_premium: profile.is_premium,
-        });
-
-        if (!profile.learning_path) {
-          navigate('/onboarding');
-        } else {
-          navigate('/dashboard');
+          if (!profile.learning_path) {
+            navigate('/onboarding');
+          } else {
+            navigate('/dashboard');
+          }
         }
       }
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

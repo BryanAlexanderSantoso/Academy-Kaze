@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import type { Course } from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import { BookOpen, Clock, Search, GraduationCap, ChevronRight, Activity } from 'lucide-react';
@@ -18,20 +18,18 @@ const Courses: React.FC = () => {
 
   const loadCourses = async () => {
     try {
-      let query = supabase
-        .from('courses')
-        .select('*')
-        .eq('is_published', true)
-        .order('schedule_date', { ascending: true });
+      if (!user) return;
 
-      // Premium+ users see ALL courses, others see only their learning path
-      if (user?.premium_type !== 'premium_plus' && user?.role !== 'admin') {
-        query = query.eq('category', user?.learning_path);
-      }
+      // Premium+ users or admins see ALL courses, others see only their learning path
+      const category = (user.premium_type === 'premium_plus' || user.role === 'admin')
+        ? undefined
+        : user.learning_path;
 
-      const { data } = await query;
+      const data = await api.courses.getAll({
+        category: category || undefined
+      });
 
-      if (data) setCourses(data);
+      setCourses(data);
       setLoading(false);
     } catch (error) {
       console.error('Error loading courses:', error);

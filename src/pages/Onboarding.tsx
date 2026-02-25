@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { updateLearningPath } from '../lib/auth';
+import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -111,18 +111,18 @@ const Onboarding: React.FC = () => {
   const handleContinue = async () => {
     if (!selectedPath || !user) return;
 
-    setLoading(true);
-    const { data, error } = await updateLearningPath(user.id, selectedPath);
-
-    if (!error && data) {
+    try {
+      await api.profiles.updateLearningPath(user.id, selectedPath);
       setUser({
         ...user,
         learning_path: selectedPath,
       });
       navigate('/dashboard');
+    } catch (error) {
+      console.error('Error updating learning path:', error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

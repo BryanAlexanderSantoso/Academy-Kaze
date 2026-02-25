@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import type { Profile, Course } from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import {
@@ -36,14 +36,19 @@ const CreateAssignment: React.FC = () => {
   }, []);
 
   const loadData = async () => {
-    const [coursesRes, studentsRes] = await Promise.all([
-      supabase.from('courses').select('*').eq('is_published', true).order('title'),
-      supabase.from('profiles').select('*').eq('role', 'member').order('full_name'),
-    ]);
+    try {
+      const [coursesData, studentsData] = await Promise.all([
+        api.courses.getAll(),
+        api.profiles.getAllMembers(),
+      ]);
 
-    if (coursesRes.data) setCourses(coursesRes.data);
-    if (studentsRes.data) setStudents(studentsRes.data);
-    setLoading(false);
+      setCourses(coursesData);
+      setStudents(studentsData);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleToggleStudent = (studentId: string) => {
@@ -86,21 +91,20 @@ const CreateAssignment: React.FC = () => {
 
     setSubmitting(true);
 
-    const assignments = Array.from(selectedStudents).map((studentId) => ({
-      student_id: studentId,
-      course_id: selectedCourse,
-      due_date: dueDate || null,
-    }));
+    try {
+      const assignments = Array.from(selectedStudents).map((studentId) => ({
+        student_id: studentId,
+        course_id: selectedCourse,
+        due_date: dueDate || null,
+      }));
 
-    const { error } = await supabase.from('assignments').insert(assignments);
-
-    if (error) {
-      alert('Error creating assignments: ' + error.message);
-    } else {
+      await api.assignments.createBulk(assignments);
       navigate('/admin/assignments');
+    } catch (error: any) {
+      alert('Error creating assignments: ' + error.message);
+    } finally {
+      setSubmitting(false);
     }
-
-    setSubmitting(false);
   };
 
   const handleSignOut = () => {

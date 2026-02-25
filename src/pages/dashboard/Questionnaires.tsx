@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import type { Questionnaire, QuestionnaireResponse } from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import { ClipboardList, Calendar, AlertCircle, Play, Eye, Clock, Award, Activity } from 'lucide-react';
@@ -19,34 +19,23 @@ const Questionnaires: React.FC = () => {
 
   const loadQuestionnaires = async () => {
     try {
-      // Load published questionnaires
-      const { data: qData } = await supabase
-        .from('questionnaires')
-        .select('*')
-        .eq('is_published', true)
-        .order('created_at', { ascending: false });
+      if (!user) return;
+      const [qData, rData] = await Promise.all([
+        api.questionnaires.getPublished(),
+        api.questionnaires.getUserResponses(user.id)
+      ]);
 
-      if (qData) {
-        setQuestionnaires(qData);
-
-        // Load responses for each questionnaire
-        const { data: rData } = await supabase
-          .from('questionnaire_responses')
-          .select('*')
-          .eq('student_id', user?.id);
-
-        if (rData) {
-          const responsesByQuestionnaire: Record<string, QuestionnaireResponse[]> = {};
-          rData.forEach(response => {
-            if (!responsesByQuestionnaire[response.questionnaire_id]) {
-              responsesByQuestionnaire[response.questionnaire_id] = [];
-            }
-            responsesByQuestionnaire[response.questionnaire_id].push(response);
-          });
-          setResponses(responsesByQuestionnaire);
-        }
+      if (qData) setQuestionnaires(qData);
+      if (rData) {
+        const responsesByQuestionnaire: Record<string, QuestionnaireResponse[]> = {};
+        rData.forEach(response => {
+          if (!responsesByQuestionnaire[response.questionnaire_id]) {
+            responsesByQuestionnaire[response.questionnaire_id] = [];
+          }
+          responsesByQuestionnaire[response.questionnaire_id].push(response);
+        });
+        setResponses(responsesByQuestionnaire);
       }
-
       setLoading(false);
     } catch (error) {
       console.error('Error loading questionnaires:', error);

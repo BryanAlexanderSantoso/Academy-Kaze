@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { signUp } from '../lib/auth';
+import { api } from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail, Lock, User,
@@ -21,19 +21,14 @@ const Signup: React.FC = () => {
     setError('');
     setLoading(true);
 
-    const { data, error: signUpError } = await signUp(email, password, fullName);
-
-    if (signUpError) {
-      setError(signUpError);
-      setLoading(false);
-      return;
-    }
-
-    if (data) {
+    try {
+      await api.auth.signUp(email, password, fullName);
       navigate('/onboarding');
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

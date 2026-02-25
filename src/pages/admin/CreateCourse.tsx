@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
+import type { Course } from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import {
   Save,
@@ -27,7 +28,7 @@ const CreateCourse: React.FC = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'fe' as 'fe' | 'be' | 'fs',
+    category: 'fe' as 'fe' | 'be' | 'fs' | 'seo',
     content_body: '',
     schedule_date: '',
     duration_hours: '',
@@ -42,26 +43,30 @@ const CreateCourse: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    const courseData = {
-      ...formData,
-      duration_hours: formData.duration_hours ? parseInt(formData.duration_hours) : null,
-    };
+    try {
+      const courseData = {
+        ...formData,
+        duration_hours: formData.duration_hours ? parseInt(formData.duration_hours) : undefined as any,
+      };
 
-    const { data, error } = await supabase.from('courses').insert([courseData]).select();
-
-    if (error) {
-      alert('Gagal membuat kursus: ' + error.message);
-    } else if (data && data.length > 0) {
+      await api.courses.create(courseData);
       navigate('/admin/courses');
+    } catch (error: any) {
+      alert('Gagal membuat kursus: ' + error.message);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
-  const handleSignOut = () => {
-    localStorage.removeItem('adminUser');
-    setUser(null);
-    navigate('/admin');
+  const handleSignOut = async () => {
+    try {
+      await api.auth.signOut();
+      localStorage.removeItem('adminUser');
+      setUser(null);
+      navigate('/admin');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (
@@ -240,16 +245,7 @@ const CreateCourse: React.FC = () => {
                           const file = e.target.files?.[0];
                           if (!file) return;
                           try {
-                            const fileExt = file.name.split('.').pop();
-                            const fileName = `author-${Math.random().toString(36).substring(2)}.${fileExt}`;
-                            const filePath = `authors/${fileName}`;
-                            const { error: uploadError } = await supabase.storage
-                              .from('course-materials')
-                              .upload(filePath, file);
-                            if (uploadError) throw uploadError;
-                            const { data: { publicUrl } } = supabase.storage
-                              .from('course-materials')
-                              .getPublicUrl(filePath);
+                            const publicUrl = await api.storage.uploadMaterial('authors', file);
                             setFormData({ ...formData, author_image_url: publicUrl });
                           } catch (error: any) {
                             alert(error.message);

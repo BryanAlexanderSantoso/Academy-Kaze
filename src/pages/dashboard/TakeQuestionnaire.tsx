@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { api } from '../../services/api';
 import type { Questionnaire, Question, QuestionnaireResponse } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -45,14 +45,11 @@ const TakeQuestionnaire: React.FC = () => {
 
   const loadQuestionnaire = async () => {
     try {
-      const { data: qData } = await supabase
-        .from('questionnaires')
-        .select('*')
-        .eq('id', id)
-        .eq('is_published', true)
-        .single();
+      if (!id || !user) return;
 
-      if (!qData) {
+      const qData = await api.questionnaires.getById(id);
+
+      if (!qData || !qData.is_published) {
         alert('Kuis tidak ditemukan atau tidak tersedia');
         navigate('/dashboard/questionnaires');
         return;
@@ -62,14 +59,7 @@ const TakeQuestionnaire: React.FC = () => {
       setStartTime(Date.now());
 
       // Check for existing response
-      const { data: rData } = await supabase
-        .from('questionnaire_responses')
-        .select('*')
-        .eq('questionnaire_id', id)
-        .eq('student_id', user?.id)
-        .order('attempt_number', { ascending: false })
-        .limit(1)
-        .single();
+      const rData = await api.questionnaires.getLatestUserResponse(id, user.id);
 
       if (rData) {
         setExistingResponse(rData);
@@ -113,27 +103,23 @@ const TakeQuestionnaire: React.FC = () => {
     if (!questionnaire || !user) return;
 
     try {
-      if (existingResponse && !existingResponse.submitted_at) {
-        // Update existing in-progress response
-        await supabase
-          .from('questionnaire_responses')
-          .update({ answers_json: currentAnswers })
-          .eq('id', existingResponse.id);
-      } else if (!existingResponse) {
-        // Create new response
-        const { data } = await supabase
-          .from('questionnaire_responses')
-          .insert({
-            questionnaire_id: questionnaire.id,
-            student_id: user.id,
-            answers_json: currentAnswers,
-            attempt_number: 1
-          })
-          .select()
-          .single();
+      const responseToUpsert: Partial<QuestionnaireResponse> = {
+        questionnaire_id: questionnaire.id,
+        student_id: user.id,
+        answers_json: currentAnswers,
+      };
 
-        if (data) setExistingResponse(data);
+      if (existingResponse && !existingResponse.submitted_at) {
+        responseToUpsert.id = existingResponse.id;
+      } else if (!existingResponse) {
+        responseToUpsert.attempt_number = 1;
+      } else {
+        // Can't save progress if already submitted
+        return;
       }
+
+      const data = await api.questionnaires.upsertResponse(responseToUpsert);
+      if (data) setExistingResponse(data);
     } catch (error) {
       console.error('Error saving progress:', error);
     }
@@ -156,31 +142,23 @@ const TakeQuestionnaire: React.FC = () => {
 
     try {
       const timeSpent = Math.floor((Date.now() - startTime) / 1000);
-      const attemptNumber = existingResponse ? existingResponse.attempt_number : 1;
+      const attemptNumber = existingResponse ? (existingResponse.submitted_at ? existingResponse.attempt_number + 1 : existingResponse.attempt_number) : 1;
+
+      const responseToUpsert: Partial<QuestionnaireResponse> = {
+        questionnaire_id: questionnaire.id,
+        student_id: user.id,
+        answers_json: answers,
+        submitted_at: new Date().toISOString(),
+        time_spent_seconds: timeSpent,
+        attempt_number: attemptNumber
+      };
 
       if (existingResponse && !existingResponse.submitted_at) {
-        // Update existing response
-        await supabase
-          .from('questionnaire_responses')
-          .update({
-            answers_json: answers,
-            submitted_at: new Date().toISOString(),
-            time_spent_seconds: timeSpent
-          })
-          .eq('id', existingResponse.id);
-      } else {
-        // Create new response
-        await supabase
-          .from('questionnaire_responses')
-          .insert({
-            questionnaire_id: questionnaire.id,
-            student_id: user.id,
-            answers_json: answers,
-            submitted_at: new Date().toISOString(),
-            time_spent_seconds: timeSpent,
-            attempt_number: attemptNumber
-          });
+        responseToUpsert.id = existingResponse.id;
       }
+
+      const data = await api.questionnaires.upsertResponse(responseToUpsert);
+      if (data) setExistingResponse(data);
 
       setShowResults(true);
     } catch (error) {

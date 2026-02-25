@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
+import { api } from '../services/api';
 import type { Profile, Assignment } from '../lib/supabase';
 import { motion } from 'framer-motion';
 import {
@@ -44,46 +44,30 @@ const AdminDashboard: React.FC = () => {
 
   const loadDashboardData = async () => {
     try {
-      // Fetch students
-      const { data: studentsData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('role', 'member')
-        .order('created_at', { ascending: false });
-
-      // Fetch courses
-      const { data: coursesData } = await supabase
-        .from('courses')
-        .select('*');
-
-      // Fetch assignments
-      const { data: assignmentsData } = await supabase
-        .from('assignments')
-        .select(`
-     *,
-     student:profiles(full_name, email),
-     course:courses(title)
-    `)
-        .order('created_at', { ascending: false })
-        .limit(10);
+      const [studentsData, coursesData, assignmentsData] = await Promise.all([
+        api.profiles.getAll(),
+        api.courses.getAll({ includeUnpublished: true }),
+        api.assignments.getAll()
+      ]);
 
       if (studentsData) {
-        setStudents(studentsData);
+        const members = (studentsData as Profile[]).filter(s => s.role === 'member');
+        setStudents(members);
         const avgProgress =
-          studentsData.reduce((acc, s) => acc + s.progress_percentage, 0) /
-          studentsData.length;
+          members.reduce((acc, s) => acc + s.progress_percentage, 0) /
+          members.length;
 
         setStats({
-          totalStudents: studentsData.length,
-          totalCourses: coursesData?.length || 0,
+          totalStudents: members.length,
+          totalCourses: coursesData.length,
           pendingAssignments:
-            assignmentsData?.filter((a) => a.grade === null).length || 0,
+            assignmentsData.filter((a) => a.grade === null).length,
           avgProgress: Math.round(avgProgress || 0),
         });
       }
 
       if (assignmentsData) {
-        setRecentAssignments(assignmentsData);
+        setRecentAssignments(assignmentsData.slice(0, 10));
       }
 
       setLoading(false);
@@ -93,10 +77,15 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const handleSignOut = () => {
-    localStorage.removeItem('adminUser');
-    setUser(null);
-    navigate('/admin');
+  const handleSignOut = async () => {
+    try {
+      await api.auth.signOut();
+      localStorage.removeItem('adminUser');
+      setUser(null);
+      navigate('/admin');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   if (loading) {

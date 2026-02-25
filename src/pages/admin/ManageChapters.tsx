@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { api } from '../../services/api';
 import type { CourseChapter, Course } from '../../lib/supabase';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import {
@@ -51,13 +51,14 @@ const ManageChapters: React.FC = () => {
   const loadCourseAndChapters = async () => {
     setLoading(true);
     try {
-      const [courseRes, chaptersRes] = await Promise.all([
-        supabase.from('courses').select('*').eq('id', courseId).single(),
-        supabase.from('course_chapters').select('*').eq('course_id', courseId).order('order_index')
+      if (!courseId) return;
+      const [courseData, chaptersData] = await Promise.all([
+        api.courses.getById(courseId),
+        api.chapters.getByCourse(courseId)
       ]);
 
-      if (courseRes.data) setCourse(courseRes.data);
-      if (chaptersRes.data) setChapters(chaptersRes.data);
+      setCourse(courseData);
+      setChapters(chaptersData);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -97,19 +98,7 @@ const ManageChapters: React.FC = () => {
     setUploadProgress(0);
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${courseId}/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('course-materials')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('course-materials')
-        .getPublicUrl(filePath);
+      const publicUrl = await api.storage.uploadMaterial(courseId as string, file);
 
       setEditingChapter({
         ...editingChapter,
@@ -148,16 +137,9 @@ const ManageChapters: React.FC = () => {
       };
 
       if (editingChapter.id) {
-        const { error } = await supabase
-          .from('course_chapters')
-          .update(payload)
-          .eq('id', editingChapter.id);
-        if (error) throw error;
+        await api.chapters.update(editingChapter.id, payload);
       } else {
-        const { error } = await supabase
-          .from('course_chapters')
-          .insert([payload]);
-        if (error) throw error;
+        await api.chapters.create(payload);
       }
 
       await loadCourseAndChapters();
@@ -190,12 +172,7 @@ const ManageChapters: React.FC = () => {
       showCancel: true,
       onConfirm: async () => {
         try {
-          const { error } = await supabase
-            .from('course_chapters')
-            .delete()
-            .eq('id', chapterId);
-
-          if (error) throw error;
+          await api.chapters.delete(chapterId);
           setChapters(chapters.filter(c => c.id !== chapterId));
           showAlert({
             title: 'Berhasil',
@@ -228,14 +205,22 @@ const ManageChapters: React.FC = () => {
       author_image_url: chapter.author_image_url
     }));
 
-    const { error } = await supabase.from('course_chapters').upsert(updates);
-    if (error) console.error('Error updating order:', error);
+    try {
+      await api.chapters.upsertChapters(updates);
+    } catch (error) {
+      console.error('Error updating order:', error);
+    }
   };
 
-  const handleSignOut = () => {
-    localStorage.removeItem('adminUser');
-    setUser(null);
-    navigate('/admin');
+  const handleSignOut = async () => {
+    try {
+      await api.auth.signOut();
+      localStorage.removeItem('adminUser');
+      setUser(null);
+      navigate('/admin');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   if (loading) {
@@ -494,16 +479,7 @@ const ManageChapters: React.FC = () => {
                             if (!file) return;
                             setUploading(true);
                             try {
-                              const fileExt = file.name.split('.').pop();
-                              const fileName = `author-${Math.random().toString(36).substring(2)}.${fileExt}`;
-                              const filePath = `authors/${fileName}`;
-                              const { error: uploadError } = await supabase.storage
-                                .from('course-materials')
-                                .upload(filePath, file);
-                              if (uploadError) throw uploadError;
-                              const { data: { publicUrl } } = supabase.storage
-                                .from('course-materials')
-                                .getPublicUrl(filePath);
+                              const publicUrl = await api.storage.uploadMaterial(courseId as string, file);
                               setEditingChapter({ ...editingChapter!, author_image_url: publicUrl });
                             } catch (error: any) {
                               showAlert({ title: 'Gagal Unggah', message: error.message, type: 'error' });

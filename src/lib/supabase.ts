@@ -15,6 +15,7 @@ export interface Profile {
     is_premium: boolean;
     premium_type: 'none' | 'premium' | 'premium_plus';
     premium_until: string | null;
+    is_banned: boolean;
     progress_percentage: number;
     created_at: string;
 }
