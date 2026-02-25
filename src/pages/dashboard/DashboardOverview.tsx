@@ -41,7 +41,7 @@ const DashboardOverview: React.FC = () => {
 
             // Use API Service Layer instead of direct Supabase calls
             const [coursesData, assignmentsData] = await Promise.all([
-                api.courses.getRecent(user.learning_path),
+                api.courses.getRecent(user.learning_path ?? undefined),
                 api.assignments.getByStudent(user.id)
             ]);
 

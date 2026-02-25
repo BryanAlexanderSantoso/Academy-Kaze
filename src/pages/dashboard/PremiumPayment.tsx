@@ -101,7 +101,7 @@ const PremiumPayment: React.FC = () => {
       }
 
       // Check usage limit
-      if (data.max_usage !== null && data.current_usage >= data.max_usage) {
+      if (data.max_usage != null && data.current_usage >= data.max_usage) {
         setPromoError('Kode promo sudah mencapai batas penggunaan.');
         setPromoLoading(false);
         return;
@@ -171,7 +171,7 @@ const PremiumPayment: React.FC = () => {
         proof_url: publicUrl,
         status: 'pending',
         premium_type: selectedTier,
-        promo_code: appliedPromo?.code || null,
+        promo_code: appliedPromo?.code,
         discount_percent: appliedPromo?.discount_percent || 0,
       });
 
