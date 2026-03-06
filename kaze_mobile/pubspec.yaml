@@ -1,0 +1,43 @@
+name: kaze_mobile
+description: A new Flutter project for Kaze Developer.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  
+  # Backend & Auth
+  supabase_flutter: ^2.8.1
+  
+  # State Management
+  flutter_riverpod: ^2.6.1
+  
+  # UI & UX Premium
+  google_fonts: ^6.2.1
+  glassmorphism: ^3.0.0
+  flutter_animate: ^4.5.2
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  font_awesome_flutter: ^10.8.0
+  intl: ^0.19.0
+  
+  # Navigation
+  go_router: ^14.7.2
+  url_launcher: ^6.3.2
+  flutter_markdown: ^0.7.7+1
+  http: ^1.6.0
+  path: ^1.9.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/

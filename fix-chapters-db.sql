@@ -4,9 +4,14 @@
 -- 1. Ensure columns match the application code
 ALTER TABLE course_chapters 
 ADD COLUMN IF NOT EXISTS is_preview BOOLEAN DEFAULT false,
-ADD COLUMN IF NOT EXISTS file_name TEXT;
+ADD COLUMN IF NOT EXISTS file_name TEXT,
+ADD COLUMN IF NOT EXISTS author_name TEXT,
+ADD COLUMN IF NOT EXISTS author_image_url TEXT;
 
--- 2. (Optional) Rename columns if they were created with wrong names
+-- 2. Reload schema cache -> IMPORTANT for PostgREST
+NOTIFY pgrst, 'reload schema';
+
+-- 3. (Optional) Rename columns if they were created with wrong names
 -- DO NOT RUN unless you are sure you need to rename:
 -- ALTER TABLE course_chapters RENAME COLUMN content_type TO material_type;
 -- ALTER TABLE course_chapters RENAME COLUMN content_value TO file_url;
