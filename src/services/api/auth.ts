@@ -71,6 +71,36 @@ export const authApi = {
     },
 
     /**
+     * Sign in with Google
+     */
+    async signInWithGoogle() {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/dashboard`
+            }
+        });
+
+        if (error) throw error;
+        return data;
+    },
+
+    /**
+     * Sign in with Facebook
+     */
+    async signInWithFacebook() {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'facebook',
+            options: {
+                redirectTo: `${window.location.origin}/dashboard`
+            }
+        });
+
+        if (error) throw error;
+        return data;
+    },
+
+    /**
      * Sign out
      */
     async signOut() {

@@ -25,6 +25,22 @@ class AuthService {
     );
   }
 
+  // Google Sign In
+  Future<bool> signInWithGoogle() async {
+    return await _client.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: 'io.supabase.kazedev://login-callback/',
+    );
+  }
+
+  // Facebook Sign In
+  Future<bool> signInWithFacebook() async {
+    return await _client.auth.signInWithOAuth(
+      OAuthProvider.facebook,
+      redirectTo: 'io.supabase.kazedev://login-callback/',
+    );
+  }
+
   // Sign Out
   Future<void> signOut() async {
     await _client.auth.signOut();

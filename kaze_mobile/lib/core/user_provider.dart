@@ -27,6 +27,14 @@ class UserNotifier extends StateNotifier<User?> {
     await _authService.signIn(email, password);
   }
 
+  Future<void> loginWithGoogle() async {
+    await _authService.signInWithGoogle();
+  }
+
+  Future<void> loginWithFacebook() async {
+    await _authService.signInWithFacebook();
+  }
+
   Future<void> register(String email, String password, String fullName) async {
     await _authService.signUp(email, password, fullName);
   }

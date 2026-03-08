@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/app_colors.dart';
 import '../../core/user_provider.dart';
 import '../../shared/widgets/glass_card.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -85,6 +86,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           obscureText: true),
                       const SizedBox(height: 48),
                       _buildSubmitButton(),
+                      const SizedBox(height: 16),
+                      _buildOAuthButtons(),
                     ],
                   ),
                 ),
@@ -196,6 +199,86 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildOAuthButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 60,
+            child: OutlinedButton.icon(
+              onPressed: _isLoading
+                  ? null
+                  : () async {
+                      setState(() => _isLoading = true);
+                      try {
+                        await ref.read(userProvider.notifier).loginWithGoogle();
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Google Login Gagal: $e')),
+                        );
+                      } finally {
+                        if (mounted) setState(() => _isLoading = false);
+                      }
+                    },
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Colors.white24, width: 1.5),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+              ),
+              icon: const FaIcon(FontAwesomeIcons.google,
+                  color: Colors.white, size: 20),
+              label: const Text(
+                'GOOGLE',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: SizedBox(
+            height: 60,
+            child: OutlinedButton.icon(
+              onPressed: _isLoading
+                  ? null
+                  : () async {
+                      setState(() => _isLoading = true);
+                      try {
+                        await ref
+                            .read(userProvider.notifier)
+                            .loginWithFacebook();
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Facebook Login Gagal: $e')),
+                        );
+                      } finally {
+                        if (mounted) setState(() => _isLoading = false);
+                      }
+                    },
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Colors.white24, width: 1.5),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+              ),
+              icon: const FaIcon(FontAwesomeIcons.facebook,
+                  color: Colors.blueAccent, size: 20),
+              label: const Text(
+                'FACEBOOK',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
